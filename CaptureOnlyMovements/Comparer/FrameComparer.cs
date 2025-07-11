@@ -5,21 +5,18 @@ namespace CaptureOnlyMovements.Comparer;
 public class FrameComparer
 {
     public FrameComparer(
-        int maximumPixelDifferenceValue, 
-        long maximumDifferentPixelCount,
+        Config config,
         Resolution resolution, 
         bool calculateFully = false)
     {
-        MaximumPixelDifferenceValue = maximumPixelDifferenceValue;
-        MaximumDifferentPixelCount = maximumDifferentPixelCount;
+        Config = config;
         Resolution = resolution;
+        CalculateFully = calculateFully;
         CalculationFrameData = new bool[resolution.Width * resolution.Height];
         PreviousFrameData = new byte[resolution.Width * resolution.Height * 3];
-        CalculateFully = calculateFully;
     }
 
-    public int MaximumPixelDifferenceValue { get; }
-    public long MaximumDifferentPixelCount { get; }
+    public Config Config { get; }
     public Resolution Resolution { get; }
     public bool[] CalculationFrameData { get; }
     public byte[] PreviousFrameData { get; }
@@ -53,7 +50,7 @@ public class FrameComparer
                 int pixelColorDifference3 = Math.Abs(currentBlue - previousBlue);
 
                 var pixelColorDifference = pixelColorDifference1 + pixelColorDifference2 + pixelColorDifference3;
-                var isDifferent = pixelColorDifference > MaximumPixelDifferenceValue;
+                var isDifferent = pixelColorDifference > Config.MaximumPixelDifferenceValue;
 
                 if (CalculateFully)
                     CalculationFrameData[y * Resolution.Width + x] = isDifferent;
@@ -65,7 +62,7 @@ public class FrameComparer
                 }
 
                 // Do check if total difference hasn't exceeded threshold otherwise no need to continue iterating
-                if (Result_Difference > MaximumDifferentPixelCount)
+                if (Result_Difference > Config.MaximumDifferentPixelCount)
                 {
                     if (!CalculateFully)
                     {
@@ -77,7 +74,7 @@ public class FrameComparer
         }
 
         // Do a final check for if CalculateFully is true
-        if (Result_Difference > MaximumDifferentPixelCount)
+        if (Result_Difference > Config.MaximumDifferentPixelCount)
         {
             Array.Copy(newFrameData, PreviousFrameData, newFrameData.Length);
             return true;

@@ -25,14 +25,14 @@
             label6 = new System.Windows.Forms.Label();
             MaximumPixelDifferenceValue = new System.Windows.Forms.TextBox();
             MaximumDifferentPixelCount = new System.Windows.Forms.TextBox();
-            OutputCRF = new System.Windows.Forms.TextBox();
             Preset = new System.Windows.Forms.ComboBox();
-            OutputFPS = new System.Windows.Forms.ComboBox();
+            Fps = new System.Windows.Forms.ComboBox();
             label7 = new System.Windows.Forms.Label();
-            UseQuickSync = new System.Windows.Forms.CheckBox();
+            UseGpu = new System.Windows.Forms.CheckBox();
             MinPlaybackSpeed = new System.Windows.Forms.TextBox();
             MaxLinesInDebug = new System.Windows.Forms.TextBox();
             label8 = new System.Windows.Forms.Label();
+            Quality = new System.Windows.Forms.ComboBox();
             tableLayoutPanel1.SuspendLayout();
             SuspendLayout();
             // 
@@ -50,14 +50,14 @@
             tableLayoutPanel1.Controls.Add(label6, 0, 5);
             tableLayoutPanel1.Controls.Add(MaximumPixelDifferenceValue, 1, 0);
             tableLayoutPanel1.Controls.Add(MaximumDifferentPixelCount, 1, 1);
-            tableLayoutPanel1.Controls.Add(OutputCRF, 1, 3);
             tableLayoutPanel1.Controls.Add(Preset, 1, 4);
-            tableLayoutPanel1.Controls.Add(OutputFPS, 1, 2);
+            tableLayoutPanel1.Controls.Add(Fps, 1, 2);
             tableLayoutPanel1.Controls.Add(label7, 0, 6);
-            tableLayoutPanel1.Controls.Add(UseQuickSync, 1, 6);
+            tableLayoutPanel1.Controls.Add(UseGpu, 1, 6);
             tableLayoutPanel1.Controls.Add(MinPlaybackSpeed, 1, 5);
             tableLayoutPanel1.Controls.Add(MaxLinesInDebug, 1, 7);
             tableLayoutPanel1.Controls.Add(label8, 0, 7);
+            tableLayoutPanel1.Controls.Add(Quality, 1, 3);
             tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             tableLayoutPanel1.Location = new System.Drawing.Point(5, 5);
             tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -109,18 +109,18 @@
             label3.AutoSize = true;
             label3.Location = new System.Drawing.Point(3, 56);
             label3.Name = "label3";
-            label3.Size = new System.Drawing.Size(64, 15);
+            label3.Size = new System.Drawing.Size(26, 15);
             label3.TabIndex = 2;
-            label3.Text = "OutputFPS";
+            label3.Text = "FPS";
             // 
             // label4
             // 
             label4.AutoSize = true;
             label4.Location = new System.Drawing.Point(3, 84);
             label4.Name = "label4";
-            label4.Size = new System.Drawing.Size(66, 15);
+            label4.Size = new System.Drawing.Size(45, 15);
             label4.TabIndex = 3;
-            label4.Text = "OutputCRF";
+            label4.Text = "Quality";
             // 
             // label5
             // 
@@ -156,14 +156,6 @@
             MaximumDifferentPixelCount.Size = new System.Drawing.Size(205, 23);
             MaximumDifferentPixelCount.TabIndex = 7;
             // 
-            // OutputCRF
-            // 
-            OutputCRF.Dock = System.Windows.Forms.DockStyle.Fill;
-            OutputCRF.Location = new System.Drawing.Point(214, 87);
-            OutputCRF.Name = "OutputCRF";
-            OutputCRF.Size = new System.Drawing.Size(205, 23);
-            OutputCRF.TabIndex = 9;
-            // 
             // Preset
             // 
             Preset.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -175,34 +167,34 @@
             Preset.TabIndex = 8;
             Preset.Text = "veryslow";
             // 
-            // OutputFPS
+            // Fps
             // 
-            OutputFPS.Dock = System.Windows.Forms.DockStyle.Fill;
-            OutputFPS.FormattingEnabled = true;
-            OutputFPS.Items.AddRange(new object[] { "25", "30", "50", "60" });
-            OutputFPS.Location = new System.Drawing.Point(214, 59);
-            OutputFPS.Name = "OutputFPS";
-            OutputFPS.Size = new System.Drawing.Size(205, 23);
-            OutputFPS.TabIndex = 10;
-            OutputFPS.Text = "60";
+            Fps.Dock = System.Windows.Forms.DockStyle.Fill;
+            Fps.FormattingEnabled = true;
+            Fps.Items.AddRange(new object[] { "25", "30", "50", "60" });
+            Fps.Location = new System.Drawing.Point(214, 59);
+            Fps.Name = "Fps";
+            Fps.Size = new System.Drawing.Size(205, 23);
+            Fps.TabIndex = 10;
+            Fps.Text = "60";
             // 
             // label7
             // 
             label7.AutoSize = true;
             label7.Location = new System.Drawing.Point(3, 168);
             label7.Name = "label7";
-            label7.Size = new System.Drawing.Size(82, 15);
+            label7.Size = new System.Drawing.Size(48, 15);
             label7.TabIndex = 11;
-            label7.Text = "UseQuickSync";
+            label7.Text = "UseGpu";
             // 
-            // UseQuickSync
+            // UseGpu
             // 
-            UseQuickSync.AutoSize = true;
-            UseQuickSync.Location = new System.Drawing.Point(214, 171);
-            UseQuickSync.Name = "UseQuickSync";
-            UseQuickSync.Size = new System.Drawing.Size(15, 14);
-            UseQuickSync.TabIndex = 12;
-            UseQuickSync.UseVisualStyleBackColor = true;
+            UseGpu.AutoSize = true;
+            UseGpu.Location = new System.Drawing.Point(214, 171);
+            UseGpu.Name = "UseGpu";
+            UseGpu.Size = new System.Drawing.Size(15, 14);
+            UseGpu.TabIndex = 12;
+            UseGpu.UseVisualStyleBackColor = true;
             // 
             // MinPlaybackSpeed
             // 
@@ -211,6 +203,7 @@
             MinPlaybackSpeed.Name = "MinPlaybackSpeed";
             MinPlaybackSpeed.Size = new System.Drawing.Size(205, 23);
             MinPlaybackSpeed.TabIndex = 13;
+            MinPlaybackSpeed.Text = "4";
             // 
             // MaxLinesInDebug
             // 
@@ -228,6 +221,17 @@
             label8.Size = new System.Drawing.Size(101, 15);
             label8.TabIndex = 18;
             label8.Text = "MaxLinesInDebug";
+            // 
+            // Quality
+            // 
+            Quality.Dock = System.Windows.Forms.DockStyle.Fill;
+            Quality.FormattingEnabled = true;
+            Quality.Items.AddRange(new object[] { "identical", "high", "medium", "low", "lower", "verylow" });
+            Quality.Location = new System.Drawing.Point(214, 87);
+            Quality.Name = "Quality";
+            Quality.Size = new System.Drawing.Size(205, 23);
+            Quality.TabIndex = 19;
+            Quality.Text = "identical";
             // 
             // SettingsForm
             // 
@@ -256,13 +260,13 @@
         private System.Windows.Forms.TextBox MaximumPixelDifferenceValue;
         private System.Windows.Forms.TextBox MaximumDifferentPixelCount;
         private System.Windows.Forms.ComboBox Preset;
-        private System.Windows.Forms.TextBox OutputCRF;
-        private System.Windows.Forms.ComboBox OutputFPS;
+        private System.Windows.Forms.ComboBox Fps;
         private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.CheckBox UseQuickSync;
+        private System.Windows.Forms.CheckBox UseGpu;
         private System.Windows.Forms.TextBox MinPlaybackSpeed;
         private System.Windows.Forms.Button SaveButton;
         private System.Windows.Forms.TextBox MaxLinesInDebug;
         private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.ComboBox Quality;
     }
 }

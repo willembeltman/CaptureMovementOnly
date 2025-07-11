@@ -35,7 +35,6 @@
             Controls.Add(DebugList);
             Name = "DebugForm";
             Text = "OpenDebugForm";
-            Load += DebugForm_Load;
             ResumeLayout(false);
         }
 

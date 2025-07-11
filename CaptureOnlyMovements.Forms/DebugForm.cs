@@ -26,13 +26,13 @@ public partial class DebugForm : Form
         DebugList.Items.Add(line);
     }
 
-    private void DebugForm_Load(object sender, EventArgs e)
+    // Belangrijk: Overrides om te zorgen dat de applicatie niet sluit als het formulier gesloten wordt
+    protected override void OnFormClosing(FormClosingEventArgs e)
     {
-        DebugList.Items.Clear();
-        foreach (var line in Recorder.DebugLines)
-        {
-            DebugList.Items.Add(line);
-        }   
+        // Voorkom dat het formulier direct sluit als de gebruiker op X klikt
+        e.Cancel = true;
+        this.Hide();
+        base.OnFormClosing(e);
     }
 
     protected override void Dispose(bool disposing)

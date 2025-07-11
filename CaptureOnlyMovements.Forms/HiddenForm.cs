@@ -1,57 +1,61 @@
-﻿using CaptureOnlyMovements.Forms;
-using System;
-using System.Text;
+﻿using System;
 using System.Windows.Forms;
 
+namespace CaptureOnlyMovements.Forms;
 
 public class HiddenForm : Form
 {
-    private System.Windows.Forms.NotifyIcon NotificationIcon;
-    private System.Windows.Forms.ContextMenuStrip ContextMenuStrip;
-    private ToolStripMenuItem OpenSettingsButton;
-    private ToolStripMenuItem StartRecordingButton;
-    private ToolStripMenuItem StopRecordingButton;
-    private ToolStripMenuItem exitMenuItem;
-    private Recorder Recorder;
-    private ToolStripMenuItem OpenDebugButton;
+    private readonly System.Windows.Forms.NotifyIcon NotificationIcon;
+    private readonly System.Windows.Forms.ContextMenuStrip NewContextMenuStrip;
+    private readonly ToolStripMenuItem StartRecordingButton;
+    private readonly ToolStripMenuItem StopRecordingButton;
+    private readonly ToolStripMenuItem OpenSettingsButton;
+    private readonly ToolStripMenuItem OpenDebugButton;
+    private readonly ToolStripMenuItem ExitMenuItem;
+    private readonly Recorder Recorder;
+    private readonly SettingsForm SettingsForm;
+    private readonly DebugForm DebugForm;
 
     public HiddenForm()
     {
-        NotificationIcon = new System.Windows.Forms.NotifyIcon();
-
-        // Zorg ervoor dat je een geldig icoonpad hebt!
-        NotificationIcon.Icon = new System.Drawing.Icon("Computer.ico"); // Vervang dit pad
-        NotificationIcon.Visible = true;
-        NotificationIcon.Text = "Mijn Systeemvak Applicatie";
+        NotificationIcon = new()
+        {
+            // Zorg ervoor dat je een geldig icoonpad hebt!
+            Icon = new System.Drawing.Icon("Computer.ico"), // Vervang dit pad
+            Visible = true,
+            Text = "Mijn Systeemvak Applicatie"
+        };
 
         // Initialiseer ContextMenuStrip
-        ContextMenuStrip = new System.Windows.Forms.ContextMenuStrip();
+        NewContextMenuStrip = new();
 
         // Voeg menu-items toe aan het contextmenu
 
         StartRecordingButton = new ToolStripMenuItem("Start recording");
         StartRecordingButton.Click += StartRecording_Click;
-        ContextMenuStrip.Items.Add(StartRecordingButton);
+        NewContextMenuStrip.Items.Add(StartRecordingButton);
 
-        StopRecordingButton = new ToolStripMenuItem("Stop recording");
-        StopRecordingButton.Visible = false;
+        StopRecordingButton = new ToolStripMenuItem("Stop recording")
+        {
+            Visible = false
+        };
         StopRecordingButton.Click += StopRecording_Click;
-        ContextMenuStrip.Items.Add(StopRecordingButton);
+        NewContextMenuStrip.Items.Add(StopRecordingButton);
 
         OpenSettingsButton = new ToolStripMenuItem("Open settings window");
         OpenSettingsButton.Click += OpenSettings_Click;
-        ContextMenuStrip.Items.Add(OpenSettingsButton);
+        NewContextMenuStrip.Items.Add(OpenSettingsButton);
 
         OpenDebugButton = new ToolStripMenuItem("Open debug window");
         OpenDebugButton.Click += OpenDebug_Click;
-        ContextMenuStrip.Items.Add(OpenDebugButton);
+        NewContextMenuStrip.Items.Add(OpenDebugButton);
 
-        exitMenuItem = new ToolStripMenuItem("Close");
-        exitMenuItem.Click += ExitMenuItem_Click;
-        ContextMenuStrip.Items.Add(exitMenuItem);
+        ExitMenuItem = new ToolStripMenuItem("Close");
+        ExitMenuItem.Click += ExitMenuItem_Click;
+        NewContextMenuStrip.Items.Add(ExitMenuItem);
 
         // Koppel het contextmenu aan de NotifyIcon
-        NotificationIcon.ContextMenuStrip = ContextMenuStrip;
+        NotificationIcon.ContextMenuStrip = NewContextMenuStrip;
 
         // Verberg het hoofdformulier bij het opstarten
         this.Load += Form1_Load;
@@ -60,15 +64,17 @@ public class HiddenForm : Form
         this.Hide(); // Verberg het venster
 
         Recorder = new Recorder(); // Initialiseer de Recorder klasse
-        Recorder.StateUpdated += RecorderStateUpdated;
+        Recorder.StateUpdated += RecorderState_Updated;
+
+        SettingsForm = new SettingsForm(Recorder);
+        DebugForm = new DebugForm(Recorder);
     }
 
-
-    private void RecorderStateUpdated(bool recording)
+    private void RecorderState_Updated(bool recording)
     {
         if (InvokeRequired)
         {
-            Invoke(new Action(() => RecorderStateUpdated(recording)));
+            Invoke(new Action(() => RecorderState_Updated(recording)));
             return;
         }
 
@@ -86,7 +92,6 @@ public class HiddenForm : Form
 
         }
     }
-
     private void Form1_Load(object? sender, EventArgs e)
     {
         this.Hide(); // Zorg ervoor dat het formulier verborgen is bij het laden
@@ -96,24 +101,18 @@ public class HiddenForm : Form
     {
         Recorder.Start();
     }
-
     private void StopRecording_Click(object? sender, EventArgs e)
     {
         Recorder.Stop();
     }
-
     private void OpenSettings_Click(object? sender, EventArgs e)
     {
-        using var settingsForm = new SettingsForm(Recorder);
-        settingsForm.ShowDialog();
+        SettingsForm.Show();
     }
-
     private void OpenDebug_Click(object? sender, EventArgs e)
     {
-        using var debugForm = new DebugForm(Recorder);
-        debugForm.ShowDialog();
+        DebugForm.Show();
     }
-
     private void ExitMenuItem_Click(object? sender, EventArgs e)
     {
         // Opruimen van de NotifyIcon voordat de applicatie wordt afgesloten
@@ -123,5 +122,16 @@ public class HiddenForm : Form
             NotificationIcon.Dispose();
         }
         Application.Exit();
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            Recorder.Dispose();
+            SettingsForm.Dispose();
+            DebugForm.Dispose();
+        }
+        base.Dispose(disposing);
     }
 }

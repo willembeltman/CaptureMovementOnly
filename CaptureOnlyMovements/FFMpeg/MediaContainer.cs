@@ -1,12 +1,13 @@
-﻿using CaptureOnlyMovements.Types;
+﻿using CaptureOnlyMovements.Enums;
+using CaptureOnlyMovements.Types;
 
 namespace CaptureOnlyMovements.FFMpeg;
 
 public class MediaContainer
 {
-    public MediaContainer(DirectoryInfo ffmpegdir, string fullName)
+    public MediaContainer(string fullName, DirectoryInfo? ffmpegdir = null)
     {
-        FFMpegDirectory = ffmpegdir;
+        FFMpegDirectory = ffmpegdir ?? new DirectoryInfo(Environment.CurrentDirectory);
         FileInfo = new FileInfo(fullName);
     }
 
@@ -15,9 +16,13 @@ public class MediaContainer
 
     public VideoStreamWriter OpenVideoStreamWriter(
         Resolution resolution,
-        double fps = 25,
-        int crf = 23,
-        string preset = "medium",
-        bool useQuickSync = true)
-        => new VideoStreamWriter(this, resolution, fps, crf, preset, useQuickSync);
+        double fps = 60,
+        string quality = "identical",
+        string preset = "veryslow",
+        bool useGpu = true)
+    {
+        var qualityEnum = Enum.Parse<QualityEnum>(quality);
+        var presetEnum = Enum.Parse<PresetEnum>(preset);
+        return new VideoStreamWriter(this, resolution, fps, qualityEnum, presetEnum, useGpu);
+    }
 }

@@ -9,10 +9,10 @@ public class Config
     public int MaximumDifferentPixelCount { get; set; } = 450;
     public int MinPlaybackSpeed { get; set; } = 8;
     public int MaxLinesInDebug { get; set; } = 100;
-    public int OutputFPS { get; set; } = 60;
-    public int OutputCRF { get; set; } = 23;
-    public string Preset { get; set; } = "veryslow";
-    public bool UseQuickSync { get; set; } = true;
+    public int OutputFps { get; set; } = 60;
+    public string OutputQuality { get; set; } = "identical";
+    public string OutputPreset { get; set; } = "veryslow";
+    public bool UseGpu { get; set; } = true;
 
     public static Config Read()
     {
@@ -31,7 +31,7 @@ public class Config
 
     public void Save()
     {
-        var json = System.Text.Json.JsonSerializer.Serialize(this, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
+        var json = System.Text.Json.JsonSerializer.Serialize(this);
         File.WriteAllText("CaptureOnlyMovements.json", json);
     }
 }

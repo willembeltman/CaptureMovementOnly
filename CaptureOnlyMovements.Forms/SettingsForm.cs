@@ -25,17 +25,17 @@ public partial class SettingsForm : Form
 
         if (recording)
         {
-            OutputFPS.Enabled = false;
-            OutputCRF.Enabled = false;
+            Fps.Enabled = false;
+            Quality.Enabled = false;
             Preset.Enabled = false;
-            UseQuickSync.Enabled = false;
+            UseGpu.Enabled = false;
         }
         else
         {
-            OutputFPS.Enabled = true;
-            OutputCRF.Enabled = true;
+            Fps.Enabled = true;
+            Quality.Enabled = true;
             Preset.Enabled = true;
-            UseQuickSync.Enabled = true;
+            UseGpu.Enabled = true;
         }
     }
 
@@ -47,10 +47,10 @@ public partial class SettingsForm : Form
         MaximumDifferentPixelCount.Text = config.MaximumDifferentPixelCount.ToString();
         MinPlaybackSpeed.Text = config.MinPlaybackSpeed.ToString();
         MaxLinesInDebug.Text = config.MaxLinesInDebug.ToString();
-        OutputFPS.SelectedValue = config.OutputFPS.ToString();
-        OutputCRF.Text = config.OutputCRF.ToString();
-        Preset.SelectedValue = config.Preset.ToString();
-        UseQuickSync.Checked = config.UseQuickSync;
+        Fps.SelectedValue = config.OutputFps.ToString();
+        Quality.SelectedValue = config.OutputQuality.ToString();
+        Preset.SelectedValue = config.OutputPreset.ToString();
+        UseGpu.Checked = config.UseGpu;
     }
 
     private void SaveButton_Click(object sender, EventArgs e)
@@ -60,13 +60,23 @@ public partial class SettingsForm : Form
         config.MaximumDifferentPixelCount = Convert.ToInt32(MaximumDifferentPixelCount.Text);
         config.MinPlaybackSpeed = Convert.ToInt32(MinPlaybackSpeed.Text);
         config.MaxLinesInDebug = Convert.ToInt32(MaxLinesInDebug.Text);
-        config.OutputFPS = Convert.ToInt32(OutputFPS.Text);
-        config.OutputCRF = Convert.ToInt32(OutputCRF.Text);
-        config.Preset = Preset.Text;
-        config.UseQuickSync = UseQuickSync.Checked;
+        config.OutputFps = Convert.ToInt32(Fps.Text);
+        config.OutputQuality = Quality.Text;
+        config.OutputPreset = Preset.Text;
+        config.UseGpu = UseGpu.Checked;
         config.Save();
-        Close();
+        Hide();
     }
+
+    // Belangrijk: Overrides om te zorgen dat de applicatie niet sluit als het formulier gesloten wordt
+    protected override void OnFormClosing(FormClosingEventArgs e)
+    {
+        // Voorkom dat het formulier direct sluit als de gebruiker op X klikt
+        e.Cancel = true;
+        this.Hide();
+        base.OnFormClosing(e);
+    }
+
     protected override void Dispose(bool disposing)
     {
         if (disposing && (components != null))

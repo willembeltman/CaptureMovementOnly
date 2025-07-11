@@ -4,9 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CaptureOnlyMovements.Forms
+namespace CaptureOnlyMovements;
+
+internal class Converter
 {
-    internal class Converter
-    {
-    }
 }

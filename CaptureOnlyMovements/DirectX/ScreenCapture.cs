@@ -1,34 +1,47 @@
 ﻿using SharpDX.DXGI;
 using SharpDX.Direct3D11;
 using CaptureOnlyMovements.Types;
+using CaptureOnlyMovements.Interfaces;
 
 namespace CaptureOnlyMovements.DirectX;
 
 public class ScreenshotCapturer : IDisposable
 {
-    private Factory1 _factory;
-    private Adapter1 _adapter;
-    private Output1 _output;
-    private SharpDX.Direct3D11.Device _device;
-    private OutputDuplication _duplicatedOutput;
+    private Factory1 Factory;
+    private Adapter1 Adapter;
+    private Output1 Output;
+    private SharpDX.Direct3D11.Device Device;
+    private OutputDuplication DuplicatedOutput;
 
     public ScreenshotCapturer()
     {
-        _factory = new Factory1();
-        _adapter = _factory.GetAdapter1(0);
-        _device = new SharpDX.Direct3D11.Device(_adapter);
-        _output = _adapter.GetOutput(0).QueryInterface<Output1>();
-        _duplicatedOutput = _output.DuplicateOutput(_device);
+        Factory = new Factory1();
+        Adapter = Factory.GetAdapter1(0);
+        Device = new SharpDX.Direct3D11.Device(Adapter);
+        Output = Adapter.GetOutput(0).QueryInterface<Output1>();
+        DuplicatedOutput = Output.DuplicateOutput(Device);
+    }
+
+    public IEnumerable<byte[]> ReadEnumerable(IKillSwitch killSwitch)
+    {
+        var frame = CaptureFrame();
+        if (!killSwitch.KillSwitch)
+            yield return frame.Buffer;
+        while (!killSwitch.KillSwitch)
+            yield return CaptureFrame(frame.Buffer).Buffer;
     }
 
     public Frame CaptureFrame(byte[]? buffer = null)
     {
         SharpDX.DXGI.Resource? screenResource = null;
+        OutputDuplicateFrameInformation info;
+
+        DuplicatedOutput.TryAcquireNextFrame(1, out info, out screenResource);
 
         while (screenResource == null)
         {
-            _duplicatedOutput.TryAcquireNextFrame(10, out var info, out screenResource);
-            Thread.Sleep(100); // Wait for the next frame
+            Thread.Sleep(1); // Wait for the next frame
+            DuplicatedOutput.TryAcquireNextFrame(1, out info, out screenResource);
         }
 
         using var texture2D = screenResource.QueryInterface<Texture2D>();
@@ -52,9 +65,9 @@ public class ScreenshotCapturer : IDisposable
             OptionFlags = ResourceOptionFlags.None
         };
 
-        using var stagingTexture = new Texture2D(_device, stagingDesc);
+        using var stagingTexture = new Texture2D(Device, stagingDesc);
 
-        var context = _device.ImmediateContext;
+        var context = Device.ImmediateContext;
         context.CopyResource(texture2D, stagingTexture);
 
         // Map staging texture to memory
@@ -94,17 +107,17 @@ public class ScreenshotCapturer : IDisposable
         context.UnmapSubresource(stagingTexture, 0);
 
         screenResource.Dispose();
-        _duplicatedOutput.ReleaseFrame();
+        DuplicatedOutput.ReleaseFrame();
 
         return new(buffer, new(width, height));
     }
 
     public void Dispose()
     {
-        _duplicatedOutput?.Dispose();
-        _output?.Dispose();
-        _device?.Dispose();
-        _adapter?.Dispose();
-        _factory?.Dispose();
+        DuplicatedOutput?.Dispose();
+        Output?.Dispose();
+        Device?.Dispose();
+        Adapter?.Dispose();
+        Factory?.Dispose();
     }
 }
