@@ -4,10 +4,10 @@ using System.Windows.Forms;
 
 namespace CaptureOnlyMovements.Forms;
 
-public class HiddenForm : Form, IApplication
+public class ApplicationForm : Form, IApplication
 {
-    private readonly System.Windows.Forms.NotifyIcon NotificationIcon;
-    private readonly System.Windows.Forms.ContextMenuStrip NewContextMenuStrip;
+    private readonly NotifyIcon NotificationIcon;
+    private readonly ContextMenuStrip NewContextMenuStrip;
     private readonly ToolStripMenuItem StartRecordingButton;
     private readonly ToolStripMenuItem StopRecordingButton;
     private readonly ToolStripMenuItem OpenSettingsButton;
@@ -20,7 +20,7 @@ public class HiddenForm : Form, IApplication
 
     public ToolStripMenuItem OpenFFMpegDebugButton { get; }
 
-    public HiddenForm()
+    public ApplicationForm()
     {
         NotificationIcon = new()
         {
@@ -66,10 +66,10 @@ public class HiddenForm : Form, IApplication
         NotificationIcon.ContextMenuStrip = NewContextMenuStrip;
 
         // Verberg het hoofdformulier bij het opstarten
-        this.Load += Form1_Load;
-        this.ShowInTaskbar = false; // Verberg de applicatie van de taakbalk
-        this.WindowState = FormWindowState.Minimized; // Minimaliseer het venster
-        this.Hide(); // Verberg het venster
+        Load += Form1_Load;
+        ShowInTaskbar = false; // Verberg de applicatie van de taakbalk
+        WindowState = FormWindowState.Minimized; // Minimaliseer het venster
+        Hide(); // Verberg het venster
 
         Recorder = new Recorder(this); // Initialiseer de Recorder klasse
         Recorder.StateUpdated += RecorderState_Updated;
@@ -108,7 +108,7 @@ public class HiddenForm : Form, IApplication
     }
     private void Form1_Load(object? sender, EventArgs e)
     {
-        this.Hide(); // Zorg ervoor dat het formulier verborgen is bij het laden
+        Hide(); // Zorg ervoor dat het formulier verborgen is bij het laden
     }
 
     private void StartRecording_Click(object? sender, EventArgs e)

@@ -46,7 +46,6 @@ public partial class SettingsForm : Form
         MaximumPixelDifferenceValue.Text = config.MaximumPixelDifferenceValue.ToString();
         MaximumDifferentPixelCount.Text = config.MaximumDifferentPixelCount.ToString();
         MinPlaybackSpeed.Text = config.MinPlaybackSpeed.ToString();
-        MaxLinesInDebug.Text = config.MaxLinesInDebug.ToString();
         Fps.SelectedValue = config.OutputFps.ToString();
         Quality.SelectedValue = config.OutputQuality.ToString();
         Preset.SelectedValue = config.OutputPreset.ToString();
@@ -59,7 +58,6 @@ public partial class SettingsForm : Form
         config.MaximumPixelDifferenceValue = Convert.ToInt32(MaximumPixelDifferenceValue.Text);
         config.MaximumDifferentPixelCount = Convert.ToInt32(MaximumDifferentPixelCount.Text);
         config.MinPlaybackSpeed = Convert.ToInt32(MinPlaybackSpeed.Text);
-        config.MaxLinesInDebug = Convert.ToInt32(MaxLinesInDebug.Text);
         config.OutputFps = Convert.ToInt32(Fps.Text);
         config.OutputQuality = Quality.Text;
         config.OutputPreset = Preset.Text;

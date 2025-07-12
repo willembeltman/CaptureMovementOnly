@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="FFMpegDebugForm.cs">
+    <Compile Update="SubForms\FFMpegDebugForm.cs">
       <SubType>Form</SubType>
     </Compile>
   </ItemGroup>

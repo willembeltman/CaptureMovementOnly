@@ -6,7 +6,6 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Windows.Forms;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace CaptureOnlyMovements.Forms;
 
@@ -21,13 +20,12 @@ public class Recorder : IDisposable, IKillSwitch, IDebugWriter, IFFMpegDebugWrit
         Config = Config.Read();
     }
 
-    public IApplication Application { get; }
+    private readonly IApplication Application;
+    private Thread? WriterThread;
 
-    public Config Config;
-
+    public Config Config { get; }
     public bool Running { get; private set; }
     public bool KillSwitch { get; private set; }
-    public Thread? WriterThread { get; private set; }
 
     public event StateUpdated? StateUpdated;
     public event DebugUpdated? DebugUpdated;
@@ -48,11 +46,8 @@ public class Recorder : IDisposable, IKillSwitch, IDebugWriter, IFFMpegDebugWrit
         {
             DebugWriteLine("Stopping the recorder...");
             KillSwitch = true;
-            if (WriterThread != Thread.CurrentThread)
-                WriterThread?.Join();
         }
     }
-
     private void Kernel()
     {
         Running = true;
