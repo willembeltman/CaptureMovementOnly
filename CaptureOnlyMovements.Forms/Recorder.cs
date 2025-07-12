@@ -6,6 +6,7 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Windows.Forms;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace CaptureOnlyMovements.Forms;
 
@@ -14,10 +15,13 @@ public delegate void DebugUpdated(string line);
 
 public class Recorder : IDisposable, IKillSwitch, IDebugWriter, IFFMpegDebugWriter
 {
-    public Recorder()
+    public Recorder(IApplication application)
     {
+        Application = application;
         Config = Config.Read();
     }
+
+    public IApplication Application { get; }
 
     public Config Config;
 
@@ -103,10 +107,15 @@ public class Recorder : IDisposable, IKillSwitch, IDebugWriter, IFFMpegDebugWrit
         }
         catch (Exception ex)
         {
-            MessageBox.Show(ex.Message);
+            MessageBox.Show(ex.Message, "Error while recording", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }
 
+    public void FatalException(string error)
+    {
+        MessageBox.Show(error, "Fatal exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        Application.Exit();
+    }
     public void DebugWriteLine(string message) => DebugUpdated?.Invoke(message);
     public void FFMpegDebugWriteLine(string message) => FFMpegDebugUpdated?.Invoke(message);
 

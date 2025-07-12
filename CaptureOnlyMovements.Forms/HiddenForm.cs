@@ -1,9 +1,10 @@
-﻿using System;
+﻿using CaptureOnlyMovements.Interfaces;
+using System;
 using System.Windows.Forms;
 
 namespace CaptureOnlyMovements.Forms;
 
-public class HiddenForm : Form
+public class HiddenForm : Form, IApplication
 {
     private readonly System.Windows.Forms.NotifyIcon NotificationIcon;
     private readonly System.Windows.Forms.ContextMenuStrip NewContextMenuStrip;
@@ -70,12 +71,17 @@ public class HiddenForm : Form
         this.WindowState = FormWindowState.Minimized; // Minimaliseer het venster
         this.Hide(); // Verberg het venster
 
-        Recorder = new Recorder(); // Initialiseer de Recorder klasse
+        Recorder = new Recorder(this); // Initialiseer de Recorder klasse
         Recorder.StateUpdated += RecorderState_Updated;
 
         SettingsForm = new SettingsForm(Recorder);
         DebugForm = new DebugForm(Recorder);
         FFMpegDebugForm = new FFMpegDebugForm(Recorder);
+    }
+
+    public void Exit()
+    {
+        ExitMenuItem_Click(null, new EventArgs());
     }
 
     private void RecorderState_Updated(bool recording)
@@ -151,4 +157,5 @@ public class HiddenForm : Form
         }
         base.Dispose(disposing);
     }
+
 }

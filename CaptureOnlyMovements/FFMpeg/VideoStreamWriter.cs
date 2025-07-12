@@ -26,8 +26,13 @@ public class VideoStreamWriter : IDisposable
         var ffMpegFullname = Path.Combine(FFMpegDirectory.FullName, "ffmpeg.exe");
 
         if (!File.Exists(ffMpegFullname))
-            throw new Exception($"Cannot find file '{ffMpegFullname}', please download a new copy and put it in this location.");
+        {
+            var error = @$"FFmpeg executable not found at: {ffMpegFullname}
 
+Please download FFmpeg and place it in the specified location. The program will now close. Restart the application after installing FFmpeg.";
+            killSwitch.FatalException(error);
+            throw new Exception(error);
+        }
         if (FileInfo.Exists)
             throw new Exception($"Cannot write to file '{FileInfo.FullName}', file already exists.");
 
@@ -100,7 +105,6 @@ public class VideoStreamWriter : IDisposable
     }
 
     public MediaContainer MediaContainer { get; }
-    public bool ShowDebug { get; }
 
     private readonly IFFMpegDebugWriter? DebugWriter;
     private readonly IKillSwitch KillSwitch;
@@ -167,5 +171,6 @@ public class VideoStreamWriter : IDisposable
                 Process.Kill();
             Process.Dispose();
         }
+        GC.SuppressFinalize(this);
     }
 }
