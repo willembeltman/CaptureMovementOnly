@@ -21,6 +21,7 @@ public class FrameComparer
     public bool[] CalculationFrameData { get; }
     public byte[] PreviousFrameData { get; }
     public bool CalculateFully { get; }
+    public int Result_Difference { get; private set; }
 
     public bool IsDifferent(byte[] newFrameData)
     {
@@ -28,7 +29,7 @@ public class FrameComparer
         var stride = Resolution.Width * 3;
 
         // Counter for total difference in frame 
-        var Result_Difference = 0;
+        Result_Difference = 0;
 
         // Iterate throug each pixel/color of the frame
         for (int y = 0; y < Resolution.Height; y++)

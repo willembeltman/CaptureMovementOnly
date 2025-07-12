@@ -2,5 +2,5 @@
 
 public interface IDebugWriter
 {
-    void WriteLine(string v);
+    void DebugWriteLine(string v);
 }

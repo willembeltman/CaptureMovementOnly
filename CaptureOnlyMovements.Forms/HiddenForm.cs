@@ -15,6 +15,9 @@ public class HiddenForm : Form
     private readonly Recorder Recorder;
     private readonly SettingsForm SettingsForm;
     private readonly DebugForm DebugForm;
+    private readonly FFMpegDebugForm FFMpegDebugForm;
+
+    public ToolStripMenuItem OpenFFMpegDebugButton { get; }
 
     public HiddenForm()
     {
@@ -50,6 +53,10 @@ public class HiddenForm : Form
         OpenDebugButton.Click += OpenDebug_Click;
         NewContextMenuStrip.Items.Add(OpenDebugButton);
 
+        OpenFFMpegDebugButton = new ToolStripMenuItem("Open ffmpeg debug window");
+        OpenFFMpegDebugButton.Click += OpenFFMpegDebug_Click;
+        NewContextMenuStrip.Items.Add(OpenFFMpegDebugButton);
+
         ExitMenuItem = new ToolStripMenuItem("Close");
         ExitMenuItem.Click += ExitMenuItem_Click;
         NewContextMenuStrip.Items.Add(ExitMenuItem);
@@ -68,6 +75,7 @@ public class HiddenForm : Form
 
         SettingsForm = new SettingsForm(Recorder);
         DebugForm = new DebugForm(Recorder);
+        FFMpegDebugForm = new FFMpegDebugForm(Recorder);
     }
 
     private void RecorderState_Updated(bool recording)
@@ -113,8 +121,16 @@ public class HiddenForm : Form
     {
         DebugForm.Show();
     }
+    private void OpenFFMpegDebug_Click(object? sender, EventArgs e)
+    {
+        FFMpegDebugForm.Show();
+    }
     private void ExitMenuItem_Click(object? sender, EventArgs e)
     {
+        Recorder.Dispose();
+        DebugForm.Dispose();
+        SettingsForm.Dispose();
+
         // Opruimen van de NotifyIcon voordat de applicatie wordt afgesloten
         if (NotificationIcon != null)
         {
@@ -131,6 +147,7 @@ public class HiddenForm : Form
             Recorder.Dispose();
             SettingsForm.Dispose();
             DebugForm.Dispose();
+            NotificationIcon.Dispose();
         }
         base.Dispose(disposing);
     }

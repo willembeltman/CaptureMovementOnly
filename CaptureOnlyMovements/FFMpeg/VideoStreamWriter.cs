@@ -1,8 +1,8 @@
 ﻿using CaptureOnlyMovements.Enums;
+using CaptureOnlyMovements.Helpers;
 using CaptureOnlyMovements.Interfaces;
 using CaptureOnlyMovements.Types;
 using System.Diagnostics;
-using System.Management; // Voor GPU-detectie op Windows
 using System.Runtime.InteropServices; // Voor OS-detectie
 
 namespace CaptureOnlyMovements.FFMpeg;
@@ -10,13 +10,17 @@ namespace CaptureOnlyMovements.FFMpeg;
 public class VideoStreamWriter : IDisposable
 {
     public VideoStreamWriter(
+        IFFMpegDebugWriter debugWriter,
+        IKillSwitch killSwitch,
         MediaContainer mediaContainer,
         Resolution resolution,
-        double fps = 25,
-        QualityEnum qualityEnum = QualityEnum.medium,
-        PresetEnum presetEnum = PresetEnum.medium,
-        bool useGpu = true)
+        int fps,
+        QualityEnum qualityEnum,
+        PresetEnum presetEnum,
+        bool useGpu)
     {
+        DebugWriter = debugWriter;
+        KillSwitch = killSwitch;
         MediaContainer = mediaContainer;
 
         var ffMpegFullname = Path.Combine(FFMpegDirectory.FullName, "ffmpeg.exe");
@@ -32,36 +36,38 @@ public class VideoStreamWriter : IDisposable
 
         if (useGpu)
         {
-            var gpuType = DetectGpu(); // Detecteer de GPU
+            var gpuType = GpuHelper.DetectGpu(); // Detecteer de GPU
             switch (gpuType)
             {
                 case GpuEnum.Nvidia:
                     codec = "h264_nvenc";
-                    arguments = $"-f rawvideo -pix_fmt rgb24 -s {resolution.Width}x{resolution.Height} -r {(fps.ToString("F2")).Replace(",", ".")} -i - -c:v {codec} " +
-                        $"-rc vbr -cq {GetQuality(qualityEnum, gpuType)} -preset {GetPreset(presetEnum, gpuType)} \"{FileInfo.FullName}\"";
+                    arguments = $"-f rawvideo -pix_fmt rgb24 -s {resolution.Width}x{resolution.Height} -r {fps} -i - -c:v {codec} " +
+                        $"-rc vbr -cq {GpuHelper.GetQuality(qualityEnum, gpuType)} -preset {GpuHelper.GetPreset(presetEnum, gpuType)} \"{FileInfo.FullName}\"";
                     break;
                 case GpuEnum.AMD:
                     codec = "h264_amf";
-                    arguments = $"-f rawvideo -pix_fmt rgb24 -s {resolution.Width}x{resolution.Height} -r {(fps.ToString("F2")).Replace(",", ".")} -i - -c:v {codec} " +
-                                $"-rc vbr -qp_i {GetQuality(qualityEnum, gpuType)} -qp_p {GetQuality(qualityEnum, gpuType)} -quality {GetPreset(presetEnum, gpuType)} \"{FileInfo.FullName}\"";
+                    arguments = $"-f rawvideo -pix_fmt rgb24 -s {resolution.Width}x{resolution.Height} -r {fps} -i - -c:v {codec} " +
+                                $"-rc vbr -qp_i {GpuHelper.GetQuality(qualityEnum, gpuType)} -qp_p {GpuHelper.GetQuality(qualityEnum, gpuType)} -quality {GpuHelper.GetPreset(presetEnum, gpuType)} \"{FileInfo.FullName}\"";
                     break;
                 case GpuEnum.Intel:
+                    //arguments = $"-f rawvideo -pix_fmt rgb24 -s {resolution.Width}x{resolution.Height} -r {fps} -i - -c:v h264_qsv -global_quality {CRF} -preset {Preset} \"{FileInfo.FullName}\"",
                     codec = "h264_qsv";
-                    arguments = $"-f rawvideo -pix_fmt rgb24 -s {resolution.Width}x{resolution.Height} -r {(fps.ToString("F2")).Replace(",", ".")} -i - -c:v {codec} " +
-                        $"-global_quality {GetQuality(qualityEnum, gpuType)} -preset {GetPreset(presetEnum, gpuType)} \"{FileInfo.FullName}\"";
+                    arguments = $"-f rawvideo -pix_fmt rgb24 -s {resolution.Width}x{resolution.Height} -r {fps} -i - -c:v {codec} " +
+                        $"-global_quality {GpuHelper.GetQuality(qualityEnum, gpuType)} -preset {GpuHelper.GetPreset(presetEnum, gpuType)} \"{FileInfo.FullName}\"";
                     break;
                 default:
-                    codec = "libx264";
-                    arguments = $"-f rawvideo -pix_fmt rgb24 -s {resolution.Width}x{resolution.Height} -r {(fps.ToString("F2")).Replace(",", ".")} -i - -c:v {codec} " +
-                        $"-crf {GetQuality(qualityEnum, gpuType)} -preset {GetPreset(presetEnum, gpuType)} \"{FileInfo.FullName}\"";
+                    //arguments = $"-f rawvideo -pix_fmt rgb24 -s {resolution.Width}x{resolution.Height} -r {fps} -i - -c:v libx265 -crf {CRF} -preset {Preset} \"{FileInfo.FullName}\"",
+                    codec = "libx265";
+                    arguments = $"-f rawvideo -pix_fmt rgb24 -s {resolution.Width}x{resolution.Height} -r {fps} -i - -c:v {codec} " +
+                        $"-crf {GpuHelper.GetQuality(qualityEnum, gpuType)} -preset {GpuHelper.GetPreset(presetEnum, gpuType)} \"{FileInfo.FullName}\"";
                     break;
             }
         }
         else
         {
             codec = "libx264";
-            arguments = $"-f rawvideo -pix_fmt rgb24 -s {resolution.Width}x{resolution.Height} -r {(fps.ToString("F2")).Replace(",", ".")} -i - -c:v {codec} " +
-                $"-crf {GetQuality(qualityEnum, GpuEnum.None)} -preset {GetPreset(presetEnum, GpuEnum.None)} \"{FileInfo.FullName}\"";
+            arguments = $"-f rawvideo -pix_fmt rgb24 -s {resolution.Width}x{resolution.Height} -r {fps} -i - -c:v {codec} " +
+                $"-crf {GpuHelper.GetQuality(qualityEnum, GpuEnum.None)} -preset {GpuHelper.GetPreset(presetEnum, GpuEnum.None)} \"{FileInfo.FullName}\"";
         }
 
         Process = new Process()
@@ -72,9 +78,9 @@ public class VideoStreamWriter : IDisposable
                 WorkingDirectory = FFMpegDirectory.FullName,
                 Arguments = arguments,
                 RedirectStandardInput = true,
+                RedirectStandardError = true,
                 UseShellExecute = false,
                 CreateNoWindow = true,
-                RedirectStandardError = true,
             }
         };
 
@@ -87,140 +93,74 @@ public class VideoStreamWriter : IDisposable
         if (!Process.Start()) throw new Exception("Error launching FFMPEG");
         Stopwatch = Stopwatch.StartNew();
         StreamWriter = new BinaryWriter(Process.StandardInput.BaseStream);
-    }
+        StreamReader = new StreamReader(Process.StandardError.BaseStream);
 
+        ReaderThread = new Thread(new ThreadStart(ReadWhileWriting));
+        ReaderThread.Start();
+    }
 
     public MediaContainer MediaContainer { get; }
-    public Process Process { get; }
-    public Stopwatch Stopwatch { get; }
-    public BinaryWriter StreamWriter { get; }
-    public DirectoryInfo FFMpegDirectory => MediaContainer.FFMpegDirectory;
-    public FileInfo FileInfo => MediaContainer.FileInfo;
+    public bool ShowDebug { get; }
 
-    public void WriteFrame(byte[] frameData, IDebugWriter debugWriter)
+    private readonly IFFMpegDebugWriter? DebugWriter;
+    private readonly IKillSwitch KillSwitch;
+    private bool ReaderKillSwitch;
+    private readonly Process Process;
+    private readonly Stopwatch Stopwatch;
+    private readonly BinaryWriter StreamWriter;
+    private readonly StreamReader StreamReader;
+    private readonly Thread ReaderThread;
+    private string ReadMessage = "";
+    private bool ProcessEnded;
+
+    private DirectoryInfo FFMpegDirectory => MediaContainer.FFMpegDirectory;
+    private FileInfo FileInfo => MediaContainer.FileInfo;
+
+
+    private void ReadWhileWriting()
     {
-        if (Process.HasExited)
+        var line = StreamReader.ReadLine();
+        while (line != null && !KillSwitch.KillSwitch && !ReaderKillSwitch)
         {
-            var error = Process.StandardError.ReadToEnd();
+            ReadMessage += line +"\r\n"; // Dit kan omdat als het niet goed gaat, laat ffmpeg de error zien.
+            DebugWriter?.FFMpegDebugWriteLine(line);
+
+            line = StreamReader.ReadLine();
+        }
+        if (line != null)
+        {
+            if (!Process.HasExited)
+                Process.Kill();
+        }
+        ProcessEnded = true;
+    }
+
+    public void WriteFrame(byte[] frameData)
+    {
+        if (ProcessEnded)
+        {
             if (Stopwatch.Elapsed.TotalSeconds > 10)
-                throw new Exception($"FFMpeg shut down, maybe file already exist, or disk is full, or something else.\r\n\r\n{error}");
+                throw new Exception($"FFMpeg shut down, maybe file already exist, or disk is full, or something else.\r\n\r\n{ReadMessage}");
             else
-                throw new Exception($"FFMpeg shut down, error creating file\r\n\r\n{error}");
+                throw new Exception($"FFMpeg shut down, error creating file\r\n\r\n{ReadMessage}");
+        }
+        if (KillSwitch.KillSwitch)
+        {
+            return;
         }
         StreamWriter.Write(frameData);
-        debugWriter.WriteLine($"Captured frame at {DateTime.Now:HH:mm:ss.fff}");
     }
 
-    public void WriteEnumerable(IEnumerable<byte[]> enumerable, IDebugWriter debugWriter)
-    {
-        foreach (byte[] frame in enumerable)
-        {
-            WriteFrame(frame, debugWriter);
-        }
-    }
-
-    private GpuEnum DetectGpu()
-    {
-        try
-        {
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
-                using (var searcher = new ManagementObjectSearcher("SELECT * FROM Win32_VideoController"))
-                {
-                    foreach (var obj in searcher.Get())
-                    {
-                        string name = obj["Name"]!.ToString()!.ToLower() ?? "";
-                        if (name.Contains("nvidia")) return GpuEnum.Nvidia;
-                        if (name.Contains("amd") || name.Contains("radeon")) return GpuEnum.AMD;
-                        if (name.Contains("intel")) return GpuEnum.Intel;
-                    }
-                }
-            }
-            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-            {
-                // Voor Linux kun je `lspci` of `lscpu` gebruiken, maar dit vereist extra parsing
-                // Voor simpliciteit vertrouwen we op FFmpeg's detectie of handmatige config
-                var process = new Process
-                {
-                    StartInfo = new ProcessStartInfo
-                    {
-                        FileName = "lspci",
-                        RedirectStandardOutput = true,
-                        UseShellExecute = false,
-                        CreateNoWindow = true
-                    }
-                };
-                process.Start();
-                string output = process.StandardOutput.ReadToEnd();
-                process.WaitForExit();
-                output = output.ToLower();
-                if (output.Contains("nvidia")) return GpuEnum.Nvidia;
-                if (output.Contains("amd") || output.Contains("radeon")) return GpuEnum.AMD;
-                if (output.Contains("intel")) return GpuEnum.Intel;
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"GPU detection failed: {ex.Message}");
-        }
-        return GpuEnum.Unknown; // Fallback naar software-encoding
-    }
-    private string? GetPreset(PresetEnum presetEnum, GpuEnum gpuType)
-    {
-        return gpuType switch
-        {
-            GpuEnum.Nvidia => presetEnum switch
-            {
-                PresetEnum.veryslow => "p7",
-                PresetEnum.slower => "p6",
-                PresetEnum.slow => "p5",
-                PresetEnum.fast => "p2",
-                PresetEnum.faster => "p1",
-                PresetEnum.veryfast => "p1",
-                _ => "p4",
-            },
-            GpuEnum.AMD => presetEnum switch
-            {
-                PresetEnum.veryslow => "quality",
-                PresetEnum.slower => "quality",
-                PresetEnum.slow => "balanced",
-                PresetEnum.fast => "speed",
-                PresetEnum.faster => "speed",
-                PresetEnum.veryfast => "speed",
-                _ => "balanced",
-            },
-            _ => Enum.GetName(presetEnum),
-        };
-    }
-    private string GetQuality(QualityEnum qualityEnum, GpuEnum gpuType)
-    {
-        return gpuType switch
-        {
-            GpuEnum.Nvidia => qualityEnum switch
-            {
-                QualityEnum.identical => "20",
-                QualityEnum.high => "23",
-                QualityEnum.low => "30",
-                QualityEnum.lower => "35",
-                QualityEnum.verylow => "40",
-                _ => "26", // Medium
-            },
-            GpuEnum.AMD => qualityEnum switch
-            {
-                QualityEnum.identical => "10", // Adjusted from 0 to align with CRF 23 quality
-                QualityEnum.high => "18",
-                QualityEnum.low => "26",
-                QualityEnum.lower => "30",
-                QualityEnum.verylow => "34",
-                _ => "22", // Medium
-            },
-            _ => Convert.ToInt32(qualityEnum).ToString(),
-        };
-    }
     public void Dispose()
     {
+        ReaderKillSwitch = true;
+
         Stopwatch?.Stop();
         StreamWriter?.Dispose();
+        if (ReaderThread != null && Thread.CurrentThread != ReaderThread && !ProcessEnded)
+        {
+            ReaderThread.Join();
+        }
         if (Process != null)
         {
             if (!Process.HasExited)

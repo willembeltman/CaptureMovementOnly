@@ -1,6 +1,6 @@
 ﻿namespace CaptureOnlyMovements.Forms
 {
-    partial class DebugForm
+    partial class FFMpegDebugForm
     {
         /// <summary>
         /// Required designer variable.
