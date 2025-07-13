@@ -74,7 +74,7 @@ public class Converter(IApplication Application, BindingList<FileConfig> Files) 
                 if (frame == null) continue;
 
                 var comparer = new FrameComparer(fileItemMediaContainer.FileConfig, frame.Resolution);
-                var resizer = new Resizer(resolution);
+                var resizer = new RgbResizer(resolution);
 
                 // Pre-compare frame
                 comparer.IsDifferent(frame.Buffer);
@@ -104,6 +104,9 @@ public class Converter(IApplication Application, BindingList<FileConfig> Files) 
                     // Write frame
                     writer.WriteFrame(frame.Buffer);
                     Application.OutputFps.Tick();
+
+                    // Set screenshot
+                    Application.SetPreview(comparer.CalculationFrameData, comparer.Resolution);
 
                     DebugWriteLine($"Captured frame at {DateTime.Now:HH:mm:ss.fff}   {comparer.Result_Difference}");
                 }

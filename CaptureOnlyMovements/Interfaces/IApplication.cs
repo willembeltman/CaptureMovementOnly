@@ -1,4 +1,5 @@
 ﻿using CaptureOnlyMovements.Helpers;
+using CaptureOnlyMovements.Types;
 
 namespace CaptureOnlyMovements.Interfaces;
 
@@ -11,4 +12,5 @@ public interface IApplication : IFFMpegDebugWriter, IDebugWriter
 
     void FatalException(string message, string title);
     void FatalException(Exception exception);
+    void SetPreview(bool[] frameData, Resolution frameResolution);
 }

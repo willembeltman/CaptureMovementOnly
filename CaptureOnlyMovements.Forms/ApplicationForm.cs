@@ -2,6 +2,7 @@
 using CaptureOnlyMovements.Forms.SubForms;
 using CaptureOnlyMovements.Helpers;
 using CaptureOnlyMovements.Interfaces;
+using CaptureOnlyMovements.Types;
 using System;
 using System.Windows.Forms;
 
@@ -171,4 +172,7 @@ public class ApplicationForm : Form, IApplication
         base.Dispose(disposing);
     }
 
+    public void SetPreview(bool[] frameData, Resolution frameResolution)
+    {
+    }
 }

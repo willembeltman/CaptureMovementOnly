@@ -2,15 +2,15 @@
 
 namespace CaptureOnlyMovements;
 
-public class Resizer
+public class RgbaResizer
 {
     private readonly Resolution OutputResolution;
     private readonly byte[] Buffer;
 
-    public Resizer(Resolution outputResolution)
+    public RgbaResizer(Resolution outputResolution)
     {
         OutputResolution = outputResolution;
-        Buffer = new byte[outputResolution.ByteLength];
+        Buffer = new byte[outputResolution.PixelLength * 4];
     }
 
     public Frame Resize(Frame frame)
@@ -19,8 +19,8 @@ public class Resizer
         if (inputResolution == OutputResolution)
             return frame;
 
-        var inputStride = inputResolution.Width * 3;
-        var outputStride = OutputResolution.Width * 3;
+        var inputStride = inputResolution.Width * 4;
+        var outputStride = OutputResolution.Width * 4;
 
         for (int x = 0; x < OutputResolution.Width; x++)
         {
@@ -33,12 +33,14 @@ public class Resizer
                     Buffer[outputIndex + 0] = frame.Buffer[inputIndex + 0];
                     Buffer[outputIndex + 1] = frame.Buffer[inputIndex + 1];
                     Buffer[outputIndex + 2] = frame.Buffer[inputIndex + 2];
+                    Buffer[outputIndex + 3] = frame.Buffer[inputIndex + 3];
                 }
                 else
                 {
                     Buffer[outputIndex] = 0;
                     Buffer[outputIndex + 1] = 0;
                     Buffer[outputIndex + 2] = 0;
+                    Buffer[outputIndex + 3] = 0;
                 }
             }
         }

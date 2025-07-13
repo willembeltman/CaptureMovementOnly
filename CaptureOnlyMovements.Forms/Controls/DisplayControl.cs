@@ -15,16 +15,17 @@ namespace CaptureOnlyMovements.Forms.Controls;
 public class DisplayControl : UserControl
 {
     public Resolution Resolution { get; private set; }
-    public Resizer? Resizer { get; private set; }
+    public RgbResizer? RgbResizer { get; private set; }
+    public RgbaResizer? RgbaResizer { get; private set; }
 
-    private Frame? FrameBuffer1;
-    private Frame? FrameBuffer2;
+    private byte[]? FrameBuffer1;
+    private byte[]? FrameBuffer2;
     private bool FrameBufferSwitch;
 
     public bool Dirty { get; private set; }
 
-    private Frame? RenderFrame => FrameBufferSwitch ? FrameBuffer1 : FrameBuffer2;
-    private void SetInputFrame(Frame value)
+    private byte[]? RenderBuffer => FrameBufferSwitch ? FrameBuffer1 : FrameBuffer2;
+    private void SetInputFrameBuffer(byte[] value)
     {
         if (!FrameBufferSwitch)
         {
@@ -69,8 +70,8 @@ public class DisplayControl : UserControl
         InitializeVertexBuffer();
         InitializeSamplerState();
         DisplayControl_Resize(this, EventArgs.Empty);
-        FrameBuffer1 = new Frame(Resolution);
-        FrameBuffer2 = new Frame(Resolution);
+        FrameBuffer1 = new Frame(Resolution).Buffer;
+        FrameBuffer2 = new Frame(Resolution).Buffer;
 
         // Start render timer
         _renderTimer = new Timer { Interval = 16 }; // ~60 FPS
@@ -130,7 +131,7 @@ public class DisplayControl : UserControl
     }";
 
         var vsByteCode = Compiler.Compile(vertexShaderSource, "VS", "vertex.hlsl", "vs_5_0");
-        _vertexShader = _device.CreateVertexShader(vsByteCode.Span); 
+        _vertexShader = _device.CreateVertexShader(vsByteCode.Span);
 
         // Input layout
         var inputElements = new[]
@@ -214,39 +215,32 @@ public class DisplayControl : UserControl
     private void DisplayControl_Resize(object? sender, EventArgs e)
     {
         Resolution = new Resolution(Width, Height);
-        Resizer = new Resizer(Resolution);
+        RgbResizer = new RgbResizer(Resolution);
         ResizeD3D();
     }
 
     public void SetFrame(Frame frame)
     {
-        if (Resizer == null) return;
-        if (frame.Resolution != Resolution)
-        {
-            frame = Resizer.Resize(frame);
-        }
-        SetInputFrame(frame);
+        if (RgbResizer == null) return;
+        frame = RgbResizer.Resize(frame);
+        var rgbaBuffer = ConvertRgbToRgba(frame.Buffer, frame.Resolution.PixelLength);
+        SetInputFrameBuffer(rgbaBuffer);
+    }
+
+    public void SetFrame(bool[] frameData, Resolution frameResolution)
+    {
+        if (RgbaResizer == null) return;
+        var rgbaBuffer = ConvertBWToRgba(frameData);
+        var rgbaFrame = new Frame(rgbaBuffer, frameResolution);
+        rgbaFrame = RgbaResizer.Resize(rgbaFrame);
+        SetInputFrameBuffer(rgbaFrame.Buffer);
     }
 
     private void RenderLoop()
     {
-        var renderFrame = RenderFrame;
-        if (renderFrame == null || !Dirty || _device == null || _context == null || _swapChain == null)
+        var textureData = RenderBuffer;
+        if (textureData == null || !Dirty || _device == null || _context == null || _swapChain == null)
             return;
-
-        // Upload frame buffer to a D3D texture
-        var data = renderFrame.Buffer;
-        if (data.Length != Resolution.ByteLength) return;
-
-        byte[] textureData;
-        if (data.Length == Resolution.PixelLength * 3)
-        {
-            textureData = ConvertRgbToRgba(data, Resolution.PixelLength);
-        }
-        else
-        {
-            textureData = data;
-        }
 
         // Create texture
         var texDesc = new Texture2DDescription
@@ -364,6 +358,20 @@ public class DisplayControl : UserControl
             rgba[j] = rgb[i];       // R
             rgba[j + 1] = rgb[i + 1]; // G
             rgba[j + 2] = rgb[i + 2]; // B
+            rgba[j + 3] = 255;      // A
+        }
+        return rgba;
+    }
+    private byte[] ConvertBWToRgba(bool[] bw)
+    {
+        var black = (byte)0;
+        var white = (byte)255;
+        var rgba = new byte[bw.Length * 4];
+        for (int i = 0, j = 0; i < bw.Length; i++, j += 4)
+        {
+            rgba[j] = bw[i] ? white : black;       // R
+            rgba[j + 1] = bw[i] ? white : black; // G
+            rgba[j + 2] = bw[i] ? white : black; // B
             rgba[j + 3] = 255;      // A
         }
         return rgba;

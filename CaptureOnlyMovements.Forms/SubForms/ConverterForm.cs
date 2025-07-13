@@ -218,5 +218,10 @@ namespace CaptureOnlyMovements.Forms.SubForms
             }
             base.Dispose(disposing);
         }
+
+        public void SetPreview(bool[] frameData, Resolution frameResolution)
+        {
+            displayControl1.SetFrame(frameData, frameResolution);
+        }
     }
 }
