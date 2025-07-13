@@ -4,6 +4,8 @@ using System.Text.Json;
 
 namespace CaptureOnlyMovements.FFProbe;
 
+#pragma warning disable IDE1006 // Naming Styles
+
 public class FFProbeRapport
 {
     public List<FFProbeStream>? streams { get; set; }
@@ -35,10 +37,8 @@ public class FFProbeRapport
         process.WaitForExit();
 
         var rapport = JsonSerializer.Deserialize<FFProbeRapport>(json);
-        if (rapport == null) 
-            throw new Exception($"Error getting rapport");
-
-        return rapport; 
+        return rapport ?? throw new Exception($"Error getting rapport");
     }
 }
 
+#pragma warning restore IDE1006 // Naming Styles

@@ -1,7 +1,9 @@
-﻿using CaptureOnlyMovements.Comparer;
+﻿using CaptureOnlyMovements.FrameComparers;
 using CaptureOnlyMovements.DirectX;
 using CaptureOnlyMovements.FFMpeg;
 using CaptureOnlyMovements.Interfaces;
+using CaptureOnlyMovements.Types;
+using CaptureOnlyMovements.Helpers;
 
 namespace CaptureOnlyMovements;
 

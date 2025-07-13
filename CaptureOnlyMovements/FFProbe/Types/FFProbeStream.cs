@@ -1,5 +1,7 @@
 ﻿namespace CaptureOnlyMovements.FFProbe.Types;
 
+#pragma warning disable IDE1006 // Naming Styles
+
 public class FFProbeStream
 {
     public int index { get; set; }
@@ -38,3 +40,4 @@ public class FFProbeStream
     public int? bits_per_sample { get; set; }
 }
 
+#pragma warning restore IDE1006 // Naming Styles

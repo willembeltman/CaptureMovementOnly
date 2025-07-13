@@ -1,6 +1,5 @@
 ﻿using CaptureOnlyMovements.Types;
 using System;
-using System.Drawing;
 using System.Windows.Forms;
 using Vortice.Direct3D11;
 using Vortice.DXGI;
@@ -9,7 +8,7 @@ using Vortice.Mathematics;
 using Vortice.Direct3D;
 using System.Runtime.InteropServices;
 using Vortice.D3DCompiler;
-using CaptureOnlyMovements.Filters;
+using CaptureOnlyMovements.FrameConverters;
 
 namespace CaptureOnlyMovements.Forms.Controls;
 

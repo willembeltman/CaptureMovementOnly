@@ -1,29 +1,17 @@
-﻿using CaptureOnlyMovements.Filters;
-using CaptureOnlyMovements.Interfaces;
+﻿using CaptureOnlyMovements.Interfaces;
 using CaptureOnlyMovements.Types;
 
-namespace CaptureOnlyMovements.Comparer;
+namespace CaptureOnlyMovements.FrameComparers;
 
-public class FrameComparerParallel : IFrameComparer
+public class FrameComparerParallel(
+    IComparerConfig config,
+    Resolution resolution,
+    IPreview? preview = null) : IFrameComparer
 {
-    public FrameComparerParallel(
-        IComparerConfig config,
-        Resolution resolution,
-        IPreview? preview = null)
-    {
-        Config = config;
-        Preview = preview;
-        Resolution = resolution;
-        CalculationFrameData = new bool[resolution.Width * resolution.Height];
-        PreviousFrameData = new byte[resolution.Width * resolution.Height * 3];
-    }
+    private readonly byte[] PreviousFrameData = new byte[resolution.Width * resolution.Height * 3];
 
-    private readonly IComparerConfig Config;
-    private readonly IPreview? Preview;
-    private readonly byte[] PreviousFrameData;
-
-    public Resolution Resolution { get; }
-    public bool[] CalculationFrameData { get; }
+    public Resolution Resolution { get; } = resolution;
+    public bool[] CalculationFrameData { get; } = new bool[resolution.Width * resolution.Height];
     public int Result_Difference { get; private set; }
 
     public bool IsDifferent(byte[] newFrameData)
@@ -43,9 +31,9 @@ public class FrameComparerParallel : IFrameComparer
                     Math.Abs(newFrameData[index + 1] - PreviousFrameData[index + 1]) +
                     Math.Abs(newFrameData[index + 2] - PreviousFrameData[index + 2]);
 
-                bool isDifferent = diff > Config.MaximumPixelDifferenceValue;
+                bool isDifferent = diff > config.MaximumPixelDifferenceValue;
 
-                if (Preview?.ShowMask == true)
+                if (preview?.ShowMask == true)
                 {
                     CalculationFrameData[y * Resolution.Width + x] = isDifferent;
                 }
@@ -53,10 +41,10 @@ public class FrameComparerParallel : IFrameComparer
                 if (isDifferent)
                 {
                     int current = Interlocked.Increment(ref totalDifferent);
-                    if (current > Config.MaximumDifferentPixelCount)
+                    if (current > config.MaximumDifferentPixelCount)
                     {
                         differenceExceeded = true;
-                        if (Preview?.ShowMask != true)
+                        if (preview?.ShowMask != true)
                         {
                             state.Stop(); // Abort parallel execution early
                             return;

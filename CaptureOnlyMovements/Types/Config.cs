@@ -1,7 +1,7 @@
 ﻿using CaptureOnlyMovements.Delegates;
 using CaptureOnlyMovements.Interfaces;
 
-namespace CaptureOnlyMovements;
+namespace CaptureOnlyMovements.Types;
 
 public class Config : IComparerConfig, IEncoderConfig
 {

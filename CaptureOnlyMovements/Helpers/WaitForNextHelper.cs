@@ -1,4 +1,6 @@
-﻿using CaptureOnlyMovements;
+﻿using CaptureOnlyMovements.Types;
+
+namespace CaptureOnlyMovements.Helpers;
 
 public static class WaitForNextHelper
 {

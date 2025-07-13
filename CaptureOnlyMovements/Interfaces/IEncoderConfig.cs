@@ -1,7 +1,6 @@
-﻿
-using CaptureOnlyMovements.Enums;
+﻿using CaptureOnlyMovements.Enums;
 
-namespace CaptureOnlyMovements;
+namespace CaptureOnlyMovements.Interfaces;
 
 public interface IEncoderConfig
 {

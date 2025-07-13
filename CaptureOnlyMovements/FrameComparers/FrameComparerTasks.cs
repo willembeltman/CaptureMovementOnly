@@ -1,39 +1,27 @@
 ﻿using CaptureOnlyMovements.Interfaces;
 using CaptureOnlyMovements.Types;
 
-namespace CaptureOnlyMovements.Filters;
+namespace CaptureOnlyMovements.FrameComparers;
 
-public class FrameComparerTasks : IFrameComparer
+public class FrameComparerTasks(
+    IComparerConfig config,
+    Resolution resolution,
+    IPreview? preview = null) : IFrameComparer
 {
-    public FrameComparerTasks(
-        IComparerConfig config,
-        Resolution resolution,
-        IPreview? preview = null)
-    {
-        Config = config;
-        Preview = preview;
-        Resolution = resolution;
-        CalculationFrameData = new bool[resolution.Width * resolution.Height];
-        PreviousFrameData = new byte[resolution.Width * resolution.Height * 3];
-        Result_Difference = 0;
-    }
+    private readonly byte[] PreviousFrameData = new byte[resolution.Width * resolution.Height * 3];
 
-    private readonly IComparerConfig Config;
-    private readonly IPreview? Preview;
-    private readonly byte[] PreviousFrameData;
-
-    public Resolution Resolution { get; }
-    public bool[] CalculationFrameData { get; }
-    public int Result_Difference { get; private set; }
+    public Resolution Resolution { get; } = resolution;
+    public bool[] CalculationFrameData { get; } = new bool[resolution.Width * resolution.Height];
+    public int Result_Difference { get; private set; } = 0;
 
     public bool IsDifferent(byte[] newFrameData)
     {
         int stride = Resolution.Width * 3;
         int height = Resolution.Height;
         int width = Resolution.Width;
-        int maxDiffPixels = Config.MaximumDifferentPixelCount;
-        int maxPixelDiff = Config.MaximumPixelDifferenceValue;
-        bool showMask = Preview.ShowMask;
+        int maxDiffPixels = config.MaximumDifferentPixelCount;
+        int maxPixelDiff = config.MaximumPixelDifferenceValue;
+        bool showMask = preview?.ShowMask == true;
 
         // Reset difference counter
         Result_Difference = 0;

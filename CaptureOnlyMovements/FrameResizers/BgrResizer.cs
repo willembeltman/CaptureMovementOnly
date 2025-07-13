@@ -1,6 +1,6 @@
 ﻿using CaptureOnlyMovements.Types;
 
-namespace CaptureOnlyMovements.Filters;
+namespace CaptureOnlyMovements.FrameResizers;
 
 public class BgrResizer(Resolution outputResolution)
 {

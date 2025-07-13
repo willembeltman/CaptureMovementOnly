@@ -1,4 +1,5 @@
 ﻿using CaptureOnlyMovements.Interfaces;
+using CaptureOnlyMovements.Types;
 using System;
 using System.Windows.Forms;
 

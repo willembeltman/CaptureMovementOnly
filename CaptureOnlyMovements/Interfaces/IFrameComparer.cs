@@ -1,6 +1,6 @@
 ﻿using CaptureOnlyMovements.Types;
 
-namespace CaptureOnlyMovements.Filters
+namespace CaptureOnlyMovements.Interfaces
 {
     public interface IFrameComparer
     {

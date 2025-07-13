@@ -18,7 +18,7 @@ public struct Resolution
 
     public int Width
     {
-        get => _Width;
+        readonly get => _Width;
         set
         {
             _Width = value;
@@ -27,7 +27,7 @@ public struct Resolution
     }
     public int Height
     {
-        get => _Height;
+        readonly get => _Height;
         set
         {
             _Height = value;
@@ -44,7 +44,7 @@ public struct Resolution
     {
         return !p1.Equals(p2);
     }
-    public override bool Equals(object? obj)
+    public override readonly bool Equals(object? obj)
     {
         if (obj == null) return false;
         if (!(obj is Resolution?)) return false;
@@ -55,12 +55,12 @@ public struct Resolution
         if (Height != other.Value.Height) return false;
         return true;
     }
-    public override int GetHashCode()
+    public override readonly int GetHashCode()
     {
         return HashCode.Combine(Width, Height);
     }
 
-    public override string ToString()
+    public override readonly string ToString()
     {
         return $"{Width}x{Height}";
     }

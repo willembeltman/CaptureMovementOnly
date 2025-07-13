@@ -1,6 +1,6 @@
 ﻿using System.Collections.Concurrent;
 
-namespace CaptureOnlyMovements.Helpers;
+namespace CaptureOnlyMovements.Types;
 
 public class FpsCounter
 {

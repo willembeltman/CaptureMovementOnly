@@ -280,5 +280,7 @@ Please download FFmpeg and place it in the specified location. The program will 
         Process.Dispose();
 
         Writer?.Dispose();
+
+        GC.SuppressFinalize(this);
     }
 }
