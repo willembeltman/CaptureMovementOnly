@@ -1,4 +1,6 @@
-﻿namespace CaptureOnlyMovements.Forms.Controls
+﻿using System.Windows.Forms;
+
+namespace CaptureOnlyMovements.Forms.Controls
 {
     partial class ConsoleControl
     {
@@ -45,6 +47,7 @@
             List.Name = "List";
             List.Size = new System.Drawing.Size(478, 349);
             List.TabIndex = 1;
+            List.SelectionMode = SelectionMode.MultiExtended;
             // 
             // Timer
             // 

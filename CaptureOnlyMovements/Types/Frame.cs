@@ -7,10 +7,10 @@ public class Frame
         Buffer = buffer;
         Resolution = resolution;
     }
-    public Frame(Resolution resolution)
+    public Frame(Resolution resolution, int bytesPerPixel = 3)
     {
         Resolution = resolution;
-        Buffer = new byte[resolution.ByteLength];
+        Buffer = new byte[resolution.PixelCount * bytesPerPixel];
     }
 
     public byte[] Buffer { get; }

@@ -9,6 +9,7 @@ using Vortice.Mathematics;
 using Vortice.Direct3D;
 using System.Runtime.InteropServices;
 using Vortice.D3DCompiler;
+using CaptureOnlyMovements.Filters;
 
 namespace CaptureOnlyMovements.Forms.Controls;
 
@@ -23,8 +24,8 @@ public class DisplayControl : UserControl
     }
 
     public Resolution Resolution { get; private set; }
-    //public RgbResizer? RgbResizer { get; private set; }
-    //public RgbaResizer? RgbaResizer { get; private set; }
+    //public BgrResizer? BgrResizer { get; private set; }
+    //public BgraResizer? BgraResizer { get; private set; }
 
     private byte[]? FrameBuffer1;
     private byte[]? FrameBuffer2;
@@ -95,12 +96,24 @@ public class DisplayControl : UserControl
         };
 
 
+        // --- AANGEPASTE SECTIE VOOR DEVICE CREATIE ---
+        FeatureLevel[] featureLevels =
+        [
+            FeatureLevel.Level_11_1, // Probeer eerst 11.1
+            FeatureLevel.Level_11_0, // Dan 11.0
+            FeatureLevel.Level_10_1, // Dan 10.1
+            FeatureLevel.Level_10_0, // Dan 10.0
+            FeatureLevel.Level_9_3,  // En zo verder...
+            FeatureLevel.Level_9_2,
+            FeatureLevel.Level_9_1
+        ];
+
         IDXGIFactory2 factory = DXGI.CreateDXGIFactory2<IDXGIFactory2>(true);
-        var result = D3D11.D3D11CreateDevice(
+        D3D11.D3D11CreateDevice(
             null,
             DriverType.Warp,
-            DeviceCreationFlags.BgraSupport | DeviceCreationFlags.Debug, 
-            null,
+            DeviceCreationFlags.BgraSupport | DeviceCreationFlags.Debug,
+            featureLevels,
             out _device,
             out _context);
 
@@ -190,13 +203,13 @@ public class DisplayControl : UserControl
         _vertexBuffer = _device.CreateBuffer(bufferDesc, vertexBufferData);
     }
 
-    private ushort[] GetIndexBuffer()
+    private static ushort[] GetIndexBuffer()
     {
-        return new ushort[]
-        {
+        return
+        [
             0, 1, 2,
             2, 1, 3
-        };
+        ];
     }
 
     private void InitializeSamplerState()
@@ -219,8 +232,8 @@ public class DisplayControl : UserControl
     private void DisplayControl_Resize(object? sender, EventArgs e)
     {
         Resolution = new Resolution(Width, Height);
-        //RgbResizer = new RgbResizer(Resolution);
-        //RgbaResizer = new RgbaResizer(Resolution);
+        //BgrResizer = new BgrResizer(Resolution);
+        //BgraResizer = new BgraResizer(Resolution);
         FrameBuffer1 = new Frame(Resolution).Buffer;
         FrameBuffer2 = new Frame(Resolution).Buffer;
         ResizeD3D();
@@ -228,40 +241,40 @@ public class DisplayControl : UserControl
 
     public void SetFrame(Frame frame)
     {
-        //if (RgbResizer == null) return;
+        //if (BgrResizer == null) return;
 
         if(frame.Resolution != Resolution)
         {
             Resolution = frame.Resolution;
-            //RgbResizer = new RgbResizer(Resolution);
-            //RgbaResizer = new RgbaResizer(Resolution);
+            //BgrResizer = new BgrResizer(Resolution);
+            //BgraResizer = new BgraResizer(Resolution);
             FrameBuffer1 = new Frame(Resolution).Buffer;
             FrameBuffer2 = new Frame(Resolution).Buffer;
             ResizeD3D();
         }
 
-        //frame = RgbResizer.Resize(frame);
-        var rgbaBuffer = ConvertRgbToBgra(frame.Buffer, frame.Resolution.PixelLength);
-        SetInputFrameBuffer(rgbaBuffer);
+        //frame = BgrResizer.Resize(frame);
+        var bgraBuffer = frame.Buffer.BgrToBgra();
+        SetInputFrameBuffer(bgraBuffer);
     }
     public void SetFrame(bool[] frameData, Resolution frameResolution)
     {
-        //if (RgbaResizer == null) return;
+        //if (BgraResizer == null) return;
 
         if (frameResolution != Resolution)
         {
             Resolution = frameResolution;
-            //RgbResizer = new RgbResizer(Resolution);
-            //RgbaResizer = new RgbaResizer(Resolution);
+            //BgrResizer = new BgrResizer(Resolution);
+            //BgraResizer = new BgraResizer(Resolution);
             FrameBuffer1 = new Frame(Resolution).Buffer;
             FrameBuffer2 = new Frame(Resolution).Buffer;
             ResizeD3D();
         }
 
-        var rgbaBuffer = ConvertBWToBgra(frameData);
-        var rgbaFrame = new Frame(rgbaBuffer, frameResolution);
-        //rgbaFrame = RgbaResizer.Resize(rgbaFrame);
-        SetInputFrameBuffer(rgbaFrame.Buffer);
+        var bgraBuffer = frameData.BwToBgra();
+        var bgraFrame = new Frame(bgraBuffer, frameResolution);
+        //bgraFrame = BgraResizer.Resize(bgraFrame);
+        SetInputFrameBuffer(bgraFrame.Buffer);
     }
 
     private void RenderLoop()
@@ -299,7 +312,7 @@ public class DisplayControl : UserControl
         _context.PSSetShader(_pixelShader);
         _context.IASetInputLayout(_inputLayout);
 
-        _context.IASetVertexBuffers(0, 1, new[] { _vertexBuffer! }, new[] { Convert.ToUInt32(24) }, new[] { Convert.ToUInt32(0) });
+        _context.IASetVertexBuffers(0, 1, [_vertexBuffer!], [Convert.ToUInt32(24)], [Convert.ToUInt32(0)]);
         _context.IASetPrimitiveTopology(PrimitiveTopology.TriangleList);
 
         var indices = GetIndexBuffer();
@@ -311,7 +324,6 @@ public class DisplayControl : UserControl
             CPUAccessFlags = CpuAccessFlags.None
         };
 
-
         var indexBufferData = new SubresourceData
         {
             DataPointer = Marshal.UnsafeAddrOfPinnedArrayElement(indices, 0),
@@ -322,8 +334,8 @@ public class DisplayControl : UserControl
         using var indexBuffer = _device.CreateBuffer(indexBufferDesc, indexBufferData);
         _context.IASetIndexBuffer(indexBuffer, Format.R16_UInt, 0);
 
-        _context.PSSetShaderResources(0, 1, new[] { _shaderResourceView });
-        _context.PSSetSamplers(0, 1, new[] { _samplerState });
+        _context.PSSetShaderResources(0, 1, [_shaderResourceView]);
+        _context.PSSetSamplers(0, 1, [_samplerState!]);
 
         _context.DrawIndexed(6, 0, 0);
 
@@ -387,30 +399,4 @@ public class DisplayControl : UserControl
         _device?.Dispose();
     }
 
-    private byte[] ConvertRgbToBgra(byte[] rgb, int pixelCount)
-    {
-        var rgba = new byte[pixelCount * 4];
-        for (int i = 0, j = 0; i < rgb.Length; i += 3, j += 4)
-        {
-            rgba[j] = rgb[i + 2];
-            rgba[j + 1] = rgb[i + 1];
-            rgba[j + 2] = rgb[i];
-            rgba[j + 3] = 255;
-        }
-        return rgba;
-    }
-    private byte[] ConvertBWToBgra(bool[] bw)
-    {
-        var black = (byte)0;
-        var white = (byte)255;
-        var rgba = new byte[bw.Length * 4];
-        for (int i = 0, j = 0; i < bw.Length; i++, j += 4)
-        {
-            rgba[j] = bw[i] ? white : black;
-            rgba[j + 1] = bw[i] ? white : black;
-            rgba[j + 2] = bw[i] ? white : black;
-            rgba[j + 3] = 255;
-        }
-        return rgba;
-    }
 }

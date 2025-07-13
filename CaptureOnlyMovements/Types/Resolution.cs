@@ -22,8 +22,7 @@ public struct Resolution
         set
         {
             _Width = value;
-            PixelLength = Width * Height;
-            ByteLength = PixelLength * 4;
+            PixelCount = Width * Height;
         }
     }
     public int Height
@@ -32,12 +31,10 @@ public struct Resolution
         set
         {
             _Height = value;
-            PixelLength = Width * Height;
-            ByteLength = PixelLength * 3;
+            PixelCount = Width * Height;
         }
     }
-    public int PixelLength { get; private set; }
-    public int ByteLength { get; private set; }
+    public int PixelCount { get; private set; }
 
     public static bool operator ==(Resolution p1, Resolution p2)
     {

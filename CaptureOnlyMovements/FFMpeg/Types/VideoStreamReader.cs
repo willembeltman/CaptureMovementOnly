@@ -24,7 +24,7 @@ public class VideoStreamReader : IDisposable
         var arguments = $"-i \"{FileInfo.FullName}\" " +
                         $"-ss {startTimeStamp} " +
                         $"-s {Resolution.Width}x{Resolution.Height} " +
-                        $"-pix_fmt rgb24 -f rawvideo -";
+                        $"-pix_fmt bgr24 -f rawvideo -";
 
         var processStartInfo = new ProcessStartInfo
         {
@@ -99,13 +99,14 @@ public class VideoStreamReader : IDisposable
 
     public Frame? ReadFrame(byte[]? buffer = null)
     {
-        buffer ??= new byte[Resolution.ByteLength];
+        var byteLength = Resolution.PixelCount * 3;
+        buffer ??= new byte[byteLength];
 
         var endOfVideo = false;
         var read = 0;
-        while (read < Resolution.ByteLength && !endOfVideo)
+        while (read < byteLength && !endOfVideo)
         {
-            var partialread = StandardOutputReader.Read(buffer, read, Resolution.ByteLength - read);
+            var partialread = StandardOutputReader.Read(buffer, read, byteLength - read);
             read += partialread;
             endOfVideo = partialread <= 0;
         }

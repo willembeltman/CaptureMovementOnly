@@ -89,12 +89,12 @@ public class ScreenshotCapturer : IDisposable
     {
         // Vortice gebruikt Result.Ok om aan te geven of de operatie succesvol was.
         // screenResource is een COM-object en moet gedisposed worden.
-        Vortice.DXGI.IDXGIResource? screenResource = null;
-        Vortice.DXGI.OutduplFrameInfo info;
 
         // TryAcquireNextFrame retourneert een Result, niet alleen een bool.
         // We moeten controleren of de Result.IsSuccess property true is.
-        var result = DuplicatedOutput.AcquireNextFrame(1, out info, out screenResource);
+        var result = DuplicatedOutput.AcquireNextFrame(1, 
+            out OutduplFrameInfo info, 
+            out IDXGIResource? screenResource);
 
         while (!result.Success || screenResource == null)
         {
@@ -136,13 +136,13 @@ public class ScreenshotCapturer : IDisposable
         var stride = dataBox.RowPitch;
         // int size = stride * desc.Height; // Deze variabele wordt niet gebruikt
 
-        // Converteer BGRA → RGB
+        // Converteer BGRA → BGR
         var srcStride = Convert.ToInt32(dataBox.RowPitch);
         int dstStride = width * 3;
-        int rgbSize = dstStride * height;
+        int bgrSize = dstStride * height;
 
-        if (buffer == null || buffer.Length != rgbSize)
-            buffer = new byte[rgbSize];
+        if (buffer == null || buffer.Length != bgrSize)
+            buffer = new byte[bgrSize];
 
         unsafe
         {
@@ -156,11 +156,11 @@ public class ScreenshotCapturer : IDisposable
                 for (int x = 0; x < width; x++)
                 {
                     int srcIndex = srcRow + x * 4; // BGRA
-                    int dstIndex = dstRow + x * 3; // RGB
+                    int dstIndex = dstRow + x * 3; // BGR
 
-                    buffer[dstIndex + 0] = srcPtr[srcIndex + 2]; // R
+                    buffer[dstIndex + 0] = srcPtr[srcIndex + 0]; // B
                     buffer[dstIndex + 1] = srcPtr[srcIndex + 1]; // G
-                    buffer[dstIndex + 2] = srcPtr[srcIndex + 0]; // B
+                    buffer[dstIndex + 2] = srcPtr[srcIndex + 2]; // R
                 }
             }
         }

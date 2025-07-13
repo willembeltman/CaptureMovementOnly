@@ -1,30 +1,23 @@
 ﻿using CaptureOnlyMovements.Types;
 
-namespace CaptureOnlyMovements;
+namespace CaptureOnlyMovements.Filters;
 
-public class RgbResizer
+public class BgrResizer(Resolution outputResolution)
 {
-    private readonly Resolution OutputResolution;
-    private readonly byte[] Buffer;
-
-    public RgbResizer(Resolution outputResolution)
-    {
-        OutputResolution = outputResolution;
-        Buffer = new byte[outputResolution.PixelLength * 3];
-    }
+    private readonly byte[] Buffer = new byte[outputResolution.PixelCount * 3];
 
     public Frame Resize(Frame frame)
     {
         var inputResolution = frame.Resolution;
-        if (inputResolution == OutputResolution)
+        if (inputResolution == outputResolution)
             return frame;
 
         var inputStride = inputResolution.Width * 3;
-        var outputStride = OutputResolution.Width * 3;
+        var outputStride = outputResolution.Width * 3;
 
-        for (int x = 0; x < OutputResolution.Width; x++)
+        for (int x = 0; x < outputResolution.Width; x++)
         {
-            for (int y = 0; y < OutputResolution.Height; y++)
+            for (int y = 0; y < outputResolution.Height; y++)
             {
                 int outputIndex = y * outputStride + x * 3;
                 if (x < inputResolution.Width && y < inputResolution.Height)
@@ -43,6 +36,6 @@ public class RgbResizer
             }
         }
 
-        return new Frame(Buffer, OutputResolution);
+        return new Frame(Buffer, outputResolution);
     }
 }

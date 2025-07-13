@@ -1,5 +1,6 @@
 ﻿using CaptureOnlyMovements.Comparer;
 using CaptureOnlyMovements.FFMpeg;
+using CaptureOnlyMovements.Filters;
 using CaptureOnlyMovements.Interfaces;
 using CaptureOnlyMovements.Types;
 using System.ComponentModel;
@@ -79,7 +80,7 @@ public class Converter(
                 if (frame == null) continue;
 
                 var comparer = new FrameComparerTasks(fileItemMediaContainer.FileConfig, Application, frame.Resolution);
-                var resizer = new RgbResizer(resolution);
+                var resizer = new BgrResizer(resolution);
 
                 // Pre-compare frame
                 comparer.IsDifferent(frame.Buffer);
