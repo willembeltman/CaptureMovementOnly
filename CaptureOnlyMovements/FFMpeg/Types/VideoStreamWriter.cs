@@ -61,8 +61,16 @@ Please download FFmpeg and place it in the specified location. The program will 
                 case GpuEnum.Intel:
                     //arguments = $"-f rawvideo -pix_fmt rgb24 -s {resolution.Width}x{resolution.Height} -r {fps} -i - -c:v h264_qsv -global_quality {CRF} -preset {Preset} \"{FileInfo.FullName}\"",
                     codec = "h264_qsv";
-                    arguments = $"-f rawvideo -pix_fmt rgb24 -s {resolution.Width}x{resolution.Height} -r {fps} -i - -c:v {codec} " +
-                        $"-global_quality {GpuHelper.GetQuality(qualityEnum, gpuType)} -preset {GpuHelper.GetPreset(presetEnum, gpuType)} \"{FileInfo.FullName}\"";
+                    arguments = 
+                        $"-f rawvideo " +
+                        $"-pix_fmt rgb24 " +
+                        $"-s {resolution.Width}x{resolution.Height} " +
+                        $"-r {(fps.ToString("F2")).Replace(",", ".")} " +
+                        $"-i - " +
+                        $"-c:v {codec} " +
+                        $"-global_quality {GpuHelper.GetQuality(qualityEnum, gpuType)} " +
+                        $"-preset {GpuHelper.GetPreset(presetEnum, gpuType)} " +
+                        $"\"{FileInfo.FullName}\"";
                     break;
                 default:
                     //arguments = $"-f rawvideo -pix_fmt rgb24 -s {resolution.Width}x{resolution.Height} -r {fps} -i - -c:v libx265 -crf {CRF} -preset {Preset} \"{FileInfo.FullName}\"",
@@ -74,7 +82,7 @@ Please download FFmpeg and place it in the specified location. The program will 
         }
         else
         {
-            codec = "libx264";
+            codec = "libx265";
             arguments = $"-f rawvideo -pix_fmt rgb24 -s {resolution.Width}x{resolution.Height} -r {fps} -i - -c:v {codec} " +
                 $"-crf {GpuHelper.GetQuality(qualityEnum, GpuEnum.None)} -preset {GpuHelper.GetPreset(presetEnum, GpuEnum.None)} \"{FileInfo.FullName}\"";
         }

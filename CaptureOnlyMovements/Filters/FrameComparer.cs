@@ -55,7 +55,9 @@ public class FrameComparer
                 var isDifferent = pixelColorDifference > Config.MaximumPixelDifferenceValue;
 
                 if (ShowDifference.ShowDifference)
+                {
                     CalculationFrameData[y * Resolution.Width + x] = isDifferent;
+                }
 
                 if (isDifferent)
                 {

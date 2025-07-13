@@ -55,8 +55,11 @@ public class FrameComparerTasks : IDisposable
                     if (current > Config.MaximumDifferentPixelCount)
                     {
                         differenceExceeded = true;
-                        state.Stop(); // Abort parallel execution early
-                        return;
+                        if (!ShowDifference.ShowDifference)
+                        {
+                            state.Stop(); // Abort parallel execution early
+                            return;
+                        }
                     }
                 }
             }
