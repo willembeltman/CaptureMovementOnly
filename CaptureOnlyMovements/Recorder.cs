@@ -63,7 +63,7 @@ public class Recorder(IApplication Application) : IDisposable, IKillSwitch, IDeb
             writer.WriteFrame(frame.Buffer);
             Application.InputFps.Tick();
             Application.OutputFps.Tick();
-            //DebugWriteLine($"Captured frame at {DateTime.Now:HH:mm:ss.fff}   -");
+            DebugWriteLine($"Captured frame at {DateTime.Now:HH:mm:ss.fff}   -");
 
             var comparer = new FrameComparer(Config, resolution);
             var previousDate = DateTime.Now;
@@ -77,7 +77,7 @@ public class Recorder(IApplication Application) : IDisposable, IKillSwitch, IDeb
                 {
                     writer.WriteFrame(frame.Buffer);
                     Application.OutputFps.Tick();
-                    //DebugWriteLine($"Captured frame at {DateTime.Now:HH:mm:ss.fff}   {comparer.Result_Difference}");
+                    DebugWriteLine($"Captured frame at {DateTime.Now:HH:mm:ss.fff}   {comparer.Result_Difference}");
 
                     previousDate = WaitForNextHelper.Wait(Config, previousDate);
                 }

@@ -17,6 +17,8 @@ public partial class FFMpegDebugForm : Form
 
     private void Recorder_DebugUpdated(string line)
     {
+        if (!Visible) return;
+
         if (InvokeRequired)
         {
             Invoke(new Action(() => Recorder_DebugUpdated(line)));

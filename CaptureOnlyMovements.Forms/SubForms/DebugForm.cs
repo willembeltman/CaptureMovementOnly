@@ -17,6 +17,8 @@ public partial class DebugForm : Form
 
     private void Application_DebugUpdated(string line)
     {
+        if (!Visible) return;
+
         if (InvokeRequired)
         {
             Invoke(new Action(() => Application_DebugUpdated(line)));

@@ -85,7 +85,7 @@ public class Converter(IApplication Application, BindingList<FileConfig> Files) 
                 // Write frame
                 writer.WriteFrame(frame.Buffer);
                 Application.InputFps.Tick();
-                //DebugWriteLine($"Captured frame at {DateTime.Now:HH:mm:ss.fff}   -");
+                DebugWriteLine($"Captured frame at {DateTime.Now:HH:mm:ss.fff}   -");
 
                 while (!KillSwitch)
                 {
@@ -105,7 +105,7 @@ public class Converter(IApplication Application, BindingList<FileConfig> Files) 
                     writer.WriteFrame(frame.Buffer);
                     Application.OutputFps.Tick();
 
-                    //DebugWriteLine($"Captured frame at {DateTime.Now:HH:mm:ss.fff}   {comparer.Result_Difference}");
+                    DebugWriteLine($"Captured frame at {DateTime.Now:HH:mm:ss.fff}   {comparer.Result_Difference}");
                 }
 
                 if (KillSwitch) break;

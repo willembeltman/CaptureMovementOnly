@@ -28,7 +28,9 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             List = new System.Windows.Forms.ListBox();
+            Timer = new System.Windows.Forms.Timer(components);
             SuspendLayout();
             // 
             // List
@@ -42,6 +44,11 @@
             List.Name = "List";
             List.Size = new System.Drawing.Size(418, 262);
             List.TabIndex = 1;
+            // 
+            // Timer
+            // 
+            Timer.Enabled = true;
+            Timer.Tick += Timer_Tick;
             // 
             // ConsoleControl
             // 
@@ -58,5 +65,6 @@
         #endregion
 
         private System.Windows.Forms.ListBox List;
+        private System.Windows.Forms.Timer Timer;
     }
 }

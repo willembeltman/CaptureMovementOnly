@@ -1,9 +1,12 @@
-﻿using System.Windows.Forms;
+﻿using System.Collections.Concurrent;
+using System.Windows.Forms;
 
 namespace CaptureOnlyMovements.Forms.Controls
 {
     public partial class ConsoleControl : UserControl
     {
+        ConcurrentQueue<string> Queue = new ConcurrentQueue<string>();
+
         public ConsoleControl()
         {
             InitializeComponent();
@@ -11,12 +14,15 @@ namespace CaptureOnlyMovements.Forms.Controls
 
         internal void WriteLine(string line)
         {
-            if (InvokeRequired)
+            Queue.Enqueue(line);
+        }
+
+        private void Timer_Tick(object sender, System.EventArgs e)
+        {
+            while (Queue.TryDequeue(out var line))
             {
-                Invoke(() => { WriteLine(line); });
-                return;
+                List.Items.Add(line);
             }
-            List.Items.Add(line);
         }
     }
 }
