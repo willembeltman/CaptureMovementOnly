@@ -7,6 +7,11 @@ public class Frame
         Buffer = buffer;
         Resolution = resolution;
     }
+    public Frame(Resolution resolution)
+    {
+        Resolution = resolution;
+        Buffer = new byte[resolution.ByteLength];
+    }
 
     public byte[] Buffer { get; }
     public Resolution Resolution { get; }
