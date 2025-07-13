@@ -33,16 +33,25 @@ public class DisplayControl : UserControl
     public bool Dirty { get; private set; }
 
     private byte[]? RenderBuffer => FrameBufferSwitch ? FrameBuffer1 : FrameBuffer2;
-    private void SetInputFrameBuffer(byte[] value)
+
+    private byte[]? InputBuffer
     {
-        if (!FrameBufferSwitch)
+        get => !FrameBufferSwitch ? FrameBuffer1 : FrameBuffer2;
+        set
         {
-            FrameBuffer1 = value;
+            if (!FrameBufferSwitch)
+            {
+                FrameBuffer1 = value;
+            }
+            else
+            {
+                FrameBuffer2 = value;
+            }
         }
-        else
-        {
-            FrameBuffer2 = value;
-        }
+    }
+
+    private void SwitchBuffers()
+    {
         FrameBufferSwitch = !FrameBufferSwitch;
         Dirty = true;
     }
@@ -248,8 +257,8 @@ public class DisplayControl : UserControl
             ResizeD3D();
         }
 
-        var bgraBuffer = frame.Buffer.BgrToBgra();
-        SetInputFrameBuffer(bgraBuffer);
+        InputBuffer = frame.Buffer.BgrToBgraParallel(InputBuffer);
+        SwitchBuffers();
     }
     public void SetFrame(BwFrame frame)
     {
@@ -261,8 +270,8 @@ public class DisplayControl : UserControl
             ResizeD3D();
         }
 
-        var bgraBuffer = frame.Buffer.BwToBgra();
-        SetInputFrameBuffer(bgraBuffer);
+        InputBuffer = frame.Buffer.BwToBgraParallel(InputBuffer);
+        SwitchBuffers();
     }
 
     private void RenderLoop()

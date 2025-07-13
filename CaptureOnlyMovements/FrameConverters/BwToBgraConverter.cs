@@ -2,11 +2,14 @@
 
 public static class BwToBgraConverter
 {
-    public static byte[] BwToBgra(this bool[] bw)
+    public static byte[] BwToBgra(this bool[] bw, byte[]? bgra = null)
     {
+        if (bgra == null || bw.Length * 4 != bgra.Length)
+        {
+            bgra = new byte[bw.Length * 4];
+        }
         var black = (byte)0;
         var white = (byte)255;
-        var bgra = new byte[bw.Length * 4];
         for (int i = 0, j = 0; i < bw.Length; i++, j += 4)
         {
             bgra[j] = bw[i] ? white : black;

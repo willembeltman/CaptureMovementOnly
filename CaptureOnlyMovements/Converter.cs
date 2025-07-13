@@ -81,7 +81,7 @@ public class Converter(
                 if (frame == null) continue;
 
                 var comparer = new FrameComparerTasks(fileItemMediaContainer.FileConfig, frame.Resolution, Preview);
-                var resizer = new BgrResizer(resolution);
+                var resizer = new BgrResizerTasks(resolution);
 
                 comparer.IsDifferent(frame.Buffer);
 

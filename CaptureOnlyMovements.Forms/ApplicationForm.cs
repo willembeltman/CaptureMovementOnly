@@ -33,6 +33,10 @@ public class ApplicationForm : Form, IApplication
         StopRecordingButton.Click += StopRecording_Click;
         NewContextMenuStrip.Items.Add(StopRecordingButton);
 
+
+        NewContextMenuStrip.Items.Add(new ToolStripSeparator());
+
+
         var OpenConverterButton = new ToolStripMenuItem("Convert video(s)");
         OpenConverterButton.Click += OpenConverter_Click;
         NewContextMenuStrip.Items.Add(OpenConverterButton);
@@ -66,10 +70,8 @@ public class ApplicationForm : Form, IApplication
         NewContextMenuStrip.Items.Add(ExitMenuItem);
 
 
-        // Koppel het contextmenu aan de NotifyIcon
         NotificationIcon.ContextMenuStrip = NewContextMenuStrip;
 
-        // Verberg het hoofdformulier bij het opstarten
         Load += ApplicationForm_Load;
         ShowInTaskbar = false; // Verberg de applicatie van de taakbalk
         WindowState = FormWindowState.Minimized; // Minimaliseer het venster
@@ -98,8 +100,6 @@ public class ApplicationForm : Form, IApplication
     public FpsCounter OutputFps { get; }
 
     public bool IsBusy => Recorder.Recording || ConverterForm.IsBusy;
-    public bool ShowDifference => false;
-    public bool ShowPreview => false;
 
     private void ConfigChanged()
     {
@@ -114,18 +114,17 @@ public class ApplicationForm : Form, IApplication
 
         if (Recorder.Recording)
         {
-            NotificationIcon.Icon = new System.Drawing.Icon("ComputerRecording.ico"); // Vervang dit pad
+            NotificationIcon.Icon = new System.Drawing.Icon("ComputerRecording.ico");
         }
         else
         {
-            NotificationIcon.Icon = new System.Drawing.Icon("Computer.ico"); // Vervang dit pad
-
+            NotificationIcon.Icon = new System.Drawing.Icon("Computer.ico"); 
         }
     }
 
     private void ApplicationForm_Load(object? sender, EventArgs e)
     {
-        Hide(); // Zorg ervoor dat het formulier verborgen is bij het laden
+        Hide(); // Zorgt ervoor dat het formulier verborgen is bij het laden
     }
     private void StartRecording_Click(object? sender, EventArgs e) => Recorder.Start();
     private void StopRecording_Click(object? sender, EventArgs e) => Recorder.Stop();
@@ -135,13 +134,7 @@ public class ApplicationForm : Form, IApplication
     private void OpenFFMpegDebug_Click(object? sender, EventArgs e) => FFMpegDebugForm.Show();
     private void ExitMenuItem_Click(object? sender, EventArgs e) => Exit();
 
-    public void SetMask(BwFrame frame)
-    {
-    }
-    public void SetPreview(Frame frame) { }
-
-    public void FatalException(Exception exception)
-        => FatalException(exception.Message, "Fatal exception");
+    public void FatalException(Exception exception) => FatalException(exception.Message, "Fatal exception");
     public void FatalException(string message, string title)
     {
         MessageBox.Show(message, title, MessageBoxButtons.OK, MessageBoxIcon.Error);

@@ -72,8 +72,9 @@ public class FrameComparerTasks(
             });
         }
 
-        // Aggregate results
         Task.WaitAll(tasks);
+
+        // Aggregate results
         foreach (var task in tasks)
         {
             Result_Difference += task.Result;

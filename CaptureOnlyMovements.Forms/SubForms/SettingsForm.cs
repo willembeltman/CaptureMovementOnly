@@ -42,6 +42,12 @@ public partial class ConfigForm : Form
         }
     }
 
+    private void Timer_Tick(object sender, EventArgs e)
+    {
+        InputFpsLabel.Text = Application.InputFps.CalculateFps().ToString("F2") + " fps";
+        OutputFpsLabel.Text = Application.OutputFps.CalculateFps().ToString("F2") + " fps";
+    }
+
     private void ConfigForm_VisibleChanged(object sender, EventArgs e)
     {
         Timer.Enabled = Visible;
@@ -88,11 +94,5 @@ public partial class ConfigForm : Form
             components.Dispose();
         }
         base.Dispose(disposing);
-    }
-
-    private void Timer_Tick(object sender, EventArgs e)
-    {
-        InputFpsLabel.Text = Application.InputFps.CalculateFps().ToString("F2") + " fps";
-        OutputFpsLabel.Text = Application.OutputFps.CalculateFps().ToString("F2") + " fps";
     }
 }
