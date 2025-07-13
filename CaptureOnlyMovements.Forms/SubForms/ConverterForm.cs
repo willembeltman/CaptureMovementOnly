@@ -205,5 +205,18 @@ namespace CaptureOnlyMovements.Forms.SubForms
         {
             Timer.Enabled = Visible;
         }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
+            if (disposing)
+            {
+                Converter.Dispose();
+            }
+            base.Dispose(disposing);
+        }
     }
 }

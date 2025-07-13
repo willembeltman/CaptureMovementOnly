@@ -15,9 +15,9 @@ public class ApplicationForm : Form, IApplication
     private readonly ToolStripMenuItem StopRecordingButton;
 
     private readonly Recorder Recorder;
-    private readonly ConverterForm ConverterForm;
-    private readonly ConfigForm ConfigForm;
     private readonly DebugForm DebugForm;
+    private readonly ConfigForm ConfigForm;
+    private readonly ConverterForm ConverterForm;
     private readonly FFMpegDebugForm FFMpegDebugForm;
 
     public Config Config { get; }
@@ -136,6 +136,8 @@ public class ApplicationForm : Form, IApplication
         Recorder.Dispose();
         DebugForm.Dispose();
         ConfigForm.Dispose();
+        ConverterForm.Dispose();
+        FFMpegDebugForm.Dispose();
 
         // Opruimen van de NotifyIcon voordat de applicatie wordt afgesloten
         if (NotificationIcon != null)
@@ -160,8 +162,10 @@ public class ApplicationForm : Form, IApplication
         if (disposing)
         {
             Recorder.Dispose();
-            ConfigForm.Dispose();
             DebugForm.Dispose();
+            ConfigForm.Dispose();
+            ConverterForm.Dispose();
+            FFMpegDebugForm.Dispose();
             NotificationIcon.Dispose();
         }
         base.Dispose(disposing);

@@ -7,7 +7,7 @@ using System.ComponentModel;
 namespace CaptureOnlyMovements;
 
 public delegate void ChangeStateDelegate(bool running);
-public class Converter(IApplication Application, BindingList<FileConfig> Files) : IKillSwitch
+public class Converter(IApplication Application, BindingList<FileConfig> Files) : IKillSwitch, IDisposable
 {
     private Thread? WriterThread;
 
@@ -128,4 +128,15 @@ public class Converter(IApplication Application, BindingList<FileConfig> Files) 
     public void DebugWriteLine(string message) => Application.DebugWriteLine(message);
     public void FFMpegDebugWriteLine(string message) => Application.FFMpegDebugWriteLine(message);
 
+    public void Dispose()
+    {
+        KillSwitch = true;
+        // De form thread roept dit aan, die laat de thread vervolgens netjes afsluiten,
+        // Maar tijdens het afsluiten wil de recorder thread het form aanroepen om de status te updaten.
+        // Deze staat dan hieronder te wachten tot de recorder thread klaar is. Dus DEADLOCK.
+        // Programma mag zich gewoon afsluiten terwijl de recorder thread zichzelf apart afsluit.
+        //if (Running && WriterThread != null && WriterThread != Thread.CurrentThread)
+        //    WriterThread.Join();
+        GC.SuppressFinalize(this);
+    }
 }

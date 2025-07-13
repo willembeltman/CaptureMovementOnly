@@ -74,7 +74,7 @@ public class VideoStreamReader : IDisposable
         while (line != null && !KillSwitch.KillSwitch && !ErrorReaderKillSwitch)
         {
             //ErrorMessage += line + "\r\n"; // Dit kan omdat als het niet goed gaat, laat ffmpeg de error zien.
-            DebugWriter?.FFMpegDebugWriteLine(line);
+            //DebugWriter?.FFMpegDebugWriteLine(line);
 
             line = StandardErrorReader.ReadLine();
         }
