@@ -22,22 +22,16 @@ public class ApplicationForm : Form, IApplication
             // Zorg ervoor dat je een geldig icoonpad hebt!
             Icon = new System.Drawing.Icon("Computer.ico"), // Vervang dit pad
             Visible = true,
-            Text = "Mijn Systeemvak Applicatie"
+            Text = "Capture Motion Only"
         };
 
-        // Initialiseer ContextMenuStrip
         NewContextMenuStrip = new();
-
-        // Voeg menu-items toe aan het contextmenu
 
         StartRecordingButton = new ToolStripMenuItem("Start recording");
         StartRecordingButton.Click += StartRecording_Click;
         NewContextMenuStrip.Items.Add(StartRecordingButton);
 
-        StopRecordingButton = new ToolStripMenuItem("Stop recording")
-        {
-            Visible = false
-        };
+        StopRecordingButton = new ToolStripMenuItem("Stop recording") { Visible = false };
         StopRecordingButton.Click += StopRecording_Click;
         NewContextMenuStrip.Items.Add(StopRecordingButton);
 
@@ -45,11 +39,19 @@ public class ApplicationForm : Form, IApplication
         OpenConverterButton.Click += OpenConverter_Click;
         NewContextMenuStrip.Items.Add(OpenConverterButton);
 
+
+        NewContextMenuStrip.Items.Add(new ToolStripSeparator());
+
+
         var OpenSettingsButton = new ToolStripMenuItem("Open settings window");
         OpenSettingsButton.Click += OpenSettings_Click;
         NewContextMenuStrip.Items.Add(OpenSettingsButton);
 
-        var OpenDebugButton = new ToolStripMenuItem("Open debug window");
+
+        NewContextMenuStrip.Items.Add(new ToolStripSeparator());
+
+
+        var OpenDebugButton = new ToolStripMenuItem("Open main debug window");
         OpenDebugButton.Click += OpenDebug_Click;
         NewContextMenuStrip.Items.Add(OpenDebugButton);
 
@@ -57,9 +59,14 @@ public class ApplicationForm : Form, IApplication
         OpenFFMpegDebugButton.Click += OpenFFMpegDebug_Click;
         NewContextMenuStrip.Items.Add(OpenFFMpegDebugButton);
 
+
+        NewContextMenuStrip.Items.Add(new ToolStripSeparator());
+
+
         var ExitMenuItem = new ToolStripMenuItem("Close");
         ExitMenuItem.Click += ExitMenuItem_Click;
         NewContextMenuStrip.Items.Add(ExitMenuItem);
+
 
         // Koppel het contextmenu aan de NotifyIcon
         NotificationIcon.ContextMenuStrip = NewContextMenuStrip;

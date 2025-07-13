@@ -15,7 +15,7 @@ public interface IApplication
 }
 public interface IPreview
 {
-    bool ShowDifference { get; }
+    bool ShowMask { get; }
     bool ShowPreview { get; }
     void SetMask(BwFrame frame);
     void SetPreview(Frame frame);

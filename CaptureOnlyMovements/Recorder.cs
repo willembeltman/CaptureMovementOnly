@@ -46,7 +46,7 @@ public class Recorder(
             string videosFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.MyVideos);
 
             // Define your desired output filename
-            var outputName = $"{DateTime.Now:yyyy-MM-dd HH-mm-ss}.mp4";
+            var outputName = $"{DateTime.Now:yyyy-MM-dd HH-mm-ss}.mkv";
 
             // Combine the path and the filename to get the full output path
             string outputFullName = Path.Combine(videosFolderPath, outputName);
@@ -61,7 +61,7 @@ public class Recorder(
             var frame = capturer.CaptureFrame();
             var resolution = frame.Resolution;
 
-            var comparer = new FrameComparerTasks(Config, resolution);
+            var comparer = new FrameComparer(Config, resolution);
 
             var container = new MediaContainer(outputFullName);
             using var writer = container.OpenVideoWriter(this, resolution, Config, FFMpegWriterConsole);

@@ -1,27 +1,29 @@
-﻿using CaptureOnlyMovements.Interfaces;
+﻿using CaptureOnlyMovements.Filters;
+using CaptureOnlyMovements.Interfaces;
 using CaptureOnlyMovements.Types;
 
 namespace CaptureOnlyMovements.Comparer;
 
-public class FrameComparer
+public class FrameComparer : IFrameComparer
 {
     public FrameComparer(
         IComparerConfig config,
-        IPreview showDifference,
-        Resolution resolution)
+        Resolution resolution,
+        IPreview? preview = null)
     {
         Config = config; 
-        ShowDifference = showDifference;
+        Preview = preview;
         Resolution = resolution;
         CalculationFrameData = new bool[resolution.Width * resolution.Height];
         PreviousFrameData = new byte[resolution.Width * resolution.Height * 3];
     }
 
-    public IComparerConfig Config { get; }
-    public IPreview ShowDifference { get; }
+    private readonly IComparerConfig Config;
+    private readonly IPreview? Preview;
+    private readonly byte[] PreviousFrameData;
+
     public Resolution Resolution { get; }
     public bool[] CalculationFrameData { get; }
-    public byte[] PreviousFrameData { get; }
     public int Result_Difference { get; private set; }
 
     public bool IsDifferent(byte[] newFrameData)
@@ -54,7 +56,7 @@ public class FrameComparer
                 var pixelColorDifference = pixelColorDifference1 + pixelColorDifference2 + pixelColorDifference3;
                 var isDifferent = pixelColorDifference > Config.MaximumPixelDifferenceValue;
 
-                if (ShowDifference.ShowDifference)
+                if (Preview?.ShowMask == true)
                 {
                     CalculationFrameData[y * Resolution.Width + x] = isDifferent;
                 }
@@ -68,7 +70,7 @@ public class FrameComparer
                 // Do check if total difference hasn't exceeded threshold otherwise no need to continue iterating
                 if (Result_Difference > Config.MaximumDifferentPixelCount)
                 {
-                    if (!ShowDifference.ShowDifference)
+                    if (Preview?.ShowMask != true)
                     {
                         Array.Copy(newFrameData, PreviousFrameData, newFrameData.Length);
                         return true;

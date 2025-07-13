@@ -194,7 +194,7 @@ namespace CaptureOnlyMovements.Forms.SubForms
 
         #region IPreview implementation
 
-        public bool ShowDifference => ShowDiffernceCheckbox.Checked;
+        public bool ShowMask => ShowDiffernceCheckbox.Checked;
         public bool ShowPreview => ShowPreviewCheckbox.Checked;
 
         public void SetMask(BwFrame frame) => displayControl1.SetFrame(frame);

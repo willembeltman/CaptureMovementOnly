@@ -51,7 +51,7 @@ public class Converter(
             string videosFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.MyVideos);
 
             // Define your desired output filename
-            var outputName = $"Converted {DateTime.Now:yyyy-MM-dd HH-mm-ss}.mp4";
+            var outputName = $"Converted {DateTime.Now:yyyy-MM-dd HH-mm-ss}.mkv";
 
             // Combine the path and the filename to get the full output path
             string outputFullName = Path.Combine(videosFolderPath, outputName);
@@ -102,7 +102,7 @@ public class Converter(
 
                     Application.InputFps.Tick();
 
-                    if (Preview.ShowDifference)
+                    if (Preview.ShowMask)
                     {
                         var bwFrame = new BwFrame(comparer.CalculationFrameData, comparer.Resolution);
                         Preview.SetMask(bwFrame);
