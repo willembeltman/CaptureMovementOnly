@@ -92,8 +92,8 @@ public class ScreenshotCapturer : IDisposable
 
         // TryAcquireNextFrame retourneert een Result, niet alleen een bool.
         // We moeten controleren of de Result.IsSuccess property true is.
-        var result = DuplicatedOutput.AcquireNextFrame(1, 
-            out OutduplFrameInfo info, 
+        var result = DuplicatedOutput.AcquireNextFrame(1,
+            out OutduplFrameInfo info,
             out IDXGIResource? screenResource);
 
         while (!result.Success || screenResource == null)

@@ -42,7 +42,7 @@ Please download FFmpeg and place it in the specified location. The program will 
         }
 
         string codec;
-        string arguments; 
+        string arguments;
         string pixFmt = "bgr24";
         string format = "rawvideo";
         string overwrite = "-y";
@@ -202,7 +202,7 @@ Please download FFmpeg and place it in the specified location. The program will 
                 PresetEnum.fast => "fast",
                 PresetEnum.faster => "faster",
                 PresetEnum.veryfast => "veryfast",
-                _ => "medium", 
+                _ => "medium",
             },
             _ => Enum.GetName(presetEnum),
         };

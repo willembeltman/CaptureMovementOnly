@@ -1,7 +1,7 @@
-﻿using CaptureOnlyMovements.FrameComparers;
-using CaptureOnlyMovements.FFMpeg;
-using CaptureOnlyMovements.Interfaces;
+﻿using CaptureOnlyMovements.FFMpeg;
+using CaptureOnlyMovements.FrameComparers;
 using CaptureOnlyMovements.FrameResizers;
+using CaptureOnlyMovements.Interfaces;
 using CaptureOnlyMovements.Types;
 using System.ComponentModel;
 

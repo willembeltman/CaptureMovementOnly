@@ -1,5 +1,4 @@
-﻿using CaptureOnlyMovements.Delegates;
-using CaptureOnlyMovements.Forms.SubForms;
+﻿using CaptureOnlyMovements.Forms.SubForms;
 using CaptureOnlyMovements.Interfaces;
 using CaptureOnlyMovements.Types;
 using System;
@@ -141,7 +140,7 @@ public class ApplicationForm : Form, IApplication
     }
     public void SetPreview(Frame frame) { }
 
-    public void FatalException(Exception exception) 
+    public void FatalException(Exception exception)
         => FatalException(exception.Message, "Fatal exception");
     public void FatalException(string message, string title)
     {

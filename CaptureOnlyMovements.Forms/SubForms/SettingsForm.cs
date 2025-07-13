@@ -11,7 +11,7 @@ public partial class ConfigForm : Form
     {
         InitializeComponent();
         Application = application;
-            Config.StateChanged += StateChanged;
+        Config.StateChanged += StateChanged;
     }
 
     public IApplication Application { get; }

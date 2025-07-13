@@ -1,14 +1,14 @@
-﻿using CaptureOnlyMovements.Types;
+﻿using CaptureOnlyMovements.FrameConverters;
+using CaptureOnlyMovements.Types;
 using System;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using Vortice.D3DCompiler;
+using Vortice.Direct3D;
 using Vortice.Direct3D11;
 using Vortice.DXGI;
-using MapFlags = Vortice.Direct3D11.MapFlags;
 using Vortice.Mathematics;
-using Vortice.Direct3D;
-using System.Runtime.InteropServices;
-using Vortice.D3DCompiler;
-using CaptureOnlyMovements.FrameConverters;
+using MapFlags = Vortice.Direct3D11.MapFlags;
 
 namespace CaptureOnlyMovements.Forms.Controls;
 

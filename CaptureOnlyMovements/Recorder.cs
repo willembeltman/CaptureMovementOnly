@@ -1,16 +1,16 @@
-﻿using CaptureOnlyMovements.FrameComparers;
-using CaptureOnlyMovements.DirectX;
+﻿using CaptureOnlyMovements.DirectX;
 using CaptureOnlyMovements.FFMpeg;
+using CaptureOnlyMovements.FrameComparers;
+using CaptureOnlyMovements.Helpers;
 using CaptureOnlyMovements.Interfaces;
 using CaptureOnlyMovements.Types;
-using CaptureOnlyMovements.Helpers;
 
 namespace CaptureOnlyMovements;
 
 public class Recorder(
     IApplication Application,
     IConsole Console,
-    IConsole FFMpegWriterConsole) 
+    IConsole FFMpegWriterConsole)
     : IDisposable, IKillSwitch
 {
     private Thread? WriterThread;
@@ -67,7 +67,7 @@ public class Recorder(
 
             var container = new MediaContainer(outputFullName);
             using var writer = container.OpenVideoWriter(this, resolution, Config, FFMpegWriterConsole);
-            
+
             writer.WriteFrame(frame.Buffer);
             Application.InputFps.Tick();
             Application.OutputFps.Tick();

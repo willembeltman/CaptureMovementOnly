@@ -13,7 +13,7 @@ public class MediaContainer(string fullName, DirectoryInfo? ffmpegdir = null, Di
     public FileInfo FileInfo { get; } = new FileInfo(fullName);
 
     private FFProbeRapport? _FFProbeRapport;
-    public FFProbeRapport FFProbeRapport 
+    public FFProbeRapport FFProbeRapport
         => _FFProbeRapport ??= FFProbeRapport.GetRapport(FileInfo.FullName, FFProbeDirectory);
 
     public VideoStreamReader OpenVideoReader(
