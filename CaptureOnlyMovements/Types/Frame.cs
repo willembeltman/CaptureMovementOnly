@@ -6,10 +6,8 @@ public struct Frame
     {
         Buffer = buffer;
         Resolution = resolution;
-        CaptureDate = DateTime.Now;
     }
 
     public byte[] Buffer { get; }
     public Resolution Resolution { get; }
-    public DateTime CaptureDate { get; }
 }

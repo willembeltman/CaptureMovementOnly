@@ -1,20 +1,22 @@
-﻿
-
+﻿using CaptureOnlyMovements.Delegates;
+using CaptureOnlyMovements.Interfaces;
 
 namespace CaptureOnlyMovements;
 
-public class Config
+public class Config : IComparerConfig, IEncoderConfig
 {
     public int MaximumPixelDifferenceValue { get; set; } = 144;
     public int MaximumDifferentPixelCount { get; set; } = 450;
     public int MinPlaybackSpeed { get; set; } = 8;
-    public int MaxLinesInDebug { get; set; } = 100;
     public int OutputFps { get; set; } = 60;
     public string OutputQuality { get; set; } = "identical";
     public string OutputPreset { get; set; } = "veryslow";
     public bool UseGpu { get; set; } = true;
 
-    public static Config Read()
+    public event ConfigChanged? StateChanged;
+    public void OnChangedState() => StateChanged?.Invoke();
+
+    public static Config Load()
     {
         if (File.Exists("CaptureOnlyMovements.json"))
         {

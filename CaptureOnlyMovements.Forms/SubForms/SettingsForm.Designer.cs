@@ -1,6 +1,6 @@
 ﻿namespace CaptureOnlyMovements.Forms
 {
-    partial class SettingsForm
+    partial class ConfigForm
     {
         /// <summary>
         /// Required designer variable.
@@ -15,6 +15,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             label1 = new System.Windows.Forms.Label();
             label2 = new System.Windows.Forms.Label();
@@ -33,6 +34,8 @@
             label9 = new System.Windows.Forms.Label();
             SaveButton = new System.Windows.Forms.Button();
             label10 = new System.Windows.Forms.Label();
+            FpsCounterLabel = new System.Windows.Forms.Label();
+            Timer = new System.Windows.Forms.Timer(components);
             tableLayoutPanel1.SuspendLayout();
             SuspendLayout();
             // 
@@ -58,6 +61,7 @@
             tableLayoutPanel1.Controls.Add(label9, 1, 7);
             tableLayoutPanel1.Controls.Add(SaveButton, 1, 9);
             tableLayoutPanel1.Controls.Add(label10, 1, 8);
+            tableLayoutPanel1.Controls.Add(FpsCounterLabel, 0, 9);
             tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             tableLayoutPanel1.Location = new System.Drawing.Point(5, 5);
             tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -234,16 +238,29 @@
             label10.TabIndex = 21;
             label10.Text = "Please use OBS for realtime capturing.";
             // 
-            // SettingsForm
+            // FpsCounterLabel
+            // 
+            FpsCounterLabel.AutoSize = true;
+            FpsCounterLabel.Location = new System.Drawing.Point(3, 297);
+            FpsCounterLabel.Name = "FpsCounterLabel";
+            FpsCounterLabel.Size = new System.Drawing.Size(0, 15);
+            FpsCounterLabel.TabIndex = 22;
+            // 
+            // Timer
+            // 
+            Timer.Tick += Timer_Tick;
+            // 
+            // ConfigForm
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             ClientSize = new System.Drawing.Size(560, 343);
             Controls.Add(tableLayoutPanel1);
-            Name = "SettingsForm";
+            Name = "ConfigForm";
             Padding = new System.Windows.Forms.Padding(5);
             Text = "Settings";
-            Load += Settings_Load;
+            Load += ConfigForm_Load;
+            VisibleChanged += ConfigForm_VisibleChanged;
             tableLayoutPanel1.ResumeLayout(false);
             tableLayoutPanel1.PerformLayout();
             ResumeLayout(false);
@@ -266,9 +283,10 @@
         private System.Windows.Forms.CheckBox UseGpu;
         private System.Windows.Forms.TextBox MinPlaybackSpeed;
         private System.Windows.Forms.Button SaveButton;
-        private System.Windows.Forms.Label label8;
         private System.Windows.Forms.ComboBox Quality;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.Label FpsCounterLabel;
+        private System.Windows.Forms.Timer Timer;
     }
 }

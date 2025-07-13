@@ -1,0 +1,130 @@
+﻿using CaptureOnlyMovements.Comparer;
+using CaptureOnlyMovements.FFMpeg;
+using CaptureOnlyMovements.Interfaces;
+using CaptureOnlyMovements.Types;
+using System.ComponentModel;
+
+namespace CaptureOnlyMovements;
+
+public delegate void ChangeStateDelegate(bool running);
+public class Converter(IApplication Application, BindingList<FileConfig> Files) : IKillSwitch
+{
+    private Thread? WriterThread;
+
+    public bool Converting { get; private set; }
+    public bool KillSwitch { get; private set; }
+
+    public void Start()
+    {
+        if (!Converting)
+        {
+            Application.DebugWriteLine("Starting the recorder...");
+            WriterThread = new Thread(Kernel);
+            WriterThread.Start();
+        }
+    }
+    public void Stop()
+    {
+        if (Converting)
+        {
+            Application.DebugWriteLine("Stopping the recorder...");
+            KillSwitch = true;
+        }
+    }
+
+    private void Kernel(object? obj)
+    {
+        Converting = true;
+        KillSwitch = false;
+        Application.Config.OnChangedState();
+
+        try
+        {
+            // Get the path to the current user's Videos folder
+            string videosFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.MyVideos);
+
+            // Define your desired output filename
+            var outputName = $"Converted {DateTime.Now:yyyy-MM-dd HH-mm-ss}.mp4";
+
+            // Combine the path and the filename to get the full output path
+            string outputFullName = Path.Combine(videosFolderPath, outputName);
+
+            if (File.Exists(outputFullName))
+                File.Delete(outputFullName); // Delete existing file
+
+            DebugWriteLine($"Opening '{outputFullName}' to write video to.");
+
+            var width = Files.Max(a => a.Width) ?? throw new Exception("Could not determine resolution");
+            var height = Files.Max(a => a.Height) ?? throw new Exception("Could not determine resolution");
+            var resolution = new Resolution(width, height);
+
+            var writercontainer = new MediaContainer(outputFullName);
+            using var writer = writercontainer.OpenVideoWriter(Application, this, resolution, Application.Config);
+
+            var fileItemMediaContainers = Files
+                .Where(a => a.FullName != null)
+                .Select(a => new FileItemMediaContainer(a));
+
+            foreach (var fileItemMediaContainer in fileItemMediaContainers)
+            {
+                DebugWriteLine($"Opening '{fileItemMediaContainer.FileConfig.FullName}' to read video from.");
+
+                using var reader = fileItemMediaContainer.MediaContainer.OpenVideoReader(Application, this);
+                var nullebleFrame = reader.ReadFrame();
+                if (nullebleFrame == null) continue;
+                var frame = nullebleFrame.Value;
+                var comparer = new FrameComparer(fileItemMediaContainer.FileConfig, frame.Resolution);
+                var resizer = new Resizer(resolution);
+
+                // Pre-compare frame
+                comparer.IsDifferent(frame.Buffer);
+
+                // Resize frame
+                frame = resizer.Resize(frame);
+
+                // Write frame
+                writer.WriteFrame(frame.Buffer);
+                Application.FpsCounter.Tick();
+                DebugWriteLine($"Captured frame at {DateTime.Now:HH:mm:ss.fff}   -");
+
+                while (!KillSwitch)
+                {
+                    // Read frame
+                    nullebleFrame = reader.ReadFrame(frame.Buffer);
+                    if (nullebleFrame == null) break;
+                    frame = nullebleFrame.Value;
+
+                    Application.FpsCounter.Tick();
+
+                    // Compare frame
+                    if (!comparer.IsDifferent(frame.Buffer)) continue;
+
+                    // Resize frame
+                    frame = resizer.Resize(frame);
+
+                    // Write frame
+                    writer.WriteFrame(frame.Buffer);
+                    //DebugWriteLine($"Captured frame at {DateTime.Now:HH:mm:ss.fff}   {comparer.Result_Difference}");
+                }
+
+                if (KillSwitch) break;
+            }
+
+            DebugWriteLine($"Closed '{outputFullName}' and stopped capturing.");
+        }
+        catch (Exception ex)
+        {
+            Application.FatalException(ex.Message, "Error while recording");
+        }
+        finally
+        {
+            Converting = false;
+            Application.Config.OnChangedState();
+        }
+    }
+
+    public void FatalException(Exception exception) => Application.FatalException(exception.Message, "Fatal exception");
+    public void DebugWriteLine(string message) => Application.DebugWriteLine(message);
+    public void FFMpegDebugWriteLine(string message) => Application.FFMpegDebugWriteLine(message);
+
+}

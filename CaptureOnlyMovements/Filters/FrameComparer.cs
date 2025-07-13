@@ -1,11 +1,12 @@
-﻿using CaptureOnlyMovements.Types;
+﻿using CaptureOnlyMovements.Interfaces;
+using CaptureOnlyMovements.Types;
 
 namespace CaptureOnlyMovements.Comparer;
 
 public class FrameComparer
 {
     public FrameComparer(
-        Config config,
+        IComparerConfig config,
         Resolution resolution, 
         bool calculateFully = false)
     {
@@ -16,7 +17,7 @@ public class FrameComparer
         PreviousFrameData = new byte[resolution.Width * resolution.Height * 3];
     }
 
-    public Config Config { get; }
+    public IComparerConfig Config { get; }
     public Resolution Resolution { get; }
     public bool[] CalculationFrameData { get; }
     public byte[] PreviousFrameData { get; }

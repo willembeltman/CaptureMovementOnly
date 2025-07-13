@@ -2,38 +2,21 @@
 using CaptureOnlyMovements.DirectX;
 using CaptureOnlyMovements.FFMpeg;
 using CaptureOnlyMovements.Interfaces;
-using System;
-using System.IO;
-using System.Threading;
-using System.Windows.Forms;
+using static System.Net.Mime.MediaTypeNames;
 
-namespace CaptureOnlyMovements.Forms;
+namespace CaptureOnlyMovements;
 
-public delegate void StateUpdated(bool recording);
-public delegate void DebugUpdated(string line);
-
-public class Recorder : IDisposable, IKillSwitch, IDebugWriter, IFFMpegDebugWriter
+public class Recorder(IApplication Application) : IDisposable, IKillSwitch, IDebugWriter, IFFMpegDebugWriter
 {
-    public Recorder(IApplication application)
-    {
-        Application = application;
-        Config = Config.Read();
-    }
-
-    private readonly IApplication Application;
     private Thread? WriterThread;
 
-    public Config Config { get; }
-    public bool Running { get; private set; }
+    public bool Recording { get; private set; }
     public bool KillSwitch { get; private set; }
-
-    public event StateUpdated? StateUpdated;
-    public event DebugUpdated? DebugUpdated;
-    public event DebugUpdated? FFMpegDebugUpdated;
+    public Config Config => Application.Config;
 
     public void Start()
     {
-        if (!Running)
+        if (!Recording)
         {
             DebugWriteLine("Starting the recorder...");
             WriterThread = new Thread(Kernel) { IsBackground = true };
@@ -42,7 +25,7 @@ public class Recorder : IDisposable, IKillSwitch, IDebugWriter, IFFMpegDebugWrit
     }
     public void Stop()
     {
-        if (Running)
+        if (Recording)
         {
             DebugWriteLine("Stopping the recorder...");
             KillSwitch = true;
@@ -50,8 +33,9 @@ public class Recorder : IDisposable, IKillSwitch, IDebugWriter, IFFMpegDebugWrit
     }
     private void Kernel()
     {
-        Running = true;
+        Recording = true;
         KillSwitch = false;
+        Application.Config.OnChangedState();
 
         try
         {
@@ -68,7 +52,6 @@ public class Recorder : IDisposable, IKillSwitch, IDebugWriter, IFFMpegDebugWrit
                 File.Delete(outputFullName); // Delete existing file
 
             DebugWriteLine($"Opening '{outputFullName}' to write video to.");
-            DebugWriteLine($"Press Escape to stop capturing at any time.");
 
             // Get first frame for the resolution
             using var capturer = new ScreenshotCapturer();
@@ -76,10 +59,10 @@ public class Recorder : IDisposable, IKillSwitch, IDebugWriter, IFFMpegDebugWrit
             var resolution = frame.Resolution;
 
             var container = new MediaContainer(outputFullName);
-            using var writer = container.OpenWriter(this, this, resolution, Config);
+            using var writer = container.OpenVideoWriter(this, this, resolution, Config);
             writer.WriteFrame(frame.Buffer);
-
-            StateUpdated?.Invoke(Running);
+            Application.FpsCounter.Tick();
+            DebugWriteLine($"Captured frame at {DateTime.Now:HH:mm:ss.fff}   -");
 
             var comparer = new FrameComparer(Config, resolution);
             var previousDate = DateTime.Now;
@@ -87,32 +70,33 @@ public class Recorder : IDisposable, IKillSwitch, IDebugWriter, IFFMpegDebugWrit
             while (!KillSwitch)
             {
                 frame = capturer.CaptureFrame(frame.Buffer);
+                Application.FpsCounter.Tick();
+
                 if (comparer.IsDifferent(frame.Buffer))
                 {
                     writer.WriteFrame(frame.Buffer);
                     DebugWriteLine($"Captured frame at {DateTime.Now:HH:mm:ss.fff}   {comparer.Result_Difference}");
+
                     previousDate = WaitForNextHelper.Wait(Config, previousDate);
                 }
             }
 
             DebugWriteLine($"Closed '{outputFullName}' and stopped capturing.");
-
-            Running = false;
-            StateUpdated?.Invoke(Running);
         }
         catch (Exception ex)
         {
-            MessageBox.Show(ex.Message, "Error while recording", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            Application.FatalException(ex.Message, "Error while recording");
+        }
+        finally
+        {
+            Recording = false;
+            Application.Config.OnChangedState();
         }
     }
 
-    public void FatalException(string error)
-    {
-        MessageBox.Show(error, "Fatal exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        Application.Exit();
-    }
-    public void DebugWriteLine(string message) => DebugUpdated?.Invoke(message);
-    public void FFMpegDebugWriteLine(string message) => FFMpegDebugUpdated?.Invoke(message);
+    public void FatalException(Exception exception) => Application.FatalException(exception);
+    public void DebugWriteLine(string message) => Application.DebugWriteLine(message);
+    public void FFMpegDebugWriteLine(string message) => Application.FFMpegDebugWriteLine(message);
 
     public void Dispose()
     {

@@ -1,29 +1,32 @@
-﻿using System;
+﻿using CaptureOnlyMovements.Interfaces;
+using System;
 using System.Windows.Forms;
 
 namespace CaptureOnlyMovements.Forms;
 
-public partial class SettingsForm : Form
+public partial class ConfigForm : Form
 {
-    public SettingsForm(Recorder recorder)
+    public ConfigForm(IApplication application)
     {
-        Recorder = recorder;
         InitializeComponent();
+        Application = application;
+        Config.StateChanged += StateChanged;
 
-        recorder.StateUpdated += Recorder_StateUpdated;
     }
 
-    public Recorder Recorder { get; }
+    public IApplication Application { get; }
+    public Config Config => Application.Config;
 
-    private void Recorder_StateUpdated(bool recording)
+
+    private void StateChanged()
     {
         if (InvokeRequired)
         {
-            Invoke(new Action(() => Recorder_StateUpdated(recording)));
+            Invoke(new Action(() => StateChanged()));
             return;
         }
 
-        if (recording)
+        if (Application.IsBusy)
         {
             Fps.Enabled = false;
             Quality.Enabled = false;
@@ -39,30 +42,28 @@ public partial class SettingsForm : Form
         }
     }
 
-    private void Settings_Load(object sender, EventArgs e)
+    private void ConfigForm_Load(object sender, EventArgs e)
     {
-        Recorder_StateUpdated(Recorder.Running);
-        var config = Recorder.Config;
-        MaximumPixelDifferenceValue.Text = config.MaximumPixelDifferenceValue.ToString();
-        MaximumDifferentPixelCount.Text = config.MaximumDifferentPixelCount.ToString();
-        MinPlaybackSpeed.Text = config.MinPlaybackSpeed.ToString();
-        Fps.SelectedValue = config.OutputFps.ToString();
-        Quality.SelectedValue = config.OutputQuality.ToString();
-        Preset.SelectedValue = config.OutputPreset.ToString();
-        UseGpu.Checked = config.UseGpu;
+        StateChanged();
+        MaximumPixelDifferenceValue.Text = Config.MaximumPixelDifferenceValue.ToString();
+        MaximumDifferentPixelCount.Text = Config.MaximumDifferentPixelCount.ToString();
+        MinPlaybackSpeed.Text = Config.MinPlaybackSpeed.ToString();
+        Fps.SelectedValue = Config.OutputFps.ToString();
+        Quality.SelectedValue = Config.OutputQuality.ToString();
+        Preset.SelectedValue = Config.OutputPreset.ToString();
+        UseGpu.Checked = Config.UseGpu;
     }
 
     private void SaveButton_Click(object sender, EventArgs e)
     {
-        var config = Recorder.Config;
-        config.MaximumPixelDifferenceValue = Convert.ToInt32(MaximumPixelDifferenceValue.Text);
-        config.MaximumDifferentPixelCount = Convert.ToInt32(MaximumDifferentPixelCount.Text);
-        config.MinPlaybackSpeed = Convert.ToInt32(MinPlaybackSpeed.Text);
-        config.OutputFps = Convert.ToInt32(Fps.Text);
-        config.OutputQuality = Quality.Text;
-        config.OutputPreset = Preset.Text;
-        config.UseGpu = UseGpu.Checked;
-        config.Save();
+        Config.MaximumPixelDifferenceValue = Convert.ToInt32(MaximumPixelDifferenceValue.Text);
+        Config.MaximumDifferentPixelCount = Convert.ToInt32(MaximumDifferentPixelCount.Text);
+        Config.MinPlaybackSpeed = Convert.ToInt32(MinPlaybackSpeed.Text);
+        Config.OutputFps = Convert.ToInt32(Fps.Text);
+        Config.OutputQuality = Quality.Text;
+        Config.OutputPreset = Preset.Text;
+        Config.UseGpu = UseGpu.Checked;
+        Config.Save();
         Hide();
     }
 
@@ -79,9 +80,19 @@ public partial class SettingsForm : Form
     {
         if (disposing && (components != null))
         {
-            Recorder.StateUpdated -= Recorder_StateUpdated;
+            Config.StateChanged -= StateChanged;
             components.Dispose();
         }
         base.Dispose(disposing);
+    }
+
+    private void Timer_Tick(object sender, EventArgs e)
+    {
+        FpsCounterLabel.Text = Application.FpsCounter.CalculateFps().ToString("F2") + " fps";
+    }
+
+    private void ConfigForm_VisibleChanged(object sender, EventArgs e)
+    {
+        Timer.Enabled = Visible;
     }
 }

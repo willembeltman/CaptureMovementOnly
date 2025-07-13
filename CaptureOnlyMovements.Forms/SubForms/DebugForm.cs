@@ -5,25 +5,25 @@ namespace CaptureOnlyMovements.Forms;
 
 public partial class DebugForm : Form
 {
-    public Recorder Recorder { get; }
+    public ApplicationForm Application { get; }
 
-    public DebugForm(Recorder recorder)
+    public DebugForm(ApplicationForm application)
     {
-        Recorder = recorder;
         InitializeComponent();
 
-        Recorder.DebugUpdated += Recorder_DebugUpdated;
+        Application = application;
+        Application.DebugUpdated += Application_DebugUpdated;
     }
 
-    private void Recorder_DebugUpdated(string line)
+    private void Application_DebugUpdated(string line)
     {
         if (InvokeRequired)
         {
-            Invoke(new Action(() => Recorder_DebugUpdated(line)));
+            Invoke(new Action(() => Application_DebugUpdated(line)));
             return;
         }
 
-        DebugList.Items.Add(line);
+        Console.WriteLine(line);
     }
 
     // Belangrijk: Overrides om te zorgen dat de applicatie niet sluit als het formulier gesloten wordt
@@ -39,7 +39,7 @@ public partial class DebugForm : Form
     {
         if (disposing && (components != null))
         {
-            Recorder.DebugUpdated -= Recorder_DebugUpdated;
+            Application.DebugUpdated -= Application_DebugUpdated;
             components.Dispose();
         }
         base.Dispose(disposing);

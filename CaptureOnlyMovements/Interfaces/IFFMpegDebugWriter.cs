@@ -2,5 +2,5 @@
 
 public interface IFFMpegDebugWriter
 {
-    void FFMpegDebugWriteLine(string v);
+    void FFMpegDebugWriteLine(string line);
 }

@@ -1,4 +1,7 @@
-﻿using CaptureOnlyMovements.Interfaces;
+﻿using CaptureOnlyMovements.Delegates;
+using CaptureOnlyMovements.Forms.SubForms;
+using CaptureOnlyMovements.Helpers;
+using CaptureOnlyMovements.Interfaces;
 using System;
 using System.Windows.Forms;
 
@@ -10,15 +13,20 @@ public class ApplicationForm : Form, IApplication
     private readonly ContextMenuStrip NewContextMenuStrip;
     private readonly ToolStripMenuItem StartRecordingButton;
     private readonly ToolStripMenuItem StopRecordingButton;
-    private readonly ToolStripMenuItem OpenSettingsButton;
-    private readonly ToolStripMenuItem OpenDebugButton;
-    private readonly ToolStripMenuItem ExitMenuItem;
+
     private readonly Recorder Recorder;
-    private readonly SettingsForm SettingsForm;
+    private readonly ConverterForm ConverterForm;
+    private readonly ConfigForm ConfigForm;
     private readonly DebugForm DebugForm;
     private readonly FFMpegDebugForm FFMpegDebugForm;
 
-    public ToolStripMenuItem OpenFFMpegDebugButton { get; }
+    public Config Config { get; }
+    public FpsCounter FpsCounter { get; } = new FpsCounter();
+
+    public bool IsBusy => Recorder.Recording || ConverterForm.IsBusy;
+
+    public event DebugMessage? DebugUpdated;
+    public event DebugMessage? FFMpegDebugUpdated;
 
     public ApplicationForm()
     {
@@ -46,19 +54,23 @@ public class ApplicationForm : Form, IApplication
         StopRecordingButton.Click += StopRecording_Click;
         NewContextMenuStrip.Items.Add(StopRecordingButton);
 
-        OpenSettingsButton = new ToolStripMenuItem("Open settings window");
+        var OpenConverterButton = new ToolStripMenuItem("Convert video(s)");
+        OpenConverterButton.Click += OpenConverter_Click;
+        NewContextMenuStrip.Items.Add(OpenConverterButton);
+
+        var OpenSettingsButton = new ToolStripMenuItem("Open settings window");
         OpenSettingsButton.Click += OpenSettings_Click;
         NewContextMenuStrip.Items.Add(OpenSettingsButton);
 
-        OpenDebugButton = new ToolStripMenuItem("Open debug window");
+        var OpenDebugButton = new ToolStripMenuItem("Open debug window");
         OpenDebugButton.Click += OpenDebug_Click;
         NewContextMenuStrip.Items.Add(OpenDebugButton);
 
-        OpenFFMpegDebugButton = new ToolStripMenuItem("Open ffmpeg debug window");
+        var OpenFFMpegDebugButton = new ToolStripMenuItem("Open ffmpeg debug window");
         OpenFFMpegDebugButton.Click += OpenFFMpegDebug_Click;
         NewContextMenuStrip.Items.Add(OpenFFMpegDebugButton);
 
-        ExitMenuItem = new ToolStripMenuItem("Close");
+        var ExitMenuItem = new ToolStripMenuItem("Close");
         ExitMenuItem.Click += ExitMenuItem_Click;
         NewContextMenuStrip.Items.Add(ExitMenuItem);
 
@@ -71,34 +83,30 @@ public class ApplicationForm : Form, IApplication
         WindowState = FormWindowState.Minimized; // Minimaliseer het venster
         Hide(); // Verberg het venster
 
-        Recorder = new Recorder(this); // Initialiseer de Recorder klasse
-        Recorder.StateUpdated += RecorderState_Updated;
+        Config = Config.Load();
+        Config.StateChanged += ConfigChanged;
 
-        SettingsForm = new SettingsForm(Recorder);
-        DebugForm = new DebugForm(Recorder);
-        FFMpegDebugForm = new FFMpegDebugForm(Recorder);
+        Recorder = new Recorder(this);
+        ConverterForm = new ConverterForm(this);
+        ConfigForm = new ConfigForm(this);
+        DebugForm = new DebugForm(this);
+        FFMpegDebugForm = new FFMpegDebugForm(this);
     }
 
-    public void Exit()
-    {
-        ExitMenuItem_Click(null, new EventArgs());
-    }
-
-    private void RecorderState_Updated(bool recording)
+    private void ConfigChanged()
     {
         if (InvokeRequired)
         {
-            Invoke(new Action(() => RecorderState_Updated(recording)));
+            Invoke(new Action(() => ConfigChanged()));
             return;
         }
 
-        StartRecordingButton.Visible = !recording; // Verberg de startknop
-        StopRecordingButton.Visible = recording; // Toon de stopknop
+        StartRecordingButton.Visible = !Recorder.Recording; // Verberg de startknop
+        StopRecordingButton.Visible = Recorder.Recording; // Toon de stopknop
 
-        if (recording)
+        if (Recorder.Recording)
         {
             NotificationIcon.Icon = new System.Drawing.Icon("ComputerRecording.ico"); // Vervang dit pad
-
         }
         else
         {
@@ -111,31 +119,22 @@ public class ApplicationForm : Form, IApplication
         Hide(); // Zorg ervoor dat het formulier verborgen is bij het laden
     }
 
-    private void StartRecording_Click(object? sender, EventArgs e)
-    {
-        Recorder.Start();
-    }
-    private void StopRecording_Click(object? sender, EventArgs e)
-    {
-        Recorder.Stop();
-    }
-    private void OpenSettings_Click(object? sender, EventArgs e)
-    {
-        SettingsForm.Show();
-    }
-    private void OpenDebug_Click(object? sender, EventArgs e)
-    {
-        DebugForm.Show();
-    }
-    private void OpenFFMpegDebug_Click(object? sender, EventArgs e)
-    {
-        FFMpegDebugForm.Show();
-    }
-    private void ExitMenuItem_Click(object? sender, EventArgs e)
+    private void StartRecording_Click(object? sender, EventArgs e) => Recorder.Start();
+    private void StopRecording_Click(object? sender, EventArgs e) => Recorder.Stop();
+    private void OpenConverter_Click(object? sender, EventArgs e) => ConverterForm.Show();
+    private void OpenSettings_Click(object? sender, EventArgs e) => ConfigForm.Show();
+    private void OpenDebug_Click(object? sender, EventArgs e) => DebugForm.Show();
+    private void OpenFFMpegDebug_Click(object? sender, EventArgs e) => FFMpegDebugForm.Show();
+    private void ExitMenuItem_Click(object? sender, EventArgs e) => Exit();
+
+    public void DebugWriteLine(string line) => DebugUpdated?.Invoke(line);
+    public void FFMpegDebugWriteLine(string line) => FFMpegDebugUpdated?.Invoke(line);
+
+    private void Exit()
     {
         Recorder.Dispose();
         DebugForm.Dispose();
-        SettingsForm.Dispose();
+        ConfigForm.Dispose();
 
         // Opruimen van de NotifyIcon voordat de applicatie wordt afgesloten
         if (NotificationIcon != null)
@@ -146,12 +145,21 @@ public class ApplicationForm : Form, IApplication
         Application.Exit();
     }
 
+    public void FatalException(Exception exception)
+    {
+        FatalException(exception.Message, "Fatal exception");
+    }
+    public void FatalException(string message, string title)
+    {
+        MessageBox.Show(message, title, MessageBoxButtons.OK, MessageBoxIcon.Error);
+        Exit();
+    }
     protected override void Dispose(bool disposing)
     {
         if (disposing)
         {
             Recorder.Dispose();
-            SettingsForm.Dispose();
+            ConfigForm.Dispose();
             DebugForm.Dispose();
             NotificationIcon.Dispose();
         }

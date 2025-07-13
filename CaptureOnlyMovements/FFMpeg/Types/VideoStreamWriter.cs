@@ -5,7 +5,7 @@ using CaptureOnlyMovements.Types;
 using System.Diagnostics;
 using System.Runtime.InteropServices; // Voor OS-detectie
 
-namespace CaptureOnlyMovements.FFMpeg;
+namespace CaptureOnlyMovements.FFMpeg.Types;
 
 public class VideoStreamWriter : IDisposable
 {
@@ -27,14 +27,18 @@ public class VideoStreamWriter : IDisposable
 
         if (!File.Exists(ffMpegFullname))
         {
-            var error = @$"FFmpeg executable not found at: {ffMpegFullname}
+            var error = new Exception(@$"FFmpeg executable not found at: {ffMpegFullname}
 
-Please download FFmpeg and place it in the specified location. The program will now close. Restart the application after installing FFmpeg.";
+Please download FFmpeg and place it in the specified location. The program will now close. Restart the application after installing FFmpeg.");
             killSwitch.FatalException(error);
-            throw new Exception(error);
+            throw error;
         }
         if (FileInfo.Exists)
-            throw new Exception($"Cannot write to file '{FileInfo.FullName}', file already exists.");
+        {
+            var error = new Exception($"Cannot write to file '{FileInfo.FullName}', file already exists.");
+            killSwitch.FatalException(error);
+            throw error;
+        }
 
         string codec;
         string arguments;
@@ -97,39 +101,38 @@ Please download FFmpeg and place it in the specified location. The program will 
 
         if (!Process.Start()) throw new Exception("Error launching FFMPEG");
         Stopwatch = Stopwatch.StartNew();
-        StreamWriter = new BinaryWriter(Process.StandardInput.BaseStream);
-        StreamReader = new StreamReader(Process.StandardError.BaseStream);
+        StandardInputWriter = new BinaryWriter(Process.StandardInput.BaseStream);
+        StandardErrorReader = new StreamReader(Process.StandardError.BaseStream);
 
-        ReaderThread = new Thread(new ThreadStart(ReadWhileWriting));
-        ReaderThread.Start();
+        StandardErrorReaderThread = new Thread(new ThreadStart(ReadStandardError));
+        StandardErrorReaderThread.Start();
     }
 
     public MediaContainer MediaContainer { get; }
 
     private readonly IFFMpegDebugWriter? DebugWriter;
     private readonly IKillSwitch KillSwitch;
-    private bool ReaderKillSwitch;
+    private bool ErrorReaderKillSwitch;
     private readonly Process Process;
     private readonly Stopwatch Stopwatch;
-    private readonly BinaryWriter StreamWriter;
-    private readonly StreamReader StreamReader;
-    private readonly Thread ReaderThread;
-    private string ReadMessage = "";
+    private readonly BinaryWriter StandardInputWriter;
+    private readonly StreamReader StandardErrorReader;
+    private readonly Thread StandardErrorReaderThread;
+    private string ErrorMessage = "";
     private bool ProcessEnded;
 
     private DirectoryInfo FFMpegDirectory => MediaContainer.FFMpegDirectory;
     private FileInfo FileInfo => MediaContainer.FileInfo;
 
-
-    private void ReadWhileWriting()
+    private void ReadStandardError()
     {
-        var line = StreamReader.ReadLine();
-        while (line != null && !KillSwitch.KillSwitch && !ReaderKillSwitch)
+        var line = StandardErrorReader.ReadLine();
+        while (line != null && !KillSwitch.KillSwitch && !ErrorReaderKillSwitch)
         {
-            ReadMessage += line +"\r\n"; // Dit kan omdat als het niet goed gaat, laat ffmpeg de error zien.
+            ErrorMessage += line + "\r\n"; // Dit kan omdat als het niet goed gaat, laat ffmpeg de error zien.
             DebugWriter?.FFMpegDebugWriteLine(line);
 
-            line = StreamReader.ReadLine();
+            line = StandardErrorReader.ReadLine();
         }
         if (line != null)
         {
@@ -144,33 +147,33 @@ Please download FFmpeg and place it in the specified location. The program will 
         if (ProcessEnded)
         {
             if (Stopwatch.Elapsed.TotalSeconds > 10)
-                throw new Exception($"FFMpeg shut down, maybe file already exist, or disk is full, or something else.\r\n\r\n{ReadMessage}");
+                throw new Exception($"FFMpeg shut down, maybe file already exist, or disk is full, or something else.\r\n\r\n{ErrorMessage}");
             else
-                throw new Exception($"FFMpeg shut down, error creating file\r\n\r\n{ReadMessage}");
+                throw new Exception($"FFMpeg shut down, error creating file\r\n\r\n{ErrorMessage}");
         }
         if (KillSwitch.KillSwitch)
         {
             return;
         }
-        StreamWriter.Write(frameData);
+        StandardInputWriter.Write(frameData);
     }
 
     public void Dispose()
     {
-        ReaderKillSwitch = true;
-
         Stopwatch?.Stop();
-        StreamWriter?.Dispose();
-        if (ReaderThread != null && Thread.CurrentThread != ReaderThread && !ProcessEnded)
+
+        ErrorReaderKillSwitch = true;
+        if (StandardErrorReaderThread != null && Thread.CurrentThread != StandardErrorReaderThread && !ProcessEnded)
         {
-            ReaderThread.Join();
+            StandardErrorReaderThread.Join();
         }
-        if (Process != null)
-        {
-            if (!Process.HasExited)
-                Process.Kill();
-            Process.Dispose();
-        }
+
+        if (!Process.HasExited)
+            Process.Kill();
+        Process.Dispose();
+
+        StandardInputWriter?.Dispose();
+        StandardErrorReader?.Dispose();
         GC.SuppressFinalize(this);
     }
 }

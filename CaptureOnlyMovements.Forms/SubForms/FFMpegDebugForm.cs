@@ -5,14 +5,14 @@ namespace CaptureOnlyMovements.Forms;
 
 public partial class FFMpegDebugForm : Form
 {
-    public Recorder Recorder { get; }
+    public ApplicationForm Application { get; }
 
-    public FFMpegDebugForm(Recorder recorder)
+    public FFMpegDebugForm(ApplicationForm recorder)
     {
-        Recorder = recorder;
         InitializeComponent();
 
-        Recorder.FFMpegDebugUpdated += Recorder_DebugUpdated;
+        Application = recorder;
+        Application.FFMpegDebugUpdated += Recorder_DebugUpdated;
     }
 
     private void Recorder_DebugUpdated(string line)
@@ -23,7 +23,7 @@ public partial class FFMpegDebugForm : Form
             return;
         }
 
-        DebugList.Items.Add(line);
+        Console.WriteLine(line);
     }
 
     // Belangrijk: Overrides om te zorgen dat de applicatie niet sluit als het formulier gesloten wordt
@@ -39,7 +39,7 @@ public partial class FFMpegDebugForm : Form
     {
         if (disposing && (components != null))
         {
-            Recorder.DebugUpdated -= Recorder_DebugUpdated;
+            Application.DebugUpdated -= Recorder_DebugUpdated;
             components.Dispose();
         }
         base.Dispose(disposing);

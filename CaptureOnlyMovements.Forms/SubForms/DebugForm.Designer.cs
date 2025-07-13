@@ -15,26 +15,23 @@
         /// </summary>
         private void InitializeComponent()
         {
-            DebugList = new System.Windows.Forms.ListBox();
+            Console = new CaptureOnlyMovements.Forms.Controls.ConsoleControl();
             SuspendLayout();
             // 
-            // DebugList
+            // Console
             // 
-            DebugList.BackColor = System.Drawing.Color.Black;
-            DebugList.Dock = System.Windows.Forms.DockStyle.Fill;
-            DebugList.ForeColor = System.Drawing.Color.White;
-            DebugList.FormattingEnabled = true;
-            DebugList.Location = new System.Drawing.Point(0, 0);
-            DebugList.Name = "DebugList";
-            DebugList.Size = new System.Drawing.Size(609, 459);
-            DebugList.TabIndex = 0;
+            Console.Dock = System.Windows.Forms.DockStyle.Fill;
+            Console.Location = new System.Drawing.Point(0, 0);
+            Console.Name = "Console";
+            Console.Size = new System.Drawing.Size(609, 459);
+            Console.TabIndex = 0;
             // 
             // DebugForm
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             ClientSize = new System.Drawing.Size(609, 459);
-            Controls.Add(DebugList);
+            Controls.Add(Console);
             Name = "DebugForm";
             Text = "OpenDebugForm";
             ResumeLayout(false);
@@ -42,6 +39,6 @@
 
         #endregion
 
-        private System.Windows.Forms.ListBox DebugList;
+        private Controls.ConsoleControl Console;
     }
 }
