@@ -1,6 +1,6 @@
 ﻿namespace CaptureOnlyMovements.Types;
 
-public struct Frame
+public class Frame
 {
     public Frame(byte[] buffer, Resolution resolution)
     {

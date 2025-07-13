@@ -11,7 +11,6 @@ namespace CaptureOnlyMovements.Forms.Controls
 
         internal void WriteLine(string line)
         {
-            return;
             if (InvokeRequired)
             {
                 Invoke(() => { WriteLine(line); });

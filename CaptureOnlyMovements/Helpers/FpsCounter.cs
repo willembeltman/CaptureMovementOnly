@@ -4,9 +4,9 @@ namespace CaptureOnlyMovements.Helpers;
 
 public class FpsCounter
 {
-    private readonly ConcurrentQueue<DateTime> Queue = new ConcurrentQueue<DateTime>();
+    private readonly ConcurrentQueue<DateTime> Queue = new();
 
-    public int SampleLengthInSeconds = 10;
+    public int SampleLengthInSeconds = 2;
 
     public void Tick()
     {
@@ -16,9 +16,9 @@ public class FpsCounter
     public double CalculateFps()
     {
         var now = DateTime.Now.AddSeconds(-SampleLengthInSeconds);
-        while (Queue.Count > 0 && Queue.Min() < now)
+        while (!Queue.IsEmpty && Queue.Min() < now)
         {
-            Queue.TryDequeue(out var value);
+            Queue.TryDequeue(out _);
         }
         return Convert.ToDouble(Queue.Count) / SampleLengthInSeconds;
     }

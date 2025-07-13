@@ -12,7 +12,7 @@ public partial class FFMpegDebugForm : Form
         InitializeComponent();
 
         Application = recorder;
-        Application.FFMpegDebugUpdated += Recorder_DebugUpdated;
+            Application.FFMpegDebugUpdated += Recorder_DebugUpdated;
     }
 
     private void Recorder_DebugUpdated(string line)

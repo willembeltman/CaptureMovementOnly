@@ -12,7 +12,7 @@ public partial class DebugForm : Form
         InitializeComponent();
 
         Application = application;
-        Application.DebugUpdated += Application_DebugUpdated;
+            Application.DebugUpdated += Application_DebugUpdated;
     }
 
     private void Application_DebugUpdated(string line)

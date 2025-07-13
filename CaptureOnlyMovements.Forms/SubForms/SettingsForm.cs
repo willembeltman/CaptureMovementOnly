@@ -10,8 +10,7 @@ public partial class ConfigForm : Form
     {
         InitializeComponent();
         Application = application;
-        Config.StateChanged += StateChanged;
-
+            Config.StateChanged += StateChanged;
     }
 
     public IApplication Application { get; }
@@ -42,16 +41,20 @@ public partial class ConfigForm : Form
         }
     }
 
-    private void ConfigForm_Load(object sender, EventArgs e)
+    private void ConfigForm_VisibleChanged(object sender, EventArgs e)
     {
-        StateChanged();
-        MaximumPixelDifferenceValue.Text = Config.MaximumPixelDifferenceValue.ToString();
-        MaximumDifferentPixelCount.Text = Config.MaximumDifferentPixelCount.ToString();
-        MinPlaybackSpeed.Text = Config.MinPlaybackSpeed.ToString();
-        Fps.SelectedValue = Config.OutputFps.ToString();
-        Quality.SelectedValue = Config.OutputQuality.ToString();
-        Preset.SelectedValue = Config.OutputPreset.ToString();
-        UseGpu.Checked = Config.UseGpu;
+        Timer.Enabled = Visible;
+        if (Visible)
+        {
+            StateChanged();
+            MaximumPixelDifferenceValue.Text = Config.MaximumPixelDifferenceValue.ToString();
+            MaximumDifferentPixelCount.Text = Config.MaximumDifferentPixelCount.ToString();
+            MinPlaybackSpeed.Text = Config.MinPlaybackSpeed.ToString();
+            Fps.SelectedValue = Config.OutputFps.ToString();
+            Quality.SelectedValue = Config.OutputQuality.ToString();
+            Preset.SelectedValue = Config.OutputPreset.ToString();
+            UseGpu.Checked = Config.UseGpu;
+        }
     }
 
     private void SaveButton_Click(object sender, EventArgs e)
@@ -88,11 +91,7 @@ public partial class ConfigForm : Form
 
     private void Timer_Tick(object sender, EventArgs e)
     {
-        FpsCounterLabel.Text = Application.FpsCounter.CalculateFps().ToString("F2") + " fps";
-    }
-
-    private void ConfigForm_VisibleChanged(object sender, EventArgs e)
-    {
-        Timer.Enabled = Visible;
+        InputFpsLabel.Text = Application.InputFps.CalculateFps().ToString("F2") + " fps";
+        OutputFpsLabel.Text = Application.OutputFps.CalculateFps().ToString("F2") + " fps";
     }
 }

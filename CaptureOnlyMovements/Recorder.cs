@@ -61,8 +61,9 @@ public class Recorder(IApplication Application) : IDisposable, IKillSwitch, IDeb
             var container = new MediaContainer(outputFullName);
             using var writer = container.OpenVideoWriter(this, this, resolution, Config);
             writer.WriteFrame(frame.Buffer);
-            Application.FpsCounter.Tick();
-            DebugWriteLine($"Captured frame at {DateTime.Now:HH:mm:ss.fff}   -");
+            Application.InputFps.Tick();
+            Application.OutputFps.Tick();
+            //DebugWriteLine($"Captured frame at {DateTime.Now:HH:mm:ss.fff}   -");
 
             var comparer = new FrameComparer(Config, resolution);
             var previousDate = DateTime.Now;
@@ -70,12 +71,13 @@ public class Recorder(IApplication Application) : IDisposable, IKillSwitch, IDeb
             while (!KillSwitch)
             {
                 frame = capturer.CaptureFrame(frame.Buffer);
-                Application.FpsCounter.Tick();
+                Application.InputFps.Tick();
 
                 if (comparer.IsDifferent(frame.Buffer))
                 {
                     writer.WriteFrame(frame.Buffer);
-                    DebugWriteLine($"Captured frame at {DateTime.Now:HH:mm:ss.fff}   {comparer.Result_Difference}");
+                    Application.OutputFps.Tick();
+                    //DebugWriteLine($"Captured frame at {DateTime.Now:HH:mm:ss.fff}   {comparer.Result_Difference}");
 
                     previousDate = WaitForNextHelper.Wait(Config, previousDate);
                 }

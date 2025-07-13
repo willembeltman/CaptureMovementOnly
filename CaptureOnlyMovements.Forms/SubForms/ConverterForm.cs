@@ -1,8 +1,6 @@
-﻿using CaptureOnlyMovements.Delegates;
-using CaptureOnlyMovements.Helpers;
+﻿using CaptureOnlyMovements.Helpers;
 using CaptureOnlyMovements.Interfaces;
 using CaptureOnlyMovements.Types;
-using SharpDX.Direct3D11;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -27,7 +25,8 @@ namespace CaptureOnlyMovements.Forms.SubForms
 
         public IApplication Application { get; }
         public Converter Converter { get; }
-        public FpsCounter FpsCounter { get; } = new FpsCounter();
+        public FpsCounter InputFps { get; } = new FpsCounter();
+        public FpsCounter OutputFps { get; } = new FpsCounter();
 
         public Config Config => Application.Config;
         public bool IsBusy => Converter.Converting;
@@ -199,7 +198,8 @@ namespace CaptureOnlyMovements.Forms.SubForms
 
         private void Timer_Tick(object sender, EventArgs e)
         {
-            FpsCounterLabel.Text = FpsCounter.CalculateFps().ToString("F2") + " fps";
+            InputFpsLabel.Text = InputFps.CalculateFps().ToString("F2") + " fps";
+            OutputFpsLabel.Text = OutputFps.CalculateFps().ToString("F2") + " fps";
         }
         private void ConverterForm_VisibleChanged(object sender, EventArgs e)
         {

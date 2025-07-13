@@ -34,7 +34,8 @@
             label9 = new System.Windows.Forms.Label();
             SaveButton = new System.Windows.Forms.Button();
             label10 = new System.Windows.Forms.Label();
-            FpsCounterLabel = new System.Windows.Forms.Label();
+            OutputFpsLabel = new System.Windows.Forms.Label();
+            InputFpsLabel = new System.Windows.Forms.Label();
             Timer = new System.Windows.Forms.Timer(components);
             tableLayoutPanel1.SuspendLayout();
             SuspendLayout();
@@ -61,7 +62,8 @@
             tableLayoutPanel1.Controls.Add(label9, 1, 7);
             tableLayoutPanel1.Controls.Add(SaveButton, 1, 9);
             tableLayoutPanel1.Controls.Add(label10, 1, 8);
-            tableLayoutPanel1.Controls.Add(FpsCounterLabel, 0, 9);
+            tableLayoutPanel1.Controls.Add(OutputFpsLabel, 0, 9);
+            tableLayoutPanel1.Controls.Add(InputFpsLabel, 0, 8);
             tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             tableLayoutPanel1.Location = new System.Drawing.Point(5, 5);
             tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -238,13 +240,23 @@
             label10.TabIndex = 21;
             label10.Text = "Please use OBS for realtime capturing.";
             // 
-            // FpsCounterLabel
+            // OutputFpsLabel
             // 
-            FpsCounterLabel.AutoSize = true;
-            FpsCounterLabel.Location = new System.Drawing.Point(3, 297);
-            FpsCounterLabel.Name = "FpsCounterLabel";
-            FpsCounterLabel.Size = new System.Drawing.Size(0, 15);
-            FpsCounterLabel.TabIndex = 22;
+            OutputFpsLabel.AutoSize = true;
+            OutputFpsLabel.Location = new System.Drawing.Point(3, 297);
+            OutputFpsLabel.Name = "OutputFpsLabel";
+            OutputFpsLabel.Size = new System.Drawing.Size(32, 15);
+            OutputFpsLabel.TabIndex = 22;
+            OutputFpsLabel.Text = "0 fps";
+            // 
+            // InputFpsLabel
+            // 
+            InputFpsLabel.AutoSize = true;
+            InputFpsLabel.Location = new System.Drawing.Point(3, 264);
+            InputFpsLabel.Name = "InputFpsLabel";
+            InputFpsLabel.Size = new System.Drawing.Size(32, 15);
+            InputFpsLabel.TabIndex = 23;
+            InputFpsLabel.Text = "0 fps";
             // 
             // Timer
             // 
@@ -259,7 +271,6 @@
             Name = "ConfigForm";
             Padding = new System.Windows.Forms.Padding(5);
             Text = "Settings";
-            Load += ConfigForm_Load;
             VisibleChanged += ConfigForm_VisibleChanged;
             tableLayoutPanel1.ResumeLayout(false);
             tableLayoutPanel1.PerformLayout();
@@ -286,7 +297,8 @@
         private System.Windows.Forms.ComboBox Quality;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Label label10;
-        private System.Windows.Forms.Label FpsCounterLabel;
+        private System.Windows.Forms.Label OutputFpsLabel;
         private System.Windows.Forms.Timer Timer;
+        private System.Windows.Forms.Label InputFpsLabel;
     }
 }

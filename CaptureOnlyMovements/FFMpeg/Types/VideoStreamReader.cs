@@ -90,12 +90,12 @@ public class VideoStreamReader : IDisposable
     {
         var frame = ReadFrame();
         if (!killSwitch.KillSwitch && frame != null)
-            yield return frame.Value.Buffer;
+            yield return frame.Buffer;
         while (!killSwitch.KillSwitch && frame != null)
         {
-            frame = ReadFrame(frame.Value.Buffer);
+            frame = ReadFrame(frame.Buffer);
             if (frame == null) break;
-            yield return frame.Value.Buffer;
+            yield return frame.Buffer;
         }
     }
 

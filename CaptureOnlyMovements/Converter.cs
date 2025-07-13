@@ -70,9 +70,9 @@ public class Converter(IApplication Application, BindingList<FileConfig> Files) 
                 DebugWriteLine($"Opening '{fileItemMediaContainer.FileConfig.FullName}' to read video from.");
 
                 using var reader = fileItemMediaContainer.MediaContainer.OpenVideoReader(Application, this);
-                var nullebleFrame = reader.ReadFrame();
-                if (nullebleFrame == null) continue;
-                var frame = nullebleFrame.Value;
+                var frame = reader.ReadFrame();
+                if (frame == null) continue;
+
                 var comparer = new FrameComparer(fileItemMediaContainer.FileConfig, frame.Resolution);
                 var resizer = new Resizer(resolution);
 
@@ -84,17 +84,16 @@ public class Converter(IApplication Application, BindingList<FileConfig> Files) 
 
                 // Write frame
                 writer.WriteFrame(frame.Buffer);
-                Application.FpsCounter.Tick();
-                DebugWriteLine($"Captured frame at {DateTime.Now:HH:mm:ss.fff}   -");
+                Application.InputFps.Tick();
+                //DebugWriteLine($"Captured frame at {DateTime.Now:HH:mm:ss.fff}   -");
 
                 while (!KillSwitch)
                 {
                     // Read frame
-                    nullebleFrame = reader.ReadFrame(frame.Buffer);
-                    if (nullebleFrame == null) break;
-                    frame = nullebleFrame.Value;
+                    frame = reader.ReadFrame(frame.Buffer);
+                    if (frame == null) break;
 
-                    Application.FpsCounter.Tick();
+                    Application.InputFps.Tick();
 
                     // Compare frame
                     if (!comparer.IsDifferent(frame.Buffer)) continue;
@@ -104,6 +103,8 @@ public class Converter(IApplication Application, BindingList<FileConfig> Files) 
 
                     // Write frame
                     writer.WriteFrame(frame.Buffer);
+                    Application.OutputFps.Tick();
+
                     //DebugWriteLine($"Captured frame at {DateTime.Now:HH:mm:ss.fff}   {comparer.Result_Difference}");
                 }
 

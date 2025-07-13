@@ -21,7 +21,8 @@ public class ApplicationForm : Form, IApplication
     private readonly FFMpegDebugForm FFMpegDebugForm;
 
     public Config Config { get; }
-    public FpsCounter FpsCounter { get; } = new FpsCounter();
+    public FpsCounter InputFps { get; } = new FpsCounter();
+    public FpsCounter OutputFps { get; } = new FpsCounter();
 
     public bool IsBusy => Recorder.Recording || ConverterForm.IsBusy;
 

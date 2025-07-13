@@ -37,6 +37,7 @@
             Console = new CaptureOnlyMovements.Forms.Controls.ConsoleControl();
             tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             groupBox3 = new System.Windows.Forms.GroupBox();
+            InputFpsLabel = new System.Windows.Forms.Label();
             checkBox1 = new System.Windows.Forms.CheckBox();
             StartButton = new System.Windows.Forms.Button();
             StopButton = new System.Windows.Forms.Button();
@@ -48,7 +49,7 @@
             ConsoleFFMpeg = new CaptureOnlyMovements.Forms.Controls.ConsoleControl();
             displayControl1 = new CaptureOnlyMovements.Forms.Controls.DisplayControl();
             Timer = new System.Windows.Forms.Timer(components);
-            FpsCounterLabel = new System.Windows.Forms.Label();
+            OutputFpsLabel = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)FileGrid).BeginInit();
             tableLayoutPanel1.SuspendLayout();
             groupBox3.SuspendLayout();
@@ -147,7 +148,8 @@
             // 
             // groupBox3
             // 
-            groupBox3.Controls.Add(FpsCounterLabel);
+            groupBox3.Controls.Add(OutputFpsLabel);
+            groupBox3.Controls.Add(InputFpsLabel);
             groupBox3.Controls.Add(checkBox1);
             groupBox3.Controls.Add(StartButton);
             groupBox3.Controls.Add(StopButton);
@@ -158,6 +160,15 @@
             groupBox3.TabIndex = 17;
             groupBox3.TabStop = false;
             groupBox3.Text = "Start / Stop";
+            // 
+            // InputFpsLabel
+            // 
+            InputFpsLabel.AutoSize = true;
+            InputFpsLabel.Location = new System.Drawing.Point(366, 143);
+            InputFpsLabel.Name = "InputFpsLabel";
+            InputFpsLabel.Size = new System.Drawing.Size(32, 15);
+            InputFpsLabel.TabIndex = 16;
+            InputFpsLabel.Text = "0 fps";
             // 
             // checkBox1
             // 
@@ -279,14 +290,14 @@
             // 
             Timer.Tick += Timer_Tick;
             // 
-            // FpsCounterLabel
+            // OutputFpsLabel
             // 
-            FpsCounterLabel.AutoSize = true;
-            FpsCounterLabel.Location = new System.Drawing.Point(366, 143);
-            FpsCounterLabel.Name = "FpsCounterLabel";
-            FpsCounterLabel.Size = new System.Drawing.Size(32, 15);
-            FpsCounterLabel.TabIndex = 16;
-            FpsCounterLabel.Text = "0 fps";
+            OutputFpsLabel.AutoSize = true;
+            OutputFpsLabel.Location = new System.Drawing.Point(424, 143);
+            OutputFpsLabel.Name = "OutputFpsLabel";
+            OutputFpsLabel.Size = new System.Drawing.Size(32, 15);
+            OutputFpsLabel.TabIndex = 17;
+            OutputFpsLabel.Text = "0 fps";
             // 
             // ConverterForm
             // 
@@ -329,6 +340,7 @@
         private System.Windows.Forms.Button StopButton;
         private Controls.DisplayControl displayControl1;
         private System.Windows.Forms.Timer Timer;
-        private System.Windows.Forms.Label FpsCounterLabel;
+        private System.Windows.Forms.Label InputFpsLabel;
+        private System.Windows.Forms.Label OutputFpsLabel;
     }
 }
