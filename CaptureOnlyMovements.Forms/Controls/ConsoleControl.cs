@@ -24,9 +24,9 @@ namespace CaptureOnlyMovements.Forms.Controls
                 List.Items.Add(line);
             }
 
-            while (Queue.Count > 20)
+            while (List.Items.Count > 20)
             {
-                Queue.TryDequeue(out _);
+                List.Items.RemoveAt(0);
             }
         }
     }
