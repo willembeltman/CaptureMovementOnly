@@ -1,9 +1,10 @@
-﻿using System;
+﻿using CaptureOnlyMovements.Interfaces;
+using System;
 using System.Windows.Forms;
 
 namespace CaptureOnlyMovements.Forms;
 
-public partial class FFMpegDebugForm : Form
+public partial class FFMpegDebugForm : Form, IConsole
 {
     public ApplicationForm Application { get; }
 
@@ -25,6 +26,10 @@ public partial class FFMpegDebugForm : Form
             return;
         }
 
+        Console.WriteLine(line);
+    }
+    public void WriteLine(string line)
+    {
         Console.WriteLine(line);
     }
 

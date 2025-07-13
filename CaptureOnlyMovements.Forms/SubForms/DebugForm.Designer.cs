@@ -20,18 +20,22 @@
             // 
             // Console
             // 
+            Console.BackColor = System.Drawing.Color.Black;
             Console.Dock = System.Windows.Forms.DockStyle.Fill;
+            Console.ForeColor = System.Drawing.Color.White;
             Console.Location = new System.Drawing.Point(0, 0);
+            Console.Margin = new System.Windows.Forms.Padding(3, 5, 3, 5);
             Console.Name = "Console";
-            Console.Size = new System.Drawing.Size(609, 459);
+            Console.Size = new System.Drawing.Size(696, 348);
             Console.TabIndex = 0;
             // 
             // DebugForm
             // 
-            AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            ClientSize = new System.Drawing.Size(609, 459);
+            ClientSize = new System.Drawing.Size(696, 348);
             Controls.Add(Console);
+            Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             Name = "DebugForm";
             Text = "OpenDebugForm";
             ResumeLayout(false);

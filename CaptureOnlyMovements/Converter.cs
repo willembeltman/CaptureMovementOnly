@@ -7,7 +7,12 @@ using System.ComponentModel;
 namespace CaptureOnlyMovements;
 
 public delegate void ChangeStateDelegate(bool running);
-public class Converter(IApplication Application, BindingList<FileConfig> Files) : IKillSwitch, IDisposable
+public class Converter(
+    IApplication Application,
+    IConsole? Console,
+    IConsole? FFMpegReaderConsole,
+    IConsole? FFMpegWriterConsole,
+    BindingList<FileConfig> Files) : IKillSwitch, IDisposable
 {
     private Thread? WriterThread;
 
@@ -18,7 +23,7 @@ public class Converter(IApplication Application, BindingList<FileConfig> Files) 
     {
         if (!Converting)
         {
-            Application.DebugWriteLine("Starting the recorder...");
+            Console?.WriteLine("Starting the recorder...");
             WriterThread = new Thread(Kernel);
             WriterThread.Start();
         }
@@ -27,7 +32,7 @@ public class Converter(IApplication Application, BindingList<FileConfig> Files) 
     {
         if (Converting)
         {
-            Application.DebugWriteLine("Stopping the recorder...");
+            Console?.WriteLine("Stopping the recorder...");
             KillSwitch = true;
         }
     }
@@ -52,14 +57,14 @@ public class Converter(IApplication Application, BindingList<FileConfig> Files) 
             if (File.Exists(outputFullName))
                 File.Delete(outputFullName); // Delete existing file
 
-            DebugWriteLine($"Opening '{outputFullName}' to write video to.");
+            Console?.WriteLine($"Opening '{outputFullName}' to write video to.");
 
             var width = Files.Max(a => a.Width) ?? throw new Exception("Could not determine resolution");
             var height = Files.Max(a => a.Height) ?? throw new Exception("Could not determine resolution");
             var resolution = new Resolution(width, height);
 
             var writercontainer = new MediaContainer(outputFullName);
-            using var writer = writercontainer.OpenVideoWriter(Application, this, resolution, Application.Config);
+            using var writer = writercontainer.OpenVideoWriter(this, resolution, Application.Config, FFMpegWriterConsole);
 
             var fileItemMediaContainers = Files
                 .Where(a => a.FullName != null)
@@ -67,9 +72,9 @@ public class Converter(IApplication Application, BindingList<FileConfig> Files) 
 
             foreach (var fileItemMediaContainer in fileItemMediaContainers)
             {
-                DebugWriteLine($"Opening '{fileItemMediaContainer.FileConfig.FullName}' to read video from.");
+                Console?.WriteLine($"Opening '{fileItemMediaContainer.FileConfig.FullName}' to read video from.");
 
-                using var reader = fileItemMediaContainer.MediaContainer.OpenVideoReader(Application, this);
+                using var reader = fileItemMediaContainer.MediaContainer.OpenVideoReader(this, FFMpegReaderConsole);
                 var frame = reader.ReadFrame();
                 if (frame == null) continue;
 
@@ -85,9 +90,10 @@ public class Converter(IApplication Application, BindingList<FileConfig> Files) 
                 // Write frame
                 writer.WriteFrame(frame.Buffer);
                 Application.InputFps.Tick();
-                DebugWriteLine($"Captured frame at {DateTime.Now:HH:mm:ss.fff}   -");
+                Console?.WriteLine($"Captured frame #0   -");
                 Application.SetPreview(frame);
 
+                var frameIndex = 1;
                 while (!KillSwitch)
                 {
                     // Read frame
@@ -115,13 +121,14 @@ public class Converter(IApplication Application, BindingList<FileConfig> Files) 
                     // Set screenshot
                     Application.SetMask(comparer.CalculationFrameData, comparer.Resolution);
 
-                    DebugWriteLine($"Captured frame at {DateTime.Now:HH:mm:ss.fff}   {comparer.Result_Difference}");
+                    Console?.WriteLine($"Captured frame {frameIndex}   {comparer.Result_Difference}");
+                    frameIndex++;
                 }
 
                 if (KillSwitch) break;
             }
 
-            DebugWriteLine($"Closed '{outputFullName}' and stopped capturing.");
+            Console?.WriteLine($"Closed '{outputFullName}' and stopped capturing.");
         }
         catch (Exception ex)
         {
@@ -135,8 +142,8 @@ public class Converter(IApplication Application, BindingList<FileConfig> Files) 
     }
 
     public void FatalException(Exception exception) => Application.FatalException(exception.Message, "Fatal exception");
-    public void DebugWriteLine(string message) => Application.DebugWriteLine(message);
-    public void FFMpegDebugWriteLine(string message) => Application.FFMpegDebugWriteLine(message);
+    //public void DebugWriteLine(string message) => Application.DebugWriteLine(message);
+    //public void FFMpegDebugWriteLine(string message) => Application.FFMpegDebugWriteLine(message);
 
     public void Dispose()
     {

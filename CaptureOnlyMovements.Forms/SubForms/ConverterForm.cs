@@ -16,7 +16,7 @@ namespace CaptureOnlyMovements.Forms.SubForms
             InitializeComponent();
 
             Application = application;
-            Converter = new Converter(this, Files);
+            Converter = new Converter(this, null, Console1, Console2, Files);
 
             Application.Config.StateChanged += StateChanged;
         }
@@ -83,6 +83,10 @@ namespace CaptureOnlyMovements.Forms.SubForms
             AddFilesButton.Enabled = true;
             //FileGrid.Enabled = true;
             StopButton.Enabled = false;
+        }
+        private void ConverterForm_VisibleChanged(object sender, EventArgs e)
+        {
+            Timer.Enabled = Visible;
         }
 
         private void AddFilesButton_Click(object sender, System.EventArgs e)
@@ -186,8 +190,28 @@ namespace CaptureOnlyMovements.Forms.SubForms
         public void FatalException(string message, string title) => MessageBox.Show(message, title);
         public void FatalException(Exception exception) => FatalException(exception.Message, "Fatal exception");
 
-        public void DebugWriteLine(string line) => Console.WriteLine(line);
-        public void FFMpegDebugWriteLine(string line) => ConsoleFFMpeg.WriteLine(line);
+
+        public void SetMask(bool[] frameData, Resolution frameResolution)
+        {
+            if (ShowDiffernceCheckbox.Checked)
+            {
+                displayControl1.SetFrame(frameData, frameResolution);
+            }
+        }
+        public void SetPreview(Frame frame)
+        {
+            //if (ShowDiffernceCheckbox.Checked)
+            //{
+            //    displayControl1.SetFrame(frame);
+            //}
+        }
+
+
+        private void Timer_Tick(object sender, EventArgs e)
+        {
+            InputFpsLabel.Text = InputFps.CalculateFps().ToString("F2") + " fps";
+            OutputFpsLabel.Text = OutputFps.CalculateFps().ToString("F2") + " fps";
+        }
 
         // Belangrijk: Overrides om te zorgen dat de applicatie niet sluit als het formulier gesloten wordt
         protected override void OnFormClosing(FormClosingEventArgs e)
@@ -197,17 +221,6 @@ namespace CaptureOnlyMovements.Forms.SubForms
             this.Hide();
             base.OnFormClosing(e);
         }
-
-        private void Timer_Tick(object sender, EventArgs e)
-        {
-            InputFpsLabel.Text = InputFps.CalculateFps().ToString("F2") + " fps";
-            OutputFpsLabel.Text = OutputFps.CalculateFps().ToString("F2") + " fps";
-        }
-        private void ConverterForm_VisibleChanged(object sender, EventArgs e)
-        {
-            Timer.Enabled = Visible;
-        }
-
         protected override void Dispose(bool disposing)
         {
             if (disposing && (components != null))
@@ -219,22 +232,6 @@ namespace CaptureOnlyMovements.Forms.SubForms
                 Converter.Dispose();
             }
             base.Dispose(disposing);
-        }
-
-        public void SetMask(bool[] frameData, Resolution frameResolution)
-        {
-            if (ShowDiffernceCheckbox.Checked)
-            {
-                displayControl1.SetFrame(frameData, frameResolution);
-            }
-        }
-
-        public void SetPreview(Frame frame)
-        {
-            //if (ShowDiffernceCheckbox.Checked)
-            //{
-            //    displayControl1.SetFrame(frame);
-            //}
         }
     }
 }

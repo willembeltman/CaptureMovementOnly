@@ -10,16 +10,16 @@ namespace CaptureOnlyMovements.FFMpeg.Types;
 public class VideoStreamWriter : IDisposable
 {
     public VideoStreamWriter(
-        IFFMpegDebugWriter debugWriter,
         IKillSwitch killSwitch,
         MediaContainer mediaContainer,
         Resolution resolution,
         int fps,
         QualityEnum qualityEnum,
         PresetEnum presetEnum,
-        bool useGpu)
+        bool useGpu,
+        IConsole? console = null)
     {
-        DebugWriter = debugWriter;
+        Console = console;
         KillSwitch = killSwitch;
         MediaContainer = mediaContainer;
 
@@ -110,7 +110,7 @@ Please download FFmpeg and place it in the specified location. The program will 
 
     public MediaContainer MediaContainer { get; }
 
-    private readonly IFFMpegDebugWriter? DebugWriter;
+    private readonly IConsole? Console;
     private readonly IKillSwitch KillSwitch;
     private bool ErrorReaderKillSwitch;
     private readonly Process Process;
@@ -130,7 +130,7 @@ Please download FFmpeg and place it in the specified location. The program will 
         while (line != null && !KillSwitch.KillSwitch && !ErrorReaderKillSwitch)
         {
             ErrorMessage += line + "\r\n"; // Dit kan omdat als het niet goed gaat, laat ffmpeg de error zien.
-            DebugWriter?.FFMpegDebugWriteLine(line);
+            Console?.WriteLine(line);
 
             line = StandardErrorReader.ReadLine();
         }

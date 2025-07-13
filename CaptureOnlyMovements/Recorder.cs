@@ -2,11 +2,14 @@
 using CaptureOnlyMovements.DirectX;
 using CaptureOnlyMovements.FFMpeg;
 using CaptureOnlyMovements.Interfaces;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace CaptureOnlyMovements;
 
-public class Recorder(IApplication Application) : IDisposable, IKillSwitch, IDebugWriter, IFFMpegDebugWriter
+public class Recorder(
+    IApplication Application,
+    IConsole Console,
+    IConsole FFMpegWriterConsole) 
+    : IDisposable, IKillSwitch
 {
     private Thread? WriterThread;
 
@@ -18,7 +21,7 @@ public class Recorder(IApplication Application) : IDisposable, IKillSwitch, IDeb
     {
         if (!Recording)
         {
-            DebugWriteLine("Starting the recorder...");
+            Console.WriteLine("Starting the recorder...");
             WriterThread = new Thread(Kernel) { IsBackground = true };
             WriterThread.Start();
         }
@@ -27,7 +30,7 @@ public class Recorder(IApplication Application) : IDisposable, IKillSwitch, IDeb
     {
         if (Recording)
         {
-            DebugWriteLine("Stopping the recorder...");
+            Console.WriteLine("Stopping the recorder...");
             KillSwitch = true;
         }
     }
@@ -51,23 +54,26 @@ public class Recorder(IApplication Application) : IDisposable, IKillSwitch, IDeb
             if (File.Exists(outputFullName))
                 File.Delete(outputFullName); // Delete existing file
 
-            DebugWriteLine($"Opening '{outputFullName}' to write video to.");
+            Console.WriteLine($"Opening '{outputFullName}' to write video to.");
 
             // Get first frame for the resolution
             using var capturer = new ScreenshotCapturer();
             var frame = capturer.CaptureFrame();
             var resolution = frame.Resolution;
 
+            var comparer = new FrameComparerTasks(Config, Application, resolution);
+
             var container = new MediaContainer(outputFullName);
-            using var writer = container.OpenVideoWriter(this, this, resolution, Config);
+            using var writer = container.OpenVideoWriter(this, resolution, Config, FFMpegWriterConsole);
+            
             writer.WriteFrame(frame.Buffer);
             Application.InputFps.Tick();
             Application.OutputFps.Tick();
-            DebugWriteLine($"Captured frame at {DateTime.Now:HH:mm:ss.fff}   -");
+            Console.WriteLine($"Captured frame at {DateTime.Now:HH:mm:ss.fff}   -");
 
-            var comparer = new FrameComparer(Config, Application, resolution);
+            comparer.IsDifferent(frame.Buffer); // Initialize comparer with the first frame
+
             var previousDate = DateTime.Now;
-
             while (!KillSwitch)
             {
                 frame = capturer.CaptureFrame(frame.Buffer);
@@ -77,13 +83,13 @@ public class Recorder(IApplication Application) : IDisposable, IKillSwitch, IDeb
                 {
                     writer.WriteFrame(frame.Buffer);
                     Application.OutputFps.Tick();
-                    DebugWriteLine($"Captured frame at {DateTime.Now:HH:mm:ss.fff}   {comparer.Result_Difference}");
+                    Console.WriteLine($"Captured frame at {DateTime.Now:HH:mm:ss.fff}   {comparer.Result_Difference}");
 
                     previousDate = WaitForNextHelper.Wait(Config, previousDate);
                 }
             }
 
-            DebugWriteLine($"Closed '{outputFullName}' and stopped capturing.");
+            Console.WriteLine($"Closed '{outputFullName}' and stopped capturing.");
         }
         catch (Exception ex)
         {
@@ -97,8 +103,6 @@ public class Recorder(IApplication Application) : IDisposable, IKillSwitch, IDeb
     }
 
     public void FatalException(Exception exception) => Application.FatalException(exception);
-    public void DebugWriteLine(string message) => Application.DebugWriteLine(message);
-    public void FFMpegDebugWriteLine(string message) => Application.FFMpegDebugWriteLine(message);
 
     public void Dispose()
     {

@@ -1,7 +1,5 @@
-﻿using CaptureOnlyMovements.FFMpeg;
-using CaptureOnlyMovements.Interfaces;
+﻿using CaptureOnlyMovements.Interfaces;
 using CaptureOnlyMovements.Types;
-using System.Collections;
 using System.Diagnostics;
 
 namespace CaptureOnlyMovements.FFMpeg.Types;
@@ -9,13 +7,13 @@ namespace CaptureOnlyMovements.FFMpeg.Types;
 public class VideoStreamReader : IDisposable
 {
     public VideoStreamReader(
-        IFFMpegDebugWriter debugWriter,
         IKillSwitch killSwitch,
         MediaContainer mediaContainer,
         Resolution resolution,
+        IConsole? console = null,
         double startTime = 0)
     {
-        DebugWriter = debugWriter;
+        Console = console;
         KillSwitch = killSwitch;
         MediaContainer = mediaContainer;
         Resolution = resolution;
@@ -56,7 +54,7 @@ public class VideoStreamReader : IDisposable
     private readonly Stream StandardOutputReader;
 
     public StreamReader StandardErrorReader { get; }
-    public IFFMpegDebugWriter DebugWriter { get; }
+    public IConsole? Console { get; }
     public IKillSwitch KillSwitch { get; }
     public MediaContainer MediaContainer { get; }
     public Resolution Resolution { get; }
@@ -74,7 +72,7 @@ public class VideoStreamReader : IDisposable
         while (line != null && !KillSwitch.KillSwitch && !ErrorReaderKillSwitch)
         {
             //ErrorMessage += line + "\r\n"; // Dit kan omdat als het niet goed gaat, laat ffmpeg de error zien.
-            DebugWriter?.FFMpegDebugWriteLine(line);
+            Console?.WriteLine(line);
 
             line = StandardErrorReader.ReadLine();
         }

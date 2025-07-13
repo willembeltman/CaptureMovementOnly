@@ -41,8 +41,9 @@
             List.ForeColor = System.Drawing.Color.White;
             List.FormattingEnabled = true;
             List.Location = new System.Drawing.Point(0, 0);
+            List.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             List.Name = "List";
-            List.Size = new System.Drawing.Size(418, 262);
+            List.Size = new System.Drawing.Size(478, 349);
             List.TabIndex = 1;
             // 
             // Timer
@@ -52,13 +53,14 @@
             // 
             // ConsoleControl
             // 
-            AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             BackColor = System.Drawing.Color.Black;
             Controls.Add(List);
             ForeColor = System.Drawing.Color.White;
+            Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             Name = "ConsoleControl";
-            Size = new System.Drawing.Size(418, 262);
+            Size = new System.Drawing.Size(478, 349);
             ResumeLayout(false);
         }
 

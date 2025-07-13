@@ -90,11 +90,11 @@ public class ApplicationForm : Form, IApplication
         Config = Config.Load();
         Config.StateChanged += ConfigChanged;
 
-        Recorder = new Recorder(this);
         ConverterForm = new ConverterForm(this);
         ConfigForm = new ConfigForm(this);
         DebugForm = new DebugForm(this);
         FFMpegDebugForm = new FFMpegDebugForm(this);
+        Recorder = new Recorder(this, DebugForm, FFMpegDebugForm);
     }
 
     private void ConfigChanged()

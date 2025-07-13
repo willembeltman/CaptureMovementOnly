@@ -17,8 +17,8 @@ public class MediaContainer(string fullName, DirectoryInfo? ffmpegdir = null, Di
         => _FFProbeRapport ??= FFProbeRapport.GetRapport(FileInfo.FullName, FFProbeDirectory);
 
     public VideoStreamReader OpenVideoReader(
-        IFFMpegDebugWriter debugWriter,
-        IKillSwitch killSwitch)
+        IKillSwitch killSwitch,
+        IConsole? console = null)
     {
         var videoStream = FFProbeRapport.streams?
             .FirstOrDefault(a => a.codec_type == "video");
@@ -26,19 +26,19 @@ public class MediaContainer(string fullName, DirectoryInfo? ffmpegdir = null, Di
             throw new Exception("Cannot find any video streams");
 
         var resolution = new Resolution(videoStream.width.Value, videoStream.height.Value);
-        return new VideoStreamReader(debugWriter, killSwitch, this, resolution);
+        return new VideoStreamReader(killSwitch, this, resolution, console);
     }
 
     public VideoStreamWriter OpenVideoWriter(
-        IFFMpegDebugWriter debugWriter,
         IKillSwitch killSwitch,
         Resolution resolution,
-        IEncoderConfig config)
+        IEncoderConfig config,
+        IConsole? console = null)
     {
         var qualityEnum = Enum.Parse<QualityEnum>(config.OutputQuality);
         var presetEnum = Enum.Parse<PresetEnum>(config.OutputPreset);
         var fps = config.OutputFps;
         var useGpu = config.UseGpu;
-        return new VideoStreamWriter(debugWriter, killSwitch, this, resolution, fps, qualityEnum, presetEnum, useGpu);
+        return new VideoStreamWriter(killSwitch, this, resolution, fps, qualityEnum, presetEnum, useGpu, console);
     }
 }

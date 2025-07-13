@@ -3,7 +3,7 @@ using CaptureOnlyMovements.Types;
 
 namespace CaptureOnlyMovements.Interfaces;
 
-public interface IApplication : IFFMpegDebugWriter, IDebugWriter, IShowDifference
+public interface IApplication : IShowDifference
 {
     Config Config { get; }
     bool IsBusy { get; }

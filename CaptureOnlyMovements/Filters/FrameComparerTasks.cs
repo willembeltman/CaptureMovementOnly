@@ -6,8 +6,6 @@ namespace CaptureOnlyMovements.Comparer;
 
 public class FrameComparerTasks : IDisposable
 {
-    static int linesPerTask = 16;
-
     public FrameComparerTasks(
         IComparerConfig config,
         IShowDifference showDifference,
