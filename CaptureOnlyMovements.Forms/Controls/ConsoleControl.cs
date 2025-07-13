@@ -23,6 +23,11 @@ namespace CaptureOnlyMovements.Forms.Controls
             {
                 List.Items.Add(line);
             }
+
+            while (List.Items.Count > 20)
+            {
+                List.Items.RemoveAt(0);
+            }
         }
     }
 }

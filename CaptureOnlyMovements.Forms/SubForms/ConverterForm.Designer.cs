@@ -24,6 +24,7 @@
             Console = new CaptureOnlyMovements.Forms.Controls.ConsoleControl();
             tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             groupBox3 = new System.Windows.Forms.GroupBox();
+            OutputFpsLabel = new System.Windows.Forms.Label();
             InputFpsLabel = new System.Windows.Forms.Label();
             checkBox1 = new System.Windows.Forms.CheckBox();
             StartButton = new System.Windows.Forms.Button();
@@ -36,7 +37,6 @@
             ConsoleFFMpeg = new CaptureOnlyMovements.Forms.Controls.ConsoleControl();
             displayControl1 = new CaptureOnlyMovements.Forms.Controls.DisplayControl();
             Timer = new System.Windows.Forms.Timer(components);
-            OutputFpsLabel = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)FileGrid).BeginInit();
             tableLayoutPanel1.SuspendLayout();
             groupBox3.SuspendLayout();
@@ -48,9 +48,10 @@
             // AddFilesButton
             // 
             AddFilesButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
-            AddFilesButton.Location = new System.Drawing.Point(6, 157);
+            AddFilesButton.Location = new System.Drawing.Point(7, 209);
+            AddFilesButton.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             AddFilesButton.Name = "AddFilesButton";
-            AddFilesButton.Size = new System.Drawing.Size(314, 23);
+            AddFilesButton.Size = new System.Drawing.Size(360, 31);
             AddFilesButton.TabIndex = 0;
             AddFilesButton.Text = "Add file(s)";
             AddFilesButton.UseVisualStyleBackColor = true;
@@ -60,9 +61,10 @@
             // 
             MoveSelectedFileUpButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
             MoveSelectedFileUpButton.Enabled = false;
-            MoveSelectedFileUpButton.Location = new System.Drawing.Point(390, 157);
+            MoveSelectedFileUpButton.Location = new System.Drawing.Point(447, 209);
+            MoveSelectedFileUpButton.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             MoveSelectedFileUpButton.Name = "MoveSelectedFileUpButton";
-            MoveSelectedFileUpButton.Size = new System.Drawing.Size(51, 23);
+            MoveSelectedFileUpButton.Size = new System.Drawing.Size(58, 31);
             MoveSelectedFileUpButton.TabIndex = 4;
             MoveSelectedFileUpButton.Text = "Up";
             MoveSelectedFileUpButton.UseVisualStyleBackColor = true;
@@ -72,9 +74,10 @@
             // 
             MoveSelectedFileDownButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
             MoveSelectedFileDownButton.Enabled = false;
-            MoveSelectedFileDownButton.Location = new System.Drawing.Point(447, 157);
+            MoveSelectedFileDownButton.Location = new System.Drawing.Point(512, 209);
+            MoveSelectedFileDownButton.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             MoveSelectedFileDownButton.Name = "MoveSelectedFileDownButton";
-            MoveSelectedFileDownButton.Size = new System.Drawing.Size(51, 23);
+            MoveSelectedFileDownButton.Size = new System.Drawing.Size(58, 31);
             MoveSelectedFileDownButton.TabIndex = 5;
             MoveSelectedFileDownButton.Text = "Down";
             MoveSelectedFileDownButton.UseVisualStyleBackColor = true;
@@ -84,9 +87,10 @@
             // 
             DeleteSelectedFilesButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
             DeleteSelectedFilesButton.Enabled = false;
-            DeleteSelectedFilesButton.Location = new System.Drawing.Point(326, 157);
+            DeleteSelectedFilesButton.Location = new System.Drawing.Point(374, 209);
+            DeleteSelectedFilesButton.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             DeleteSelectedFilesButton.Name = "DeleteSelectedFilesButton";
-            DeleteSelectedFilesButton.Size = new System.Drawing.Size(58, 23);
+            DeleteSelectedFilesButton.Size = new System.Drawing.Size(66, 31);
             DeleteSelectedFilesButton.TabIndex = 6;
             DeleteSelectedFilesButton.Text = "Delete";
             DeleteSelectedFilesButton.UseVisualStyleBackColor = true;
@@ -96,9 +100,11 @@
             // 
             FileGrid.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
             FileGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            FileGrid.Location = new System.Drawing.Point(6, 22);
+            FileGrid.Location = new System.Drawing.Point(7, 29);
+            FileGrid.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             FileGrid.Name = "FileGrid";
-            FileGrid.Size = new System.Drawing.Size(492, 129);
+            FileGrid.RowHeadersWidth = 51;
+            FileGrid.Size = new System.Drawing.Size(563, 172);
             FileGrid.TabIndex = 7;
             FileGrid.SelectionChanged += FileGrid_SelectionChanged;
             // 
@@ -107,9 +113,10 @@
             Console.BackColor = System.Drawing.Color.Black;
             Console.Dock = System.Windows.Forms.DockStyle.Fill;
             Console.ForeColor = System.Drawing.Color.White;
-            Console.Location = new System.Drawing.Point(513, 195);
+            Console.Location = new System.Drawing.Point(586, 261);
+            Console.Margin = new System.Windows.Forms.Padding(3, 5, 3, 5);
             Console.Name = "Console";
-            Console.Size = new System.Drawing.Size(505, 186);
+            Console.Size = new System.Drawing.Size(578, 246);
             Console.TabIndex = 12;
             // 
             // tableLayoutPanel1
@@ -124,13 +131,14 @@
             tableLayoutPanel1.Controls.Add(ConsoleFFMpeg, 1, 2);
             tableLayoutPanel1.Controls.Add(Console, 1, 1);
             tableLayoutPanel1.Controls.Add(displayControl1, 1, 0);
-            tableLayoutPanel1.Location = new System.Drawing.Point(12, 12);
+            tableLayoutPanel1.Location = new System.Drawing.Point(14, 16);
+            tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             tableLayoutPanel1.Name = "tableLayoutPanel1";
             tableLayoutPanel1.RowCount = 3;
             tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.3333321F));
             tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.3333321F));
             tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.3333321F));
-            tableLayoutPanel1.Size = new System.Drawing.Size(1021, 576);
+            tableLayoutPanel1.Size = new System.Drawing.Size(1167, 768);
             tableLayoutPanel1.TabIndex = 15;
             // 
             // groupBox3
@@ -141,19 +149,32 @@
             groupBox3.Controls.Add(StartButton);
             groupBox3.Controls.Add(StopButton);
             groupBox3.Dock = System.Windows.Forms.DockStyle.Fill;
-            groupBox3.Location = new System.Drawing.Point(3, 387);
+            groupBox3.Location = new System.Drawing.Point(3, 516);
+            groupBox3.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             groupBox3.Name = "groupBox3";
-            groupBox3.Size = new System.Drawing.Size(504, 186);
+            groupBox3.Padding = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            groupBox3.Size = new System.Drawing.Size(577, 248);
             groupBox3.TabIndex = 17;
             groupBox3.TabStop = false;
             groupBox3.Text = "Start / Stop";
             // 
+            // OutputFpsLabel
+            // 
+            OutputFpsLabel.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
+            OutputFpsLabel.AutoSize = true;
+            OutputFpsLabel.Location = new System.Drawing.Point(485, 191);
+            OutputFpsLabel.Name = "OutputFpsLabel";
+            OutputFpsLabel.Size = new System.Drawing.Size(41, 20);
+            OutputFpsLabel.TabIndex = 17;
+            OutputFpsLabel.Text = "0 fps";
+            // 
             // InputFpsLabel
             // 
+            InputFpsLabel.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
             InputFpsLabel.AutoSize = true;
-            InputFpsLabel.Location = new System.Drawing.Point(366, 143);
+            InputFpsLabel.Location = new System.Drawing.Point(418, 191);
             InputFpsLabel.Name = "InputFpsLabel";
-            InputFpsLabel.Size = new System.Drawing.Size(32, 15);
+            InputFpsLabel.Size = new System.Drawing.Size(41, 20);
             InputFpsLabel.TabIndex = 16;
             InputFpsLabel.Text = "0 fps";
             // 
@@ -161,9 +182,10 @@
             // 
             checkBox1.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
             checkBox1.AutoSize = true;
-            checkBox1.Location = new System.Drawing.Point(366, 161);
+            checkBox1.Location = new System.Drawing.Point(419, 216);
+            checkBox1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             checkBox1.Name = "checkBox1";
-            checkBox1.Size = new System.Drawing.Size(111, 19);
+            checkBox1.Size = new System.Drawing.Size(138, 24);
             checkBox1.TabIndex = 15;
             checkBox1.Text = "Show difference";
             checkBox1.UseVisualStyleBackColor = true;
@@ -173,9 +195,10 @@
             StartButton.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
             StartButton.Enabled = false;
             StartButton.Font = new System.Drawing.Font("Segoe UI", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 0);
-            StartButton.Location = new System.Drawing.Point(6, 22);
+            StartButton.Location = new System.Drawing.Point(7, 29);
+            StartButton.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             StartButton.Name = "StartButton";
-            StartButton.Size = new System.Drawing.Size(354, 158);
+            StartButton.Size = new System.Drawing.Size(406, 211);
             StartButton.TabIndex = 13;
             StartButton.Text = "Start";
             StartButton.UseVisualStyleBackColor = true;
@@ -186,9 +209,10 @@
             StopButton.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
             StopButton.Enabled = false;
             StopButton.Font = new System.Drawing.Font("Segoe UI", 15.75F, System.Drawing.FontStyle.Bold);
-            StopButton.Location = new System.Drawing.Point(366, 22);
+            StopButton.Location = new System.Drawing.Point(419, 29);
+            StopButton.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             StopButton.Name = "StopButton";
-            StopButton.Size = new System.Drawing.Size(132, 118);
+            StopButton.Size = new System.Drawing.Size(151, 157);
             StopButton.TabIndex = 14;
             StopButton.Text = "Stop";
             StopButton.UseVisualStyleBackColor = true;
@@ -202,9 +226,11 @@
             groupBox2.Controls.Add(MoveSelectedFileDownButton);
             groupBox2.Controls.Add(DeleteSelectedFilesButton);
             groupBox2.Dock = System.Windows.Forms.DockStyle.Fill;
-            groupBox2.Location = new System.Drawing.Point(3, 3);
+            groupBox2.Location = new System.Drawing.Point(3, 4);
+            groupBox2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             groupBox2.Name = "groupBox2";
-            groupBox2.Size = new System.Drawing.Size(504, 186);
+            groupBox2.Padding = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            groupBox2.Size = new System.Drawing.Size(577, 248);
             groupBox2.TabIndex = 16;
             groupBox2.TabStop = false;
             groupBox2.Text = "Select your files";
@@ -215,9 +241,11 @@
             groupBox1.Controls.Add(AddRectangeButton);
             groupBox1.Controls.Add(DeleteSelectedRectangleButton);
             groupBox1.Dock = System.Windows.Forms.DockStyle.Fill;
-            groupBox1.Location = new System.Drawing.Point(3, 195);
+            groupBox1.Location = new System.Drawing.Point(3, 260);
+            groupBox1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             groupBox1.Name = "groupBox1";
-            groupBox1.Size = new System.Drawing.Size(504, 186);
+            groupBox1.Padding = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            groupBox1.Size = new System.Drawing.Size(577, 248);
             groupBox1.TabIndex = 16;
             groupBox1.TabStop = false;
             groupBox1.Text = "Ignored rectangles";
@@ -226,18 +254,21 @@
             // 
             Rectengles.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
             Rectengles.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            Rectengles.Location = new System.Drawing.Point(6, 22);
+            Rectengles.Location = new System.Drawing.Point(7, 29);
+            Rectengles.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             Rectengles.Name = "Rectengles";
-            Rectengles.Size = new System.Drawing.Size(492, 129);
+            Rectengles.RowHeadersWidth = 51;
+            Rectengles.Size = new System.Drawing.Size(563, 172);
             Rectengles.TabIndex = 9;
             // 
             // AddRectangeButton
             // 
             AddRectangeButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
             AddRectangeButton.Enabled = false;
-            AddRectangeButton.Location = new System.Drawing.Point(6, 157);
+            AddRectangeButton.Location = new System.Drawing.Point(7, 209);
+            AddRectangeButton.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             AddRectangeButton.Name = "AddRectangeButton";
-            AddRectangeButton.Size = new System.Drawing.Size(354, 23);
+            AddRectangeButton.Size = new System.Drawing.Size(406, 31);
             AddRectangeButton.TabIndex = 10;
             AddRectangeButton.Text = "Add rectangle";
             AddRectangeButton.UseVisualStyleBackColor = true;
@@ -246,9 +277,10 @@
             // 
             DeleteSelectedRectangleButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
             DeleteSelectedRectangleButton.Enabled = false;
-            DeleteSelectedRectangleButton.Location = new System.Drawing.Point(366, 157);
+            DeleteSelectedRectangleButton.Location = new System.Drawing.Point(419, 209);
+            DeleteSelectedRectangleButton.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             DeleteSelectedRectangleButton.Name = "DeleteSelectedRectangleButton";
-            DeleteSelectedRectangleButton.Size = new System.Drawing.Size(132, 23);
+            DeleteSelectedRectangleButton.Size = new System.Drawing.Size(151, 31);
             DeleteSelectedRectangleButton.TabIndex = 11;
             DeleteSelectedRectangleButton.Text = "Delete";
             DeleteSelectedRectangleButton.UseVisualStyleBackColor = true;
@@ -258,18 +290,20 @@
             ConsoleFFMpeg.BackColor = System.Drawing.Color.Black;
             ConsoleFFMpeg.Dock = System.Windows.Forms.DockStyle.Fill;
             ConsoleFFMpeg.ForeColor = System.Drawing.Color.White;
-            ConsoleFFMpeg.Location = new System.Drawing.Point(513, 387);
+            ConsoleFFMpeg.Location = new System.Drawing.Point(586, 517);
+            ConsoleFFMpeg.Margin = new System.Windows.Forms.Padding(3, 5, 3, 5);
             ConsoleFFMpeg.Name = "ConsoleFFMpeg";
-            ConsoleFFMpeg.Size = new System.Drawing.Size(505, 186);
+            ConsoleFFMpeg.Size = new System.Drawing.Size(578, 246);
             ConsoleFFMpeg.TabIndex = 13;
             // 
             // displayControl1
             // 
             displayControl1.BackColor = System.Drawing.Color.Black;
             displayControl1.Dock = System.Windows.Forms.DockStyle.Fill;
-            displayControl1.Location = new System.Drawing.Point(513, 3);
+            displayControl1.Location = new System.Drawing.Point(586, 4);
+            displayControl1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             displayControl1.Name = "displayControl1";
-            displayControl1.Size = new System.Drawing.Size(505, 186);
+            displayControl1.Size = new System.Drawing.Size(578, 248);
             displayControl1.TabIndex = 18;
             displayControl1.Text = "displayControl1";
             // 
@@ -277,21 +311,13 @@
             // 
             Timer.Tick += Timer_Tick;
             // 
-            // OutputFpsLabel
-            // 
-            OutputFpsLabel.AutoSize = true;
-            OutputFpsLabel.Location = new System.Drawing.Point(424, 143);
-            OutputFpsLabel.Name = "OutputFpsLabel";
-            OutputFpsLabel.Size = new System.Drawing.Size(32, 15);
-            OutputFpsLabel.TabIndex = 17;
-            OutputFpsLabel.Text = "0 fps";
-            // 
             // ConverterForm
             // 
-            AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            ClientSize = new System.Drawing.Size(1045, 600);
+            ClientSize = new System.Drawing.Size(1194, 800);
             Controls.Add(tableLayoutPanel1);
+            Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             Name = "ConverterForm";
             Text = "ConverterForm";
             Load += ConverterForm_Load;
