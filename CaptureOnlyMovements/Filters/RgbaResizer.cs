@@ -26,10 +26,10 @@ public class RgbaResizer
         {
             for (int y = 0; y < OutputResolution.Height; y++)
             {
-                int outputIndex = y * outputStride + x * 3;
-                if (x < inputResolution.Width || y < inputResolution.Height)
+                int outputIndex = y * outputStride + x * 4;
+                if (x < inputResolution.Width && y < inputResolution.Height)
                 {
-                    int inputIndex = y * inputStride + x * 3;
+                    int inputIndex = y * inputStride + x * 4;
                     Buffer[outputIndex + 0] = frame.Buffer[inputIndex + 0];
                     Buffer[outputIndex + 1] = frame.Buffer[inputIndex + 1];
                     Buffer[outputIndex + 2] = frame.Buffer[inputIndex + 2];

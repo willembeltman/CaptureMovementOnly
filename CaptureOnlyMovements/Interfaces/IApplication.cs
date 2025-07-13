@@ -3,7 +3,7 @@ using CaptureOnlyMovements.Types;
 
 namespace CaptureOnlyMovements.Interfaces;
 
-public interface IApplication : IFFMpegDebugWriter, IDebugWriter
+public interface IApplication : IFFMpegDebugWriter, IDebugWriter, IShowDifference
 {
     Config Config { get; }
     bool IsBusy { get; }
@@ -12,5 +12,6 @@ public interface IApplication : IFFMpegDebugWriter, IDebugWriter
 
     void FatalException(string message, string title);
     void FatalException(Exception exception);
-    void SetPreview(bool[] frameData, Resolution frameResolution);
+    void SetMask(bool[] frameData, Resolution frameResolution);
+    void SetPreview(Frame frame);
 }

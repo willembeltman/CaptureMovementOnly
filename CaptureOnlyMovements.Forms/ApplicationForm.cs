@@ -27,6 +27,8 @@ public class ApplicationForm : Form, IApplication
 
     public bool IsBusy => Recorder.Recording || ConverterForm.IsBusy;
 
+    public bool ShowDifference => false;
+
     public event DebugMessage? DebugUpdated;
     public event DebugMessage? FFMpegDebugUpdated;
 
@@ -172,7 +174,11 @@ public class ApplicationForm : Form, IApplication
         base.Dispose(disposing);
     }
 
-    public void SetPreview(bool[] frameData, Resolution frameResolution)
+    public void SetMask(bool[] frameData, Resolution frameResolution)
+    {
+    }
+
+    public void SetPreview(Frame frame)
     {
     }
 }

@@ -31,6 +31,8 @@ namespace CaptureOnlyMovements.Forms.SubForms
         public Config Config => Application.Config;
         public bool IsBusy => Converter.Converting;
 
+        public bool ShowDifference => ShowDiffernceCheckbox.Checked;
+
         private void ConverterForm_Load(object sender, System.EventArgs e)
         {
             FileGrid.DataSource = Files;
@@ -219,9 +221,20 @@ namespace CaptureOnlyMovements.Forms.SubForms
             base.Dispose(disposing);
         }
 
-        public void SetPreview(bool[] frameData, Resolution frameResolution)
+        public void SetMask(bool[] frameData, Resolution frameResolution)
         {
-            displayControl1.SetFrame(frameData, frameResolution);
+            if (ShowDiffernceCheckbox.Checked)
+            {
+                displayControl1.SetFrame(frameData, frameResolution);
+            }
+        }
+
+        public void SetPreview(Frame frame)
+        {
+            //if (ShowDiffernceCheckbox.Checked)
+            //{
+            //    displayControl1.SetFrame(frame);
+            //}
         }
     }
 }

@@ -23,6 +23,11 @@ namespace CaptureOnlyMovements.Forms.Controls
             {
                 List.Items.Add(line);
             }
+
+            while (Queue.Count > 20)
+            {
+                Queue.TryDequeue(out _);
+            }
         }
     }
 }

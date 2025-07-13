@@ -8,11 +8,11 @@ namespace CaptureOnlyMovements.DirectX;
 
 public class ScreenshotCapturer : IDisposable
 {
-    private IDXGIFactory1 Factory;
-    private IDXGIAdapter1 Adapter;
-    private IDXGIOutput1 Output;
-    private ID3D11Device Device;
-    private IDXGIOutputDuplication DuplicatedOutput;
+    private readonly IDXGIFactory1 Factory;
+    private readonly IDXGIAdapter1 Adapter;
+    private readonly IDXGIOutput1 Output;
+    private readonly ID3D11Device Device;
+    private readonly IDXGIOutputDuplication DuplicatedOutput;
 
     // Remove all lines using Adapter.GetOutput(0) and all duplicate EnumOutputs blocks
     // Replace with a single, correct EnumOutputs usage in the constructor:
@@ -28,7 +28,7 @@ public class ScreenshotCapturer : IDisposable
 
         // --- AANGEPASTE SECTIE VOOR DEVICE CREATIE ---
         FeatureLevel[] featureLevels =
-        {
+        [
             FeatureLevel.Level_11_1, // Probeer eerst 11.1
             FeatureLevel.Level_11_0, // Dan 11.0
             FeatureLevel.Level_10_1, // Dan 10.1
@@ -36,7 +36,7 @@ public class ScreenshotCapturer : IDisposable
             FeatureLevel.Level_9_3,  // En zo verder...
             FeatureLevel.Level_9_2,
             FeatureLevel.Level_9_1
-        };
+        ];
 
         // Gebruik DriverType.Unknown om de driver automatisch te laten bepalen (Hardware of WARP)
         var deviceResult = D3D11.D3D11CreateDevice(
@@ -44,7 +44,7 @@ public class ScreenshotCapturer : IDisposable
             DriverType.Unknown, // Laat DirectX de beste driver kiezen
             DeviceCreationFlags.BgraSupport,
             featureLevels,
-            out Device
+            out Device!
         );
 
         if (!deviceResult.Success || Device == null)
@@ -56,7 +56,7 @@ public class ScreenshotCapturer : IDisposable
                 DriverType.Software, // Dwingt het gebruik van de WARP driver
                 DeviceCreationFlags.BgraSupport,
                 featureLevels,
-                out Device
+                out Device!
             );
 
             if (!deviceResult.Success || Device == null)
@@ -183,5 +183,7 @@ public class ScreenshotCapturer : IDisposable
         Device?.Dispose();
         Adapter?.Dispose();
         Factory?.Dispose();
+
+        GC.SuppressFinalize(this); // Voorkom finalization, we hebben al gedisposed
     }
 }

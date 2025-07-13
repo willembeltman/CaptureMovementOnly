@@ -8,15 +8,23 @@ using MapFlags = Vortice.Direct3D11.MapFlags;
 using Vortice.Mathematics;
 using Vortice.Direct3D;
 using System.Runtime.InteropServices;
-using Vortice.D3DCompiler; // Voor shadercompilatie
+using Vortice.D3DCompiler;
 
 namespace CaptureOnlyMovements.Forms.Controls;
 
 public class DisplayControl : UserControl
 {
+    public DisplayControl()
+    {
+        BackColor = System.Drawing.Color.Black;
+        //Resize += DisplayControl_Resize;
+        Load += DisplayControl_Load;
+        Disposed += DisplayControl_Disposed;
+    }
+
     public Resolution Resolution { get; private set; }
-    public RgbResizer? RgbResizer { get; private set; }
-    public RgbaResizer? RgbaResizer { get; private set; }
+    //public RgbResizer? RgbResizer { get; private set; }
+    //public RgbaResizer? RgbaResizer { get; private set; }
 
     private byte[]? FrameBuffer1;
     private byte[]? FrameBuffer2;
@@ -39,7 +47,6 @@ public class DisplayControl : UserControl
         Dirty = true;
     }
 
-    // Direct3D fields
     private IDXGISwapChain1? _swapChain;
     private ID3D11Device? _device;
     private ID3D11DeviceContext? _context;
@@ -47,7 +54,6 @@ public class DisplayControl : UserControl
     private ID3D11RenderTargetView? _renderTargetView;
     private Timer? _renderTimer;
 
-    // Nieuwe velden voor shaders en rendering
     private ID3D11VertexShader? _vertexShader;
     private ID3D11PixelShader? _pixelShader;
     private ID3D11InputLayout? _inputLayout;
@@ -55,26 +61,17 @@ public class DisplayControl : UserControl
     private ID3D11ShaderResourceView? _shaderResourceView;
     private ID3D11SamplerState? _samplerState;
 
-    public DisplayControl()
-    {
-        BackColor = System.Drawing.Color.Black;
-        Resize += DisplayControl_Resize;
-        Load += DisplayControl_Load;
-        Disposed += DisplayControl_Disposed;
-    }
 
     private void DisplayControl_Load(object? sender, EventArgs e)
     {
+        DisplayControl_Resize(this, EventArgs.Empty);
+
         InitializeD3D();
         InitializeShaders();
         InitializeVertexBuffer();
         InitializeSamplerState();
-        DisplayControl_Resize(this, EventArgs.Empty);
-        FrameBuffer1 = new Frame(Resolution).Buffer;
-        FrameBuffer2 = new Frame(Resolution).Buffer;
 
-        // Start render timer
-        _renderTimer = new Timer { Interval = 16 }; // ~60 FPS
+        _renderTimer = new Timer { Interval = 16 }; 
         _renderTimer.Tick += (s, ev) => RenderLoop();
         _renderTimer.Start();
     }
@@ -83,37 +80,49 @@ public class DisplayControl : UserControl
     {
         var swapChainDesc = new SwapChainDescription1
         {
-            Width = Convert.ToUInt32(Math.Max(1, Width)),
-            Height = Convert.ToUInt32(Math.Max(1, Height)),
+            Width = Convert.ToUInt32(Math.Max(1, Resolution.Width)),
+            Height = Convert.ToUInt32(Math.Max(1, Resolution.Height)),
             Format = Format.B8G8R8A8_UNorm,
             Stereo = false,
             SampleDescription = new SampleDescription(1, 0),
             BufferCount = 2,
             Scaling = Scaling.Stretch,
-            SwapEffect = SwapEffect.FlipSequential,
+            SwapEffect = SwapEffect.Discard,
             AlphaMode = AlphaMode.Ignore,
-            Flags = SwapChainFlags.None
+            Flags = SwapChainFlags.None,
+
+            BufferUsage = Usage.RenderTargetOutput
         };
 
+
         IDXGIFactory2 factory = DXGI.CreateDXGIFactory2<IDXGIFactory2>(true);
-        D3D11.D3D11CreateDevice(
+        var result = D3D11.D3D11CreateDevice(
             null,
-            DriverType.Hardware,
-            DeviceCreationFlags.BgraSupport,
+            DriverType.Warp,
+            DeviceCreationFlags.BgraSupport | DeviceCreationFlags.Debug, 
             null,
             out _device,
             out _context);
 
+        if (_device == null || _context == null)
+        {
+            throw new InvalidOperationException("Failed to create D3D11 device and context.");
+        }
+
         _swapChain = factory.CreateSwapChainForHwnd(_device, Handle, swapChainDesc);
+        if (_swapChain == null)
+        {
+            throw new InvalidOperationException("Failed to create swap chain.");
+        }
 
         CreateRenderTarget();
     }
+    
 
     private void InitializeShaders()
     {
         if (_device == null) return;
 
-        // Binnen InitializeShaders
         string vertexShaderSource = @"
     struct VS_INPUT {
         float4 Position : POSITION;
@@ -133,7 +142,6 @@ public class DisplayControl : UserControl
         var vsByteCode = Compiler.Compile(vertexShaderSource, "VS", "vertex.hlsl", "vs_5_0");
         _vertexShader = _device.CreateVertexShader(vsByteCode.Span);
 
-        // Input layout
         var inputElements = new[]
         {
     new InputElementDescription("POSITION", 0, Format.R32G32B32A32_Float, 0, 0),
@@ -141,7 +149,6 @@ public class DisplayControl : UserControl
 };
         _inputLayout = _device.CreateInputLayout(inputElements, vsByteCode.Span);
 
-        // Compileer pixelshader
         string pixelShaderSource = @"
     Texture2D Texture : register(t0);
     SamplerState Sampler : register(s0);
@@ -157,14 +164,12 @@ public class DisplayControl : UserControl
     {
         if (_device == null) return;
 
-        // Define a screen-filling quad (two triangles)
         var vertices = new[]
         {
-            // Position (x, y, z, w), TexCoord (u, v)
-            -1.0f,  1.0f, 0.0f, 1.0f, 0.0f, 0.0f, // Top-left
-             1.0f,  1.0f, 0.0f, 1.0f, 1.0f, 0.0f, // Top-right
-            -1.0f, -1.0f, 0.0f, 1.0f, 0.0f, 1.0f, // Bottom-left
-             1.0f, -1.0f, 0.0f, 1.0f, 1.0f, 1.0f  // Bottom-right
+            -1.0f,  1.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+             1.0f,  1.0f, 0.0f, 1.0f, 1.0f, 0.0f,
+            -1.0f, -1.0f, 0.0f, 1.0f, 0.0f, 1.0f,
+             1.0f, -1.0f, 0.0f, 1.0f, 1.0f, 1.0f
         };
 
         var bufferDesc = new BufferDescription
@@ -175,7 +180,6 @@ public class DisplayControl : UserControl
             CPUAccessFlags = CpuAccessFlags.None
         };
 
-        // Fix: Create SubresourceData for the vertex buffer
         var vertexBufferData = new SubresourceData
         {
             DataPointer = Marshal.UnsafeAddrOfPinnedArrayElement(vertices, 0),
@@ -190,8 +194,8 @@ public class DisplayControl : UserControl
     {
         return new ushort[]
         {
-            0, 1, 2, // Eerste driehoek
-            2, 1, 3  // Tweede driehoek
+            0, 1, 2,
+            2, 1, 3
         };
     }
 
@@ -215,24 +219,48 @@ public class DisplayControl : UserControl
     private void DisplayControl_Resize(object? sender, EventArgs e)
     {
         Resolution = new Resolution(Width, Height);
-        RgbResizer = new RgbResizer(Resolution);
+        //RgbResizer = new RgbResizer(Resolution);
+        //RgbaResizer = new RgbaResizer(Resolution);
+        FrameBuffer1 = new Frame(Resolution).Buffer;
+        FrameBuffer2 = new Frame(Resolution).Buffer;
         ResizeD3D();
     }
 
     public void SetFrame(Frame frame)
     {
-        if (RgbResizer == null) return;
-        frame = RgbResizer.Resize(frame);
-        var rgbaBuffer = ConvertRgbToRgba(frame.Buffer, frame.Resolution.PixelLength);
+        //if (RgbResizer == null) return;
+
+        if(frame.Resolution != Resolution)
+        {
+            Resolution = frame.Resolution;
+            //RgbResizer = new RgbResizer(Resolution);
+            //RgbaResizer = new RgbaResizer(Resolution);
+            FrameBuffer1 = new Frame(Resolution).Buffer;
+            FrameBuffer2 = new Frame(Resolution).Buffer;
+            ResizeD3D();
+        }
+
+        //frame = RgbResizer.Resize(frame);
+        var rgbaBuffer = ConvertRgbToBgra(frame.Buffer, frame.Resolution.PixelLength);
         SetInputFrameBuffer(rgbaBuffer);
     }
-
     public void SetFrame(bool[] frameData, Resolution frameResolution)
     {
-        if (RgbaResizer == null) return;
-        var rgbaBuffer = ConvertBWToRgba(frameData);
+        //if (RgbaResizer == null) return;
+
+        if (frameResolution != Resolution)
+        {
+            Resolution = frameResolution;
+            //RgbResizer = new RgbResizer(Resolution);
+            //RgbaResizer = new RgbaResizer(Resolution);
+            FrameBuffer1 = new Frame(Resolution).Buffer;
+            FrameBuffer2 = new Frame(Resolution).Buffer;
+            ResizeD3D();
+        }
+
+        var rgbaBuffer = ConvertBWToBgra(frameData);
         var rgbaFrame = new Frame(rgbaBuffer, frameResolution);
-        rgbaFrame = RgbaResizer.Resize(rgbaFrame);
+        //rgbaFrame = RgbaResizer.Resize(rgbaFrame);
         SetInputFrameBuffer(rgbaFrame.Buffer);
     }
 
@@ -242,14 +270,13 @@ public class DisplayControl : UserControl
         if (textureData == null || !Dirty || _device == null || _context == null || _swapChain == null)
             return;
 
-        // Create texture
         var texDesc = new Texture2DDescription
         {
             Width = Convert.ToUInt32(Resolution.Width),
             Height = Convert.ToUInt32(Resolution.Height),
             MipLevels = 1,
             ArraySize = 1,
-            Format = Format.R8G8B8A8_UNorm,
+            Format = Format.B8G8R8A8_UNorm,
             SampleDescription = new SampleDescription(1, 0),
             Usage = ResourceUsage.Dynamic,
             BindFlags = BindFlags.ShaderResource,
@@ -258,29 +285,23 @@ public class DisplayControl : UserControl
 
         using var texture = _device.CreateTexture2D(texDesc);
 
-        // Write data to texture
         var box = _context.Map(texture, 0, MapMode.WriteDiscard, MapFlags.None);
         Marshal.Copy(textureData, 0, box.DataPointer, textureData.Length);
         _context.Unmap(texture, 0);
 
-        // Create ShaderResourceView
-        _shaderResourceView?.Dispose(); // Release previous resource
+        _shaderResourceView?.Dispose();
         _shaderResourceView = _device.CreateShaderResourceView(texture);
 
-        // Set rendering pipeline
         _context.OMSetRenderTargets(_renderTargetView!);
         _context.ClearRenderTargetView(_renderTargetView, new Color4(0, 0, 0, 1));
 
-        // Set shaders and input layout
         _context.VSSetShader(_vertexShader);
         _context.PSSetShader(_pixelShader);
         _context.IASetInputLayout(_inputLayout);
 
-        // Set vertex buffer
         _context.IASetVertexBuffers(0, 1, new[] { _vertexBuffer! }, new[] { Convert.ToUInt32(24) }, new[] { Convert.ToUInt32(0) });
         _context.IASetPrimitiveTopology(PrimitiveTopology.TriangleList);
 
-        // Set index buffer
         var indices = GetIndexBuffer();
         var indexBufferDesc = new BufferDescription
         {
@@ -290,7 +311,7 @@ public class DisplayControl : UserControl
             CPUAccessFlags = CpuAccessFlags.None
         };
 
-        // Fix: Create SubresourceData for the index buffer
+
         var indexBufferData = new SubresourceData
         {
             DataPointer = Marshal.UnsafeAddrOfPinnedArrayElement(indices, 0),
@@ -301,19 +322,15 @@ public class DisplayControl : UserControl
         using var indexBuffer = _device.CreateBuffer(indexBufferDesc, indexBufferData);
         _context.IASetIndexBuffer(indexBuffer, Format.R16_UInt, 0);
 
-        // Set texture and sampler
         _context.PSSetShaderResources(0, 1, new[] { _shaderResourceView });
         _context.PSSetSamplers(0, 1, new[] { _samplerState });
 
-        // Draw the quad
         _context.DrawIndexed(6, 0, 0);
 
-        // Present the result
         _swapChain.Present(1, PresentFlags.None);
 
         Dirty = false;
     }
-
     private void ResizeD3D()
     {
         if (_swapChain != null)
@@ -321,17 +338,37 @@ public class DisplayControl : UserControl
             _context?.OMSetRenderTargets((ID3D11RenderTargetView)null!);
             _renderTargetView?.Dispose();
             _backBuffer?.Dispose();
-
-            _swapChain.ResizeBuffers(2, Convert.ToUInt32(Math.Max(1, Width)), Convert.ToUInt32(Math.Max(1, Height)), Format.B8G8R8A8_UNorm, SwapChainFlags.None);
+            _swapChain.ResizeBuffers(2, Convert.ToUInt32(Math.Max(1, Resolution.Width)), Convert.ToUInt32(Math.Max(1, Resolution.Height)), Format.B8G8R8A8_UNorm, SwapChainFlags.None);
             CreateRenderTarget();
         }
     }
-
+    
     private void CreateRenderTarget()
     {
-        if (_swapChain == null || _device == null) return;
+        if (_swapChain == null || _device == null)
+        {
+            throw new InvalidOperationException("Swap chain or device is null.");
+        }
+
         _backBuffer = _swapChain.GetBuffer<ID3D11Texture2D>(0);
-        _renderTargetView = _device.CreateRenderTargetView(_backBuffer);
+        if (_backBuffer == null)
+        {
+            throw new InvalidOperationException("Failed to retrieve back buffer from swap chain.");
+        }
+
+        var rtvDesc = new RenderTargetViewDescription
+        {
+            Format = Format.Unknown,
+            ViewDimension = RenderTargetViewDimension.Texture2D,
+            Texture2D = new Texture2DRenderTargetView { MipSlice = 0 }
+        };
+        _renderTargetView = _device.CreateRenderTargetView(_backBuffer, rtvDesc);
+        // ↓  NIEUW: viewport zetten
+        var vp = new Viewport(0, 0,
+                              _backBuffer.Description.Width,
+                              _backBuffer.Description.Height,
+                              0.0f, 1.0f);
+        _context!.RSSetViewport(vp);
     }
 
     private void DisplayControl_Disposed(object? sender, EventArgs e)
@@ -350,29 +387,29 @@ public class DisplayControl : UserControl
         _device?.Dispose();
     }
 
-    private byte[] ConvertRgbToRgba(byte[] rgb, int pixelCount)
+    private byte[] ConvertRgbToBgra(byte[] rgb, int pixelCount)
     {
         var rgba = new byte[pixelCount * 4];
         for (int i = 0, j = 0; i < rgb.Length; i += 3, j += 4)
         {
-            rgba[j] = rgb[i];       // R
-            rgba[j + 1] = rgb[i + 1]; // G
-            rgba[j + 2] = rgb[i + 2]; // B
-            rgba[j + 3] = 255;      // A
+            rgba[j] = rgb[i + 2];
+            rgba[j + 1] = rgb[i + 1];
+            rgba[j + 2] = rgb[i];
+            rgba[j + 3] = 255;
         }
         return rgba;
     }
-    private byte[] ConvertBWToRgba(bool[] bw)
+    private byte[] ConvertBWToBgra(bool[] bw)
     {
         var black = (byte)0;
         var white = (byte)255;
         var rgba = new byte[bw.Length * 4];
         for (int i = 0, j = 0; i < bw.Length; i++, j += 4)
         {
-            rgba[j] = bw[i] ? white : black;       // R
-            rgba[j + 1] = bw[i] ? white : black; // G
-            rgba[j + 2] = bw[i] ? white : black; // B
-            rgba[j + 3] = 255;      // A
+            rgba[j] = bw[i] ? white : black;
+            rgba[j + 1] = bw[i] ? white : black;
+            rgba[j + 2] = bw[i] ? white : black;
+            rgba[j + 3] = 255;
         }
         return rgba;
     }

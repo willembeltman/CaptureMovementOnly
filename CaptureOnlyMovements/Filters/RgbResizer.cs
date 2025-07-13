@@ -10,7 +10,7 @@ public class RgbResizer
     public RgbResizer(Resolution outputResolution)
     {
         OutputResolution = outputResolution;
-        Buffer = new byte[outputResolution.ByteLength];
+        Buffer = new byte[outputResolution.PixelLength * 3];
     }
 
     public Frame Resize(Frame frame)
@@ -27,10 +27,10 @@ public class RgbResizer
             for (int y = 0; y < OutputResolution.Height; y++)
             {
                 int outputIndex = y * outputStride + x * 3;
-                if (x < inputResolution.Width || y < inputResolution.Height)
+                if (x < inputResolution.Width && y < inputResolution.Height)
                 {
                     int inputIndex = y * inputStride + x * 3;
-                    Buffer[outputIndex + 0] = frame.Buffer[inputIndex + 0];
+                    Buffer[outputIndex] = frame.Buffer[inputIndex];
                     Buffer[outputIndex + 1] = frame.Buffer[inputIndex + 1];
                     Buffer[outputIndex + 2] = frame.Buffer[inputIndex + 2];
                 }

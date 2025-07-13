@@ -1,4 +1,6 @@
-﻿using CaptureOnlyMovements.Types;
+﻿using CaptureOnlyMovements.Interfaces;
+using CaptureOnlyMovements.Types;
+using System.Threading;
 
 namespace CaptureOnlyMovements.Comparer;
 
@@ -6,84 +8,65 @@ public class FrameComparerTasks : IDisposable
 {
     static int linesPerTask = 16;
 
-
     public FrameComparerTasks(
-        int maximumPixelDifferenceValue, 
-        long maximumDifferentPixelCount,
-        Resolution resolution, 
-        bool calculateFully = false)
+        IComparerConfig config,
+        IShowDifference showDifference,
+        Resolution resolution)
     {
-        MaximumPixelDifferenceValue = maximumPixelDifferenceValue;
-        MaximumDifferentPixelCount = maximumDifferentPixelCount;
+        Config = config;
+        ShowDifference = showDifference;
         Resolution = resolution;
         CalculationFrameData = new bool[resolution.Width * resolution.Height];
         PreviousFrameData = new byte[resolution.Width * resolution.Height * 3];
-        DrawCalculationFrame = calculateFully;
     }
 
-    public int MaximumPixelDifferenceValue { get; }
-    public long MaximumDifferentPixelCount { get; }
+    public IComparerConfig Config { get; }
+    public IShowDifference ShowDifference { get; }
     public Resolution Resolution { get; }
     public bool[] CalculationFrameData { get; }
     public byte[] PreviousFrameData { get; }
-    public bool DrawCalculationFrame { get; }
+    public int Result_Difference { get; private set; }
 
     public bool IsDifferent(byte[] newFrameData)
     {
-        // Calculate stride
-        var stride = Resolution.Width * 3;
+        int stride = Resolution.Width * 3;
+        int totalDifferent = 0;
+        bool differenceExceeded = false;
 
-        // Counter for total difference in frame 
-        var Result_Difference = 0;
-
-        var tasksCount = (int)Math.Ceiling(Convert.ToDouble(Resolution.Height / linesPerTask));
-        var tasks = new Task[tasksCount];
-
-        var result = false;
-
-        for (int taskIndex = 0; taskIndex < tasksCount; taskIndex++)
+        Parallel.For(0, Resolution.Height, (y, state) =>
         {
-            tasks[taskIndex] = Task.Run(() =>
+            for (int x = 0; x < Resolution.Width; x++)
             {
-                int endY = Math.Min(taskIndex + linesPerTask, Resolution.Height);
-                for (int y = taskIndex; y < endY; y++)
+                int index = y * stride + x * 3;
+
+                int diff =
+                    Math.Abs(newFrameData[index] - PreviousFrameData[index]) +
+                    Math.Abs(newFrameData[index + 1] - PreviousFrameData[index + 1]) +
+                    Math.Abs(newFrameData[index + 2] - PreviousFrameData[index + 2]);
+
+                bool isDifferent = diff > Config.MaximumPixelDifferenceValue;
+
+                if (ShowDifference.ShowDifference)
                 {
-                    for (int x = 0; x < Resolution.Width; x++)
+                    CalculationFrameData[y * Resolution.Width + x] = isDifferent;
+                }
+
+                if (isDifferent)
+                {
+                    int current = Interlocked.Increment(ref totalDifferent);
+                    if (current > Config.MaximumDifferentPixelCount)
                     {
-                        int index = y * stride + x * 3;
-                        byte currentRed = newFrameData[index];
-                        byte previousRed = PreviousFrameData[index];
-                        byte currentGreen = newFrameData[index + 1];
-                        byte previousGreen = PreviousFrameData[index + 1];
-                        byte currentBlue = newFrameData[index + 2];
-                        byte previousBlue = PreviousFrameData[index + 2];
-                        
-                        int pixelColorDifference1 = Math.Abs(currentRed - previousRed);
-                        int pixelColorDifference2 = Math.Abs(currentGreen - previousGreen);
-                        int pixelColorDifference3 = Math.Abs(currentBlue - previousBlue);
-                        var pixelColorDifference = pixelColorDifference1 + pixelColorDifference2 + pixelColorDifference3;
-                        var isDifferent = pixelColorDifference > MaximumPixelDifferenceValue;
-                        
-                        if (DrawCalculationFrame)
-                            CalculationFrameData[y * Resolution.Width + x] = isDifferent;
-                        
-                        if (isDifferent)
-                            Result_Difference++;
-
-                        if (Result_Difference > MaximumDifferentPixelCount)
-                            result = true;
-
-                        if (result && !DrawCalculationFrame)
-                            return true;
+                        differenceExceeded = true;
+                        state.Stop(); // Abort parallel execution early
+                        return;
                     }
                 }
-                return false;
-            });
-        }
+            }
+        });
 
-        Task.WaitAll(tasks);
+        Result_Difference = totalDifferent;
 
-        if (result)
+        if (differenceExceeded)
         {
             Array.Copy(newFrameData, PreviousFrameData, newFrameData.Length);
             return true;
@@ -92,10 +75,5 @@ public class FrameComparerTasks : IDisposable
         return false;
     }
 
-
-
-
-    public void Dispose()
-    {
-    }
+    public void Dispose() { }
 }

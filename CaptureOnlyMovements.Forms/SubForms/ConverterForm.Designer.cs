@@ -24,8 +24,9 @@
             Console = new CaptureOnlyMovements.Forms.Controls.ConsoleControl();
             tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             groupBox3 = new System.Windows.Forms.GroupBox();
+            OutputFpsLabel = new System.Windows.Forms.Label();
             InputFpsLabel = new System.Windows.Forms.Label();
-            checkBox1 = new System.Windows.Forms.CheckBox();
+            ShowDiffernceCheckbox = new System.Windows.Forms.CheckBox();
             StartButton = new System.Windows.Forms.Button();
             StopButton = new System.Windows.Forms.Button();
             groupBox2 = new System.Windows.Forms.GroupBox();
@@ -36,7 +37,6 @@
             ConsoleFFMpeg = new CaptureOnlyMovements.Forms.Controls.ConsoleControl();
             displayControl1 = new CaptureOnlyMovements.Forms.Controls.DisplayControl();
             Timer = new System.Windows.Forms.Timer(components);
-            OutputFpsLabel = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)FileGrid).BeginInit();
             tableLayoutPanel1.SuspendLayout();
             groupBox3.SuspendLayout();
@@ -137,7 +137,7 @@
             // 
             groupBox3.Controls.Add(OutputFpsLabel);
             groupBox3.Controls.Add(InputFpsLabel);
-            groupBox3.Controls.Add(checkBox1);
+            groupBox3.Controls.Add(ShowDiffernceCheckbox);
             groupBox3.Controls.Add(StartButton);
             groupBox3.Controls.Add(StopButton);
             groupBox3.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -148,6 +148,15 @@
             groupBox3.TabStop = false;
             groupBox3.Text = "Start / Stop";
             // 
+            // OutputFpsLabel
+            // 
+            OutputFpsLabel.AutoSize = true;
+            OutputFpsLabel.Location = new System.Drawing.Point(424, 143);
+            OutputFpsLabel.Name = "OutputFpsLabel";
+            OutputFpsLabel.Size = new System.Drawing.Size(32, 15);
+            OutputFpsLabel.TabIndex = 17;
+            OutputFpsLabel.Text = "0 fps";
+            // 
             // InputFpsLabel
             // 
             InputFpsLabel.AutoSize = true;
@@ -157,16 +166,16 @@
             InputFpsLabel.TabIndex = 16;
             InputFpsLabel.Text = "0 fps";
             // 
-            // checkBox1
+            // ShowDiffernceCheckbox
             // 
-            checkBox1.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
-            checkBox1.AutoSize = true;
-            checkBox1.Location = new System.Drawing.Point(366, 161);
-            checkBox1.Name = "checkBox1";
-            checkBox1.Size = new System.Drawing.Size(111, 19);
-            checkBox1.TabIndex = 15;
-            checkBox1.Text = "Show difference";
-            checkBox1.UseVisualStyleBackColor = true;
+            ShowDiffernceCheckbox.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
+            ShowDiffernceCheckbox.AutoSize = true;
+            ShowDiffernceCheckbox.Location = new System.Drawing.Point(366, 161);
+            ShowDiffernceCheckbox.Name = "ShowDiffernceCheckbox";
+            ShowDiffernceCheckbox.Size = new System.Drawing.Size(111, 19);
+            ShowDiffernceCheckbox.TabIndex = 15;
+            ShowDiffernceCheckbox.Text = "Show difference";
+            ShowDiffernceCheckbox.UseVisualStyleBackColor = true;
             // 
             // StartButton
             // 
@@ -271,20 +280,10 @@
             displayControl1.Name = "displayControl1";
             displayControl1.Size = new System.Drawing.Size(505, 186);
             displayControl1.TabIndex = 18;
-            displayControl1.Text = "displayControl1";
             // 
             // Timer
             // 
             Timer.Tick += Timer_Tick;
-            // 
-            // OutputFpsLabel
-            // 
-            OutputFpsLabel.AutoSize = true;
-            OutputFpsLabel.Location = new System.Drawing.Point(424, 143);
-            OutputFpsLabel.Name = "OutputFpsLabel";
-            OutputFpsLabel.Size = new System.Drawing.Size(32, 15);
-            OutputFpsLabel.TabIndex = 17;
-            OutputFpsLabel.Text = "0 fps";
             // 
             // ConverterForm
             // 
@@ -322,7 +321,7 @@
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.GroupBox groupBox3;
-        private System.Windows.Forms.CheckBox checkBox1;
+        private System.Windows.Forms.CheckBox ShowDiffernceCheckbox;
         private System.Windows.Forms.Button StartButton;
         private System.Windows.Forms.Button StopButton;
         private Controls.DisplayControl displayControl1;

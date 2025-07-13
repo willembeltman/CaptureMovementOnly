@@ -65,7 +65,7 @@ public class Recorder(IApplication Application) : IDisposable, IKillSwitch, IDeb
             Application.OutputFps.Tick();
             DebugWriteLine($"Captured frame at {DateTime.Now:HH:mm:ss.fff}   -");
 
-            var comparer = new FrameComparer(Config, resolution);
+            var comparer = new FrameComparer(Config, Application, resolution);
             var previousDate = DateTime.Now;
 
             while (!KillSwitch)

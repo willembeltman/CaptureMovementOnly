@@ -7,21 +7,21 @@ public class FrameComparer
 {
     public FrameComparer(
         IComparerConfig config,
-        Resolution resolution, 
-        bool calculateFully = false)
+        IShowDifference showDifference,
+        Resolution resolution)
     {
-        Config = config;
+        Config = config; 
+        ShowDifference = showDifference;
         Resolution = resolution;
-        CalculateFully = calculateFully;
         CalculationFrameData = new bool[resolution.Width * resolution.Height];
         PreviousFrameData = new byte[resolution.Width * resolution.Height * 3];
     }
 
     public IComparerConfig Config { get; }
+    public IShowDifference ShowDifference { get; }
     public Resolution Resolution { get; }
     public bool[] CalculationFrameData { get; }
     public byte[] PreviousFrameData { get; }
-    public bool CalculateFully { get; }
     public int Result_Difference { get; private set; }
 
     public bool IsDifferent(byte[] newFrameData)
@@ -54,7 +54,7 @@ public class FrameComparer
                 var pixelColorDifference = pixelColorDifference1 + pixelColorDifference2 + pixelColorDifference3;
                 var isDifferent = pixelColorDifference > Config.MaximumPixelDifferenceValue;
 
-                if (CalculateFully)
+                if (ShowDifference.ShowDifference)
                     CalculationFrameData[y * Resolution.Width + x] = isDifferent;
 
                 if (isDifferent)
@@ -66,7 +66,7 @@ public class FrameComparer
                 // Do check if total difference hasn't exceeded threshold otherwise no need to continue iterating
                 if (Result_Difference > Config.MaximumDifferentPixelCount)
                 {
-                    if (!CalculateFully)
+                    if (!ShowDifference.ShowDifference)
                     {
                         Array.Copy(newFrameData, PreviousFrameData, newFrameData.Length);
                         return true;

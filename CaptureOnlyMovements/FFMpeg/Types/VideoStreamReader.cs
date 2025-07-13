@@ -26,7 +26,7 @@ public class VideoStreamReader : IDisposable
         var arguments = $"-i \"{FileInfo.FullName}\" " +
                         $"-ss {startTimeStamp} " +
                         $"-s {Resolution.Width}x{Resolution.Height} " +
-                        $"-pix_fmt rgba -f rawvideo -";
+                        $"-pix_fmt rgb24 -f rawvideo -";
 
         var processStartInfo = new ProcessStartInfo
         {
