@@ -1,32 +1,13 @@
 ﻿using CaptureOnlyMovements.Interfaces;
-using System;
 using System.Windows.Forms;
 
 namespace CaptureOnlyMovements.Forms;
 
 public partial class DebugForm : Form, IConsole
 {
-    public ApplicationForm Application { get; }
-
-    public DebugForm(ApplicationForm application)
+    public DebugForm()
     {
         InitializeComponent();
-
-        Application = application;
-            Application.DebugUpdated += Application_DebugUpdated;
-    }
-
-    private void Application_DebugUpdated(string line)
-    {
-        if (!Visible) return;
-
-        if (InvokeRequired)
-        {
-            Invoke(new Action(() => Application_DebugUpdated(line)));
-            return;
-        }
-
-        Console.WriteLine(line);
     }
 
     public void WriteLine(string line)
@@ -41,15 +22,5 @@ public partial class DebugForm : Form, IConsole
         e.Cancel = true;
         this.Hide();
         base.OnFormClosing(e);
-    }
-
-    protected override void Dispose(bool disposing)
-    {
-        if (disposing && (components != null))
-        {
-            Application.DebugUpdated -= Application_DebugUpdated;
-            components.Dispose();
-        }
-        base.Dispose(disposing);
     }
 }

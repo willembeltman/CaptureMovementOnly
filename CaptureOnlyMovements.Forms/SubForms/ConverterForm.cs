@@ -9,34 +9,24 @@ using System.Windows.Forms;
 
 namespace CaptureOnlyMovements.Forms.SubForms
 {
-    public partial class ConverterForm : Form, IApplication
+    public partial class ConverterForm : Form, IApplication, IPreview
     {
         public ConverterForm(IApplication application)
         {
             InitializeComponent();
 
+            Files = [];
             Application = application;
-            Converter = new Converter(this, null, Console1, Console2, Files);
+            Converter = new Converter(this, this, null, Console1, Console2, Files);
 
+            Load += ConverterForm_Load;
+            VisibleChanged += ConverterForm_VisibleChange;
             Application.Config.StateChanged += StateChanged;
         }
 
-        private readonly BindingList<FileConfig> Files = [];
-
+        public BindingList<FileConfig> Files { get; }
         public IApplication Application { get; }
         public Converter Converter { get; }
-        public FpsCounter InputFps { get; } = new FpsCounter();
-        public FpsCounter OutputFps { get; } = new FpsCounter();
-
-        public Config Config => Application.Config;
-        public bool IsBusy => Converter.Converting;
-
-        public bool ShowDifference => ShowDiffernceCheckbox.Checked;
-
-        private void ConverterForm_Load(object sender, System.EventArgs e)
-        {
-            FileGrid.DataSource = Files;
-        }
 
         private void StateChanged()
         {
@@ -50,7 +40,6 @@ namespace CaptureOnlyMovements.Forms.SubForms
                 DeleteSelectedFilesButton.Enabled = false;
                 StartButton.Enabled = false;
                 AddFilesButton.Enabled = false;
-                //FileGrid.Enabled = false;
                 StopButton.Enabled = true;
             }
             else
@@ -81,13 +70,11 @@ namespace CaptureOnlyMovements.Forms.SubForms
             StartButton.Enabled = Files.Count > 0;
 
             AddFilesButton.Enabled = true;
-            //FileGrid.Enabled = true;
             StopButton.Enabled = false;
         }
-        private void ConverterForm_VisibleChanged(object sender, EventArgs e)
-        {
-            Timer.Enabled = Visible;
-        }
+
+        private void ConverterForm_Load(object? sender, System.EventArgs e) => FileGrid.DataSource = Files;
+        private void ConverterForm_VisibleChange(object? sender, EventArgs e) => Timer.Enabled = Visible;
 
         private void AddFilesButton_Click(object sender, System.EventArgs e)
         {
@@ -186,32 +173,34 @@ namespace CaptureOnlyMovements.Forms.SubForms
 
         private void StartButton_Click(object sender, EventArgs e) => Converter.Start();
         private void StopButton_Click(object sender, EventArgs e) => Converter.Stop();
-
-        public void FatalException(string message, string title) => MessageBox.Show(message, title);
-        public void FatalException(Exception exception) => FatalException(exception.Message, "Fatal exception");
-
-
-        public void SetMask(bool[] frameData, Resolution frameResolution)
-        {
-            if (ShowDiffernceCheckbox.Checked)
-            {
-                displayControl1.SetFrame(frameData, frameResolution);
-            }
-        }
-        public void SetPreview(Frame frame)
-        {
-            //if (ShowDiffernceCheckbox.Checked)
-            //{
-            //    displayControl1.SetFrame(frame);
-            //}
-        }
-
-
         private void Timer_Tick(object sender, EventArgs e)
         {
             InputFpsLabel.Text = InputFps.CalculateFps().ToString("F2") + " fps";
             OutputFpsLabel.Text = OutputFps.CalculateFps().ToString("F2") + " fps";
         }
+
+        #region IApplication implementation 
+
+        public FpsCounter InputFps { get; } = new FpsCounter();
+        public FpsCounter OutputFps { get; } = new FpsCounter();
+
+        public Config Config => Application.Config;
+        public bool IsBusy => Converter.Converting;
+
+        public void FatalException(string message, string title) => MessageBox.Show(message, title);
+        public void FatalException(Exception exception) => FatalException(exception.Message, "Fatal exception");
+
+        #endregion
+
+        #region IPreview implementation
+
+        public bool ShowDifference => ShowDiffernceCheckbox.Checked;
+        public bool ShowPreview => ShowPreviewCheckbox.Checked;
+
+        public void SetMask(BwFrame frame) => displayControl1.SetFrame(frame);
+        public void SetPreview(Frame frame) => displayControl1.SetFrame(frame);
+
+        #endregion
 
         // Belangrijk: Overrides om te zorgen dat de applicatie niet sluit als het formulier gesloten wordt
         protected override void OnFormClosing(FormClosingEventArgs e)
@@ -220,18 +209,6 @@ namespace CaptureOnlyMovements.Forms.SubForms
             e.Cancel = true;
             this.Hide();
             base.OnFormClosing(e);
-        }
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing && (components != null))
-            {
-                components.Dispose();
-            }
-            if (disposing)
-            {
-                Converter.Dispose();
-            }
-            base.Dispose(disposing);
         }
     }
 }

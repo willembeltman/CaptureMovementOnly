@@ -3,7 +3,7 @@ using CaptureOnlyMovements.Types;
 
 namespace CaptureOnlyMovements.Interfaces;
 
-public interface IApplication : IShowDifference
+public interface IApplication
 {
     Config Config { get; }
     bool IsBusy { get; }
@@ -12,6 +12,11 @@ public interface IApplication : IShowDifference
 
     void FatalException(string message, string title);
     void FatalException(Exception exception);
-    void SetMask(bool[] frameData, Resolution frameResolution);
+}
+public interface IPreview
+{
+    bool ShowDifference { get; }
+    bool ShowPreview { get; }
+    void SetMask(BwFrame frame);
     void SetPreview(Frame frame);
 }

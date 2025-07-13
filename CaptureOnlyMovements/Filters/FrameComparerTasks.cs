@@ -1,6 +1,5 @@
 ﻿using CaptureOnlyMovements.Interfaces;
 using CaptureOnlyMovements.Types;
-using System.Threading;
 
 namespace CaptureOnlyMovements.Comparer;
 
@@ -8,18 +7,18 @@ public class FrameComparerTasks : IDisposable
 {
     public FrameComparerTasks(
         IComparerConfig config,
-        IShowDifference showDifference,
-        Resolution resolution)
+        Resolution resolution,
+        IPreview? preview = null)
     {
         Config = config;
-        ShowDifference = showDifference;
+        Preview = preview;
         Resolution = resolution;
         CalculationFrameData = new bool[resolution.Width * resolution.Height];
         PreviousFrameData = new byte[resolution.Width * resolution.Height * 3];
     }
 
     public IComparerConfig Config { get; }
-    public IShowDifference ShowDifference { get; }
+    public IPreview? Preview { get; }
     public Resolution Resolution { get; }
     public bool[] CalculationFrameData { get; }
     public byte[] PreviousFrameData { get; }
@@ -44,7 +43,7 @@ public class FrameComparerTasks : IDisposable
 
                 bool isDifferent = diff > Config.MaximumPixelDifferenceValue;
 
-                if (ShowDifference.ShowDifference)
+                if (Preview?.ShowDifference == true)
                 {
                     CalculationFrameData[y * Resolution.Width + x] = isDifferent;
                 }
@@ -55,7 +54,7 @@ public class FrameComparerTasks : IDisposable
                     if (current > Config.MaximumDifferentPixelCount)
                     {
                         differenceExceeded = true;
-                        if (!ShowDifference.ShowDifference)
+                        if (Preview?.ShowDifference != true)
                         {
                             state.Stop(); // Abort parallel execution early
                             return;

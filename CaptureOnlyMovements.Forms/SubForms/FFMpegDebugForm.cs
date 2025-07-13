@@ -1,33 +1,15 @@
 ﻿using CaptureOnlyMovements.Interfaces;
-using System;
 using System.Windows.Forms;
 
 namespace CaptureOnlyMovements.Forms;
 
 public partial class FFMpegDebugForm : Form, IConsole
 {
-    public ApplicationForm Application { get; }
-
-    public FFMpegDebugForm(ApplicationForm recorder)
+    public FFMpegDebugForm()
     {
         InitializeComponent();
-
-        Application = recorder;
-            Application.FFMpegDebugUpdated += Recorder_DebugUpdated;
     }
 
-    private void Recorder_DebugUpdated(string line)
-    {
-        if (!Visible) return;
-
-        if (InvokeRequired)
-        {
-            Invoke(new Action(() => Recorder_DebugUpdated(line)));
-            return;
-        }
-
-        Console.WriteLine(line);
-    }
     public void WriteLine(string line)
     {
         Console.WriteLine(line);
@@ -40,15 +22,5 @@ public partial class FFMpegDebugForm : Form, IConsole
         e.Cancel = true;
         this.Hide();
         base.OnFormClosing(e);
-    }
-
-    protected override void Dispose(bool disposing)
-    {
-        if (disposing && (components != null))
-        {
-            Application.DebugUpdated -= Recorder_DebugUpdated;
-            components.Dispose();
-        }
-        base.Dispose(disposing);
     }
 }

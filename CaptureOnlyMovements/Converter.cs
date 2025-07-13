@@ -10,6 +10,7 @@ namespace CaptureOnlyMovements;
 public delegate void ChangeStateDelegate(bool running);
 public class Converter(
     IApplication Application,
+    IPreview Preview,
     IConsole? Console,
     IConsole? FFMpegReaderConsole,
     IConsole? FFMpegWriterConsole,
@@ -79,48 +80,45 @@ public class Converter(
                 var frame = reader.ReadFrame();
                 if (frame == null) continue;
 
-                var comparer = new FrameComparerTasks(fileItemMediaContainer.FileConfig, Application, frame.Resolution);
+                var comparer = new FrameComparerTasks(fileItemMediaContainer.FileConfig, frame.Resolution, Preview);
                 var resizer = new BgrResizer(resolution);
 
-                // Pre-compare frame
                 comparer.IsDifferent(frame.Buffer);
 
-                // Resize frame
                 frame = resizer.Resize(frame);
 
-                // Write frame
                 writer.WriteFrame(frame.Buffer);
                 Application.InputFps.Tick();
                 Console?.WriteLine($"Captured frame #0   -");
-                Application.SetPreview(frame);
+                Preview.SetPreview(frame);
 
                 var frameIndex = 1;
                 while (!KillSwitch)
                 {
-                    // Read frame
                     frame = reader.ReadFrame(frame.Buffer);
                     if (frame == null) break;
 
+                    var isDifferent = comparer.IsDifferent(frame.Buffer);
+
                     Application.InputFps.Tick();
 
-                    // Compare frame
-                    if (!comparer.IsDifferent(frame.Buffer))
+                    if (Preview.ShowDifference)
                     {
-                        // Set screenshot
-                        Application.SetMask(comparer.CalculationFrameData, comparer.Resolution);
-                        continue;
+                        var bwFrame = new BwFrame(comparer.CalculationFrameData, comparer.Resolution);
+                        Preview.SetMask(bwFrame);
                     }
 
-                    // Resize frame
+                    if (!isDifferent) continue;
+
                     frame = resizer.Resize(frame);
 
-                    // Write frame
                     writer.WriteFrame(frame.Buffer);
                     Application.OutputFps.Tick();
-                    Application.SetPreview(frame);
 
-                    // Set screenshot
-                    Application.SetMask(comparer.CalculationFrameData, comparer.Resolution);
+                    if (Preview.ShowPreview)
+                    {
+                        Preview.SetPreview(frame);
+                    }
 
                     Console?.WriteLine($"Captured frame {frameIndex}   {comparer.Result_Difference}");
                     frameIndex++;

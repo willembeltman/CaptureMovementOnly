@@ -61,7 +61,7 @@ public class Recorder(
             var frame = capturer.CaptureFrame();
             var resolution = frame.Resolution;
 
-            var comparer = new FrameComparerTasks(Config, Application, resolution);
+            var comparer = new FrameComparerTasks(Config, resolution);
 
             var container = new MediaContainer(outputFullName);
             using var writer = container.OpenVideoWriter(this, resolution, Config, FFMpegWriterConsole);

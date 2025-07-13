@@ -10,30 +10,13 @@ namespace CaptureOnlyMovements.Forms;
 
 public class ApplicationForm : Form, IApplication
 {
-    private readonly NotifyIcon NotificationIcon;
-    private readonly ContextMenuStrip NewContextMenuStrip;
-    private readonly ToolStripMenuItem StartRecordingButton;
-    private readonly ToolStripMenuItem StopRecordingButton;
-
-    private readonly Recorder Recorder;
-    private readonly DebugForm DebugForm;
-    private readonly ConfigForm ConfigForm;
-    private readonly ConverterForm ConverterForm;
-    private readonly FFMpegDebugForm FFMpegDebugForm;
-
-    public Config Config { get; }
-    public FpsCounter InputFps { get; } = new FpsCounter();
-    public FpsCounter OutputFps { get; } = new FpsCounter();
-
-    public bool IsBusy => Recorder.Recording || ConverterForm.IsBusy;
-
-    public bool ShowDifference => false;
-
-    public event DebugMessage? DebugUpdated;
-    public event DebugMessage? FFMpegDebugUpdated;
-
     public ApplicationForm()
     {
+        Config = Config.Load();
+        Config.StateChanged += ConfigChanged;
+        InputFps = new FpsCounter();
+        OutputFps = new FpsCounter();
+
         NotificationIcon = new()
         {
             // Zorg ervoor dat je een geldig icoonpad hebt!
@@ -82,20 +65,36 @@ public class ApplicationForm : Form, IApplication
         NotificationIcon.ContextMenuStrip = NewContextMenuStrip;
 
         // Verberg het hoofdformulier bij het opstarten
-        Load += Form1_Load;
+        Load += ApplicationForm_Load;
         ShowInTaskbar = false; // Verberg de applicatie van de taakbalk
         WindowState = FormWindowState.Minimized; // Minimaliseer het venster
         Hide(); // Verberg het venster
 
-        Config = Config.Load();
-        Config.StateChanged += ConfigChanged;
-
         ConverterForm = new ConverterForm(this);
         ConfigForm = new ConfigForm(this);
-        DebugForm = new DebugForm(this);
-        FFMpegDebugForm = new FFMpegDebugForm(this);
+        DebugForm = new DebugForm();
+        FFMpegDebugForm = new FFMpegDebugForm();
         Recorder = new Recorder(this, DebugForm, FFMpegDebugForm);
     }
+
+    private readonly NotifyIcon NotificationIcon;
+    private readonly ContextMenuStrip NewContextMenuStrip;
+    private readonly ToolStripMenuItem StartRecordingButton;
+    private readonly ToolStripMenuItem StopRecordingButton;
+
+    private readonly Recorder Recorder;
+    private readonly DebugForm DebugForm;
+    private readonly ConfigForm ConfigForm;
+    private readonly ConverterForm ConverterForm;
+    private readonly FFMpegDebugForm FFMpegDebugForm;
+
+    public Config Config { get; }
+    public FpsCounter InputFps { get; }
+    public FpsCounter OutputFps { get; }
+
+    public bool IsBusy => Recorder.Recording || ConverterForm.IsBusy;
+    public bool ShowDifference => false;
+    public bool ShowPreview => false;
 
     private void ConfigChanged()
     {
@@ -118,11 +117,11 @@ public class ApplicationForm : Form, IApplication
 
         }
     }
-    private void Form1_Load(object? sender, EventArgs e)
+
+    private void ApplicationForm_Load(object? sender, EventArgs e)
     {
         Hide(); // Zorg ervoor dat het formulier verborgen is bij het laden
     }
-
     private void StartRecording_Click(object? sender, EventArgs e) => Recorder.Start();
     private void StopRecording_Click(object? sender, EventArgs e) => Recorder.Stop();
     private void OpenConverter_Click(object? sender, EventArgs e) => ConverterForm.Show();
@@ -131,8 +130,18 @@ public class ApplicationForm : Form, IApplication
     private void OpenFFMpegDebug_Click(object? sender, EventArgs e) => FFMpegDebugForm.Show();
     private void ExitMenuItem_Click(object? sender, EventArgs e) => Exit();
 
-    public void DebugWriteLine(string line) => DebugUpdated?.Invoke(line);
-    public void FFMpegDebugWriteLine(string line) => FFMpegDebugUpdated?.Invoke(line);
+    public void SetMask(BwFrame frame)
+    {
+    }
+    public void SetPreview(Frame frame) { }
+
+    public void FatalException(Exception exception) 
+        => FatalException(exception.Message, "Fatal exception");
+    public void FatalException(string message, string title)
+    {
+        MessageBox.Show(message, title, MessageBoxButtons.OK, MessageBoxIcon.Error);
+        Exit();
+    }
 
     private void Exit()
     {
@@ -142,23 +151,12 @@ public class ApplicationForm : Form, IApplication
         ConverterForm.Dispose();
         FFMpegDebugForm.Dispose();
 
-        // Opruimen van de NotifyIcon voordat de applicatie wordt afgesloten
         if (NotificationIcon != null)
         {
             NotificationIcon.Visible = false;
             NotificationIcon.Dispose();
         }
         Application.Exit();
-    }
-
-    public void FatalException(Exception exception)
-    {
-        FatalException(exception.Message, "Fatal exception");
-    }
-    public void FatalException(string message, string title)
-    {
-        MessageBox.Show(message, title, MessageBoxButtons.OK, MessageBoxIcon.Error);
-        Exit();
     }
     protected override void Dispose(bool disposing)
     {
@@ -172,13 +170,5 @@ public class ApplicationForm : Form, IApplication
             NotificationIcon.Dispose();
         }
         base.Dispose(disposing);
-    }
-
-    public void SetMask(bool[] frameData, Resolution frameResolution)
-    {
-    }
-
-    public void SetPreview(Frame frame)
-    {
     }
 }

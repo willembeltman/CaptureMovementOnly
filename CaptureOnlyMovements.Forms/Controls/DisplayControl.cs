@@ -72,7 +72,7 @@ public class DisplayControl : UserControl
         InitializeVertexBuffer();
         InitializeSamplerState();
 
-        _renderTimer = new Timer { Interval = 16 }; 
+        _renderTimer = new Timer { Interval = 16 };
         _renderTimer.Tick += (s, ev) => RenderLoop();
         _renderTimer.Start();
     }
@@ -130,7 +130,7 @@ public class DisplayControl : UserControl
 
         CreateRenderTarget();
     }
-    
+
 
     private void InitializeShaders()
     {
@@ -241,40 +241,29 @@ public class DisplayControl : UserControl
 
     public void SetFrame(Frame frame)
     {
-        //if (BgrResizer == null) return;
-
-        if(frame.Resolution != Resolution)
+        if (frame.Resolution != Resolution)
         {
             Resolution = frame.Resolution;
-            //BgrResizer = new BgrResizer(Resolution);
-            //BgraResizer = new BgraResizer(Resolution);
             FrameBuffer1 = new Frame(Resolution).Buffer;
             FrameBuffer2 = new Frame(Resolution).Buffer;
             ResizeD3D();
         }
 
-        //frame = BgrResizer.Resize(frame);
         var bgraBuffer = frame.Buffer.BgrToBgra();
         SetInputFrameBuffer(bgraBuffer);
     }
-    public void SetFrame(bool[] frameData, Resolution frameResolution)
+    public void SetFrame(BwFrame frame)
     {
-        //if (BgraResizer == null) return;
-
-        if (frameResolution != Resolution)
+        if (frame.Resolution != Resolution)
         {
-            Resolution = frameResolution;
-            //BgrResizer = new BgrResizer(Resolution);
-            //BgraResizer = new BgraResizer(Resolution);
+            Resolution = frame.Resolution;
             FrameBuffer1 = new Frame(Resolution).Buffer;
             FrameBuffer2 = new Frame(Resolution).Buffer;
             ResizeD3D();
         }
 
-        var bgraBuffer = frameData.BwToBgra();
-        var bgraFrame = new Frame(bgraBuffer, frameResolution);
-        //bgraFrame = BgraResizer.Resize(bgraFrame);
-        SetInputFrameBuffer(bgraFrame.Buffer);
+        var bgraBuffer = frame.Buffer.BwToBgra();
+        SetInputFrameBuffer(bgraBuffer);
     }
 
     private void RenderLoop()
@@ -354,7 +343,7 @@ public class DisplayControl : UserControl
             CreateRenderTarget();
         }
     }
-    
+
     private void CreateRenderTarget()
     {
         if (_swapChain == null || _device == null)

@@ -7,7 +7,7 @@ public class FrameComparer
 {
     public FrameComparer(
         IComparerConfig config,
-        IShowDifference showDifference,
+        IPreview showDifference,
         Resolution resolution)
     {
         Config = config; 
@@ -18,7 +18,7 @@ public class FrameComparer
     }
 
     public IComparerConfig Config { get; }
-    public IShowDifference ShowDifference { get; }
+    public IPreview ShowDifference { get; }
     public Resolution Resolution { get; }
     public bool[] CalculationFrameData { get; }
     public byte[] PreviousFrameData { get; }
