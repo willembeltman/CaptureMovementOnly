@@ -2,7 +2,7 @@
 
 namespace CaptureOnlyMovements.Helpers;
 
-public static class WaitForNextHelper
+public static class WaitForNextDateTimeHelper
 {
     public static DateTime Wait(Config config, DateTime previousDate)
     {

@@ -18,10 +18,10 @@ public class VideoStreamReader : IDisposable
         MediaContainer = mediaContainer;
         Resolution = resolution;
 
-        var ffMpegFullname = Path.Combine(FFMpegDirectory.FullName, "ffmpeg.exe");
+        var ffMpegFullname = Path.Combine(MediaContainer.FFMpegDirectory.FullName, "ffmpeg.exe");
         var startTimeSpan = TimeSpan.FromSeconds(startTime);
         var startTimeStamp = startTimeSpan.ToString(@"hh\:mm\:ss\.fff");
-        var arguments = $"-i \"{FileInfo.FullName}\" " +
+        var arguments = $"-i \"{MediaContainer.FileInfo.FullName}\" " +
                         $"-ss {startTimeStamp} " +
                         $"-s {Resolution.Width}x{Resolution.Height} " +
                         $"-pix_fmt bgr24 -f rawvideo -";
@@ -29,7 +29,7 @@ public class VideoStreamReader : IDisposable
         var processStartInfo = new ProcessStartInfo
         {
             FileName = ffMpegFullname,
-            WorkingDirectory = FFMpegDirectory.FullName,
+            WorkingDirectory = MediaContainer.FFMpegDirectory.FullName,
             Arguments = arguments,
             RedirectStandardOutput = true,
             RedirectStandardError = true,
@@ -40,17 +40,12 @@ public class VideoStreamReader : IDisposable
         Process = Process.Start(processStartInfo) ?? throw new Exception("Cannot create process");
         StandardOutputReader = Process.StandardOutput.BaseStream;
         StandardErrorReader = new StreamReader(Process.StandardError.BaseStream);
-        Stopwatch = Stopwatch.StartNew();
 
         StandardErrorReaderThread = new Thread(new ThreadStart(ReadStandardError));
         StandardErrorReaderThread.Start();
     }
 
     private readonly Process Process;
-
-    public Stopwatch Stopwatch { get; }
-    public Thread StandardErrorReaderThread { get; }
-
     private readonly Stream StandardOutputReader;
 
     public StreamReader StandardErrorReader { get; }
@@ -58,12 +53,9 @@ public class VideoStreamReader : IDisposable
     public IKillSwitch KillSwitch { get; }
     public MediaContainerInfo MediaContainer { get; }
     public Resolution Resolution { get; }
-
-    private DirectoryInfo FFMpegDirectory => MediaContainer.FFMpegDirectory;
-    private FileInfo FileInfo => MediaContainer.FileInfo;
+    public Thread StandardErrorReaderThread { get; }
 
     public bool ProcessEnded { get; private set; }
-    //public string ErrorMessage { get; private set; }
     public bool ErrorReaderKillSwitch { get; private set; }
 
     private void ReadStandardError()
@@ -71,7 +63,6 @@ public class VideoStreamReader : IDisposable
         var line = StandardErrorReader.ReadLine();
         while (line != null && !KillSwitch.KillSwitch && !ErrorReaderKillSwitch)
         {
-            //ErrorMessage += line + "\r\n"; // Dit kan omdat als het niet goed gaat, laat ffmpeg de error zien.
             Console?.WriteLine(line);
 
             line = StandardErrorReader.ReadLine();
@@ -121,8 +112,6 @@ public class VideoStreamReader : IDisposable
 
     public void Dispose()
     {
-        Stopwatch?.Stop();
-
         ErrorReaderKillSwitch = true;
         if (StandardErrorReaderThread != null && Thread.CurrentThread != StandardErrorReaderThread && !ProcessEnded)
         {

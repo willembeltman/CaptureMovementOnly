@@ -88,7 +88,7 @@ public class Recorder(
                     Application.OutputFps.Tick();
                     Console.WriteLine($"Captured frame at {DateTime.Now:HH:mm:ss.fff}   {comparer.Result_Difference}");
 
-                    previousDate = WaitForNextHelper.Wait(Config, previousDate);
+                    previousDate = WaitForNextDateTimeHelper.Wait(Config, previousDate);
                 }
             }
 

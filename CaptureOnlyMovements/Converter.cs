@@ -93,13 +93,9 @@ public class Converter(
                 Console?.WriteLine($"Captured frame #0   -");
                 Preview.SetPreview(frame);
 
-                var inputFps = fileConfigInfo.FileConfig.Fps ?? throw new Exception($"Fps not detected in video {fileConfigInfo.FileConfig.FullName}");
-                var targetFps = Application.Config.OutputFps;
-                var targetSpeed = fileConfigInfo.FileConfig.MinPlaybackSpeed;
-                var interval = 1d / targetFps * targetSpeed;
+                var waitForNextIndex = new WaitForNextIndexHelper(fileConfigInfo, Application);
 
                 var frameIndex = 1;
-                var previousIntervalIndex = 0;
                 while (!KillSwitch)
                 {
                     frame = reader.ReadFrame(frame.Buffer);
@@ -107,16 +103,7 @@ public class Converter(
                     Application.InputFps.Tick();
                     frameIndex++;
 
-                    var secElapsed = frameIndex / inputFps;
-                    var intervalIndex = (int)(secElapsed / interval);
-                    if (previousIntervalIndex < intervalIndex)
-                    {
-                        previousIntervalIndex = intervalIndex;
-                    }
-                    else
-                    {
-                        continue; // Skip frames that are not needed based on the target speed
-                    }
+                    if (waitForNextIndex.NeedToSkip(frameIndex)) continue;
 
                     var isDifferent = comparer.IsDifferent(frame.Buffer);
 
