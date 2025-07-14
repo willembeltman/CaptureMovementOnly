@@ -16,4 +16,5 @@ public static class WaitForNextHelper
         previousDate = DateTime.Now;
         return previousDate;
     }
+
 }

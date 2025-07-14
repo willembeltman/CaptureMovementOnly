@@ -1,6 +1,7 @@
 ﻿using CaptureOnlyMovements.FFMpeg;
 using CaptureOnlyMovements.FrameComparers;
 using CaptureOnlyMovements.FrameResizers;
+using CaptureOnlyMovements.Helpers;
 using CaptureOnlyMovements.Interfaces;
 using CaptureOnlyMovements.Types;
 using System.ComponentModel;
@@ -14,7 +15,7 @@ public class Converter(
     IConsole? Console,
     IConsole? FFMpegReaderConsole,
     IConsole? FFMpegWriterConsole,
-    BindingList<FileConfig> Files) : IKillSwitch, IDisposable
+    BindingList<FileConfig> FileConfigs) : IKillSwitch, IDisposable
 {
     private Thread? WriterThread;
 
@@ -61,26 +62,26 @@ public class Converter(
 
             Console?.WriteLine($"Opening '{outputFullName}' to write video to.");
 
-            var width = Files.Max(a => a.Width) ?? throw new Exception("Could not determine resolution");
-            var height = Files.Max(a => a.Height) ?? throw new Exception("Could not determine resolution");
+            var width = FileConfigs.Max(a => a.Width) ?? throw new Exception("Could not determine resolution");
+            var height = FileConfigs.Max(a => a.Height) ?? throw new Exception("Could not determine resolution");
             var resolution = new Resolution(width, height);
 
-            var writercontainer = new MediaContainer(outputFullName);
-            using var writer = writercontainer.OpenVideoWriter(this, resolution, Application.Config, FFMpegWriterConsole);
+            var writerInfo = new MediaContainerInfo(outputFullName);
+            using var writer = writerInfo.OpenVideoWriter(this, resolution, Application.Config, FFMpegWriterConsole);
 
-            var fileItemMediaContainers = Files
+            var fileConfigInfos = FileConfigs
                 .Where(a => a.FullName != null)
-                .Select(a => new FileItemMediaContainer(a));
+                .Select(a => new FileConfigInfo(a));
 
-            foreach (var fileItemMediaContainer in fileItemMediaContainers)
+            foreach (var fileConfigInfo in fileConfigInfos)
             {
-                Console?.WriteLine($"Opening '{fileItemMediaContainer.FileConfig.FullName}' to read video from.");
+                Console?.WriteLine($"Opening '{fileConfigInfo.FileConfig.FullName}' to read video from.");
 
-                using var reader = fileItemMediaContainer.MediaContainer.OpenVideoReader(this, FFMpegReaderConsole);
+                using var reader = fileConfigInfo.MediaContainer.OpenVideoReader(this, FFMpegReaderConsole);
                 var frame = reader.ReadFrame();
                 if (frame == null) continue;
 
-                var comparer = new FrameComparerTasks(fileItemMediaContainer.FileConfig, frame.Resolution, Preview);
+                var comparer = new FrameComparerTasks(fileConfigInfo.FileConfig, frame.Resolution, Preview);
                 var resizer = new BgrResizerTasks(resolution);
 
                 comparer.IsDifferent(frame.Buffer);
@@ -92,15 +93,32 @@ public class Converter(
                 Console?.WriteLine($"Captured frame #0   -");
                 Preview.SetPreview(frame);
 
+                var inputFps = fileConfigInfo.FileConfig.Fps ?? throw new Exception($"Fps not detected in video {fileConfigInfo.FileConfig.FullName}");
+                var targetFps = Application.Config.OutputFps;
+                var targetSpeed = fileConfigInfo.FileConfig.MinPlaybackSpeed;
+                var interval = 1d / targetFps * targetSpeed;
+
                 var frameIndex = 1;
+                var previousIntervalIndex = 0;
                 while (!KillSwitch)
                 {
                     frame = reader.ReadFrame(frame.Buffer);
                     if (frame == null) break;
+                    Application.InputFps.Tick();
+                    frameIndex++;
+
+                    var secElapsed = frameIndex / inputFps;
+                    var intervalIndex = (int)(secElapsed / interval);
+                    if (previousIntervalIndex < intervalIndex)
+                    {
+                        previousIntervalIndex = intervalIndex;
+                    }
+                    else
+                    {
+                        continue; // Skip frames that are not needed based on the target speed
+                    }
 
                     var isDifferent = comparer.IsDifferent(frame.Buffer);
-
-                    Application.InputFps.Tick();
 
                     if (Preview.ShowMask)
                     {
@@ -121,7 +139,7 @@ public class Converter(
                     }
 
                     Console?.WriteLine($"Captured frame {frameIndex}   {comparer.Result_Difference}");
-                    frameIndex++;
+                    
                 }
 
                 if (KillSwitch) break;

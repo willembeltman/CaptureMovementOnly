@@ -4,6 +4,7 @@ using CaptureOnlyMovements.FrameComparers;
 using CaptureOnlyMovements.Helpers;
 using CaptureOnlyMovements.Interfaces;
 using CaptureOnlyMovements.Types;
+using System.Diagnostics;
 
 namespace CaptureOnlyMovements;
 
@@ -65,7 +66,7 @@ public class Recorder(
 
             var comparer = new FrameComparer(Config, resolution);
 
-            var container = new MediaContainer(outputFullName);
+            var container = new MediaContainerInfo(outputFullName);
             using var writer = container.OpenVideoWriter(this, resolution, Config, FFMpegWriterConsole);
 
             writer.WriteFrame(frame.Buffer);

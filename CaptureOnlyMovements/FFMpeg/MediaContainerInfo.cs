@@ -6,7 +6,7 @@ using CaptureOnlyMovements.Types;
 
 namespace CaptureOnlyMovements.FFMpeg;
 
-public class MediaContainer(string fullName, DirectoryInfo? ffmpegdir = null, DirectoryInfo? ffprobedir = null)
+public class MediaContainerInfo(string fullName, DirectoryInfo? ffmpegdir = null, DirectoryInfo? ffprobedir = null)
 {
     public DirectoryInfo FFMpegDirectory { get; } = ffmpegdir ?? new DirectoryInfo(Environment.CurrentDirectory);
     public DirectoryInfo FFProbeDirectory { get; } = ffprobedir ?? new DirectoryInfo(Environment.CurrentDirectory);

@@ -8,7 +8,7 @@ public class VideoStreamReader : IDisposable
 {
     public VideoStreamReader(
         IKillSwitch killSwitch,
-        MediaContainer mediaContainer,
+        MediaContainerInfo mediaContainer,
         Resolution resolution,
         IConsole? console = null,
         double startTime = 0)
@@ -56,7 +56,7 @@ public class VideoStreamReader : IDisposable
     public StreamReader StandardErrorReader { get; }
     public IConsole? Console { get; }
     public IKillSwitch KillSwitch { get; }
-    public MediaContainer MediaContainer { get; }
+    public MediaContainerInfo MediaContainer { get; }
     public Resolution Resolution { get; }
 
     private DirectoryInfo FFMpegDirectory => MediaContainer.FFMpegDirectory;

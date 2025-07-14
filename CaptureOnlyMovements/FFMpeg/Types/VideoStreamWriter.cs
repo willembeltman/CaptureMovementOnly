@@ -11,7 +11,7 @@ public class VideoStreamWriter : IDisposable
 {
     public VideoStreamWriter(
         IKillSwitch killSwitch,
-        MediaContainer mediaContainer,
+        MediaContainerInfo mediaContainer,
         Resolution resolution,
         int fps,
         QualityEnum qualityEnum,
@@ -136,7 +136,7 @@ Please download FFmpeg and place it in the specified location. The program will 
     }
 
     private readonly IKillSwitch KillSwitch;
-    private readonly MediaContainer MediaContainer;
+    private readonly MediaContainerInfo MediaContainer;
     private readonly Resolution Resolution;
     private readonly IConsole? Console;
     private readonly Process Process;

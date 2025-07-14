@@ -209,5 +209,14 @@ namespace CaptureOnlyMovements.Forms.SubForms
             this.Hide();
             base.OnFormClosing(e);
         }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                Converter.Dispose();
+            }
+            base.Dispose(disposing);
+        }
     }
 }
