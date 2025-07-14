@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 
 namespace CaptureOnlyMovements.FrameResizers;
 
-public sealed class BgrResizerUnsafe(Resolution outputResolution)
+public sealed class BgrResizerUnsafe(Resolution outputResolution) : IDisposable
 {
     private readonly byte[] _buffer = new byte[outputResolution.PixelCount * 3];
 
@@ -61,5 +61,9 @@ public sealed class BgrResizerUnsafe(Resolution outputResolution)
         }
 
         return new Frame(dst, outputResolution);
+    }
+
+    public void Dispose()
+    {
     }
 }

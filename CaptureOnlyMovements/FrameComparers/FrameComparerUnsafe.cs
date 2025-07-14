@@ -15,15 +15,15 @@ public unsafe class FrameComparerUnsafe(
     private readonly byte[] _prev = new byte[resolution.Width * resolution.Height * 3];
 
     public Resolution Resolution { get; } = resolution;
-    public bool[] CalculationFrameData { get; } = new bool[resolution.Width * resolution.Height];
-    public int Result_Difference { get; private set; }
+    public bool[] MaskData { get; } = new bool[resolution.Width * resolution.Height];
+    public int Difference { get; private set; }
 
     public bool IsDifferent(byte[] current)
     {
         var w = Resolution.Width;
         var h = Resolution.Height;
         nint stride = w * 3;
-        Result_Difference = 0;
+        Difference = 0;
 
         fixed (byte* pCurr = current, pPrev = _prev)
         {
@@ -54,7 +54,7 @@ public unsafe class FrameComparerUnsafe(
 
                 // tel bits
                 int changed = Sse2.MoveMask(over.AsByte());   // 16‑bit mask
-                Result_Difference += BitOperations.PopCount((uint)changed);
+                Difference += BitOperations.PopCount((uint)changed);
 
                 if (preview?.ShowMask == true)
                 {
@@ -63,11 +63,11 @@ public unsafe class FrameComparerUnsafe(
                     {
                         bool diffPix = (changed & (1 << b)) != 0;
                         int pixelIndex = (int)((i + b) / 3);
-                        CalculationFrameData[pixelIndex] = diffPix;
+                        MaskData[pixelIndex] = diffPix;
                     }
                 }
 
-                if (Result_Difference > config.MaximumDifferentPixelCount)
+                if (Difference > config.MaximumDifferentPixelCount)
                 {
                     if (preview?.ShowMask != true)
                     {
@@ -104,13 +104,17 @@ public unsafe class FrameComparerUnsafe(
             }
 #endif
             // Als we hier komen is threshold niet overschreden
-            if (Result_Difference > config.MaximumDifferentPixelCount)
+            if (Difference > config.MaximumDifferentPixelCount)
             {
                 Buffer.MemoryCopy(pCurr, pPrev, _prev.Length, _prev.Length);
                 return true;
             }
         }
         return false;
+    }
+
+    public void Dispose()
+    {
     }
 }
 

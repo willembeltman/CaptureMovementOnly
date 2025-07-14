@@ -8,7 +8,7 @@ public class VideoStreamReader : IDisposable
 {
     public VideoStreamReader(
         IKillSwitch killSwitch,
-        MediaContainerInfo mediaContainer,
+        MediaInfo mediaContainer,
         Resolution resolution,
         IConsole? console = null,
         double startTime = 0)
@@ -51,7 +51,7 @@ public class VideoStreamReader : IDisposable
     public StreamReader StandardErrorReader { get; }
     public IConsole? Console { get; }
     public IKillSwitch KillSwitch { get; }
-    public MediaContainerInfo MediaContainer { get; }
+    public MediaInfo MediaContainer { get; }
     public Resolution Resolution { get; }
     public Thread StandardErrorReaderThread { get; }
 

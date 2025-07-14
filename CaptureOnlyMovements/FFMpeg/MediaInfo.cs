@@ -6,14 +6,29 @@ using CaptureOnlyMovements.Types;
 
 namespace CaptureOnlyMovements.FFMpeg;
 
-public class MediaContainerInfo(string fullName, DirectoryInfo? ffmpegdir = null, DirectoryInfo? ffprobedir = null)
+public class MediaInfo
 {
-    public DirectoryInfo FFMpegDirectory { get; } = ffmpegdir ?? new DirectoryInfo(Environment.CurrentDirectory);
-    public DirectoryInfo FFProbeDirectory { get; } = ffprobedir ?? new DirectoryInfo(Environment.CurrentDirectory);
-    public FileInfo FileInfo { get; } = new FileInfo(fullName);
+    public MediaInfo(string fullName, DirectoryInfo? ffmpegdir = null, DirectoryInfo? ffprobedir = null)
+    {
+        FFMpegDirectory = ffmpegdir ?? new DirectoryInfo(Environment.CurrentDirectory);
+        FFProbeDirectory = ffprobedir ?? new DirectoryInfo(Environment.CurrentDirectory);
+        FileInfo = new FileInfo(fullName);
+    }
+    public MediaInfo(FileConfig fileConfig, DirectoryInfo? ffmpegdir = null, DirectoryInfo? ffprobedir = null)
+    {
+        FFMpegDirectory = ffmpegdir ?? new DirectoryInfo(Environment.CurrentDirectory);
+        FFProbeDirectory = fileConfig.FFProbeDirectory;
+        _FFProbeRapport = fileConfig.FFProbeRapport;
+        FileInfo = new FileInfo(fileConfig.FullName ?? throw new Exception("File name not supplied"));
+    }
+
+    public DirectoryInfo FFMpegDirectory { get; }
+    public DirectoryInfo FFProbeDirectory { get; }
+    public FileInfo FileInfo { get; }
 
     private FFProbeRapport? _FFProbeRapport;
-    public FFProbeRapport FFProbeRapport => _FFProbeRapport ??= FFProbeRapport.GetRapport(FileInfo.FullName, FFProbeDirectory);
+    public FFProbeRapport FFProbeRapport 
+        => _FFProbeRapport ??= FFProbeRapport.GetRapport(FileInfo.FullName, FFProbeDirectory);
 
     public VideoStreamReader OpenVideoReader(
         IKillSwitch killSwitch,

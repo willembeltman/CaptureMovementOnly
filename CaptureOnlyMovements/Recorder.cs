@@ -4,7 +4,6 @@ using CaptureOnlyMovements.FrameComparers;
 using CaptureOnlyMovements.Helpers;
 using CaptureOnlyMovements.Interfaces;
 using CaptureOnlyMovements.Types;
-using System.Diagnostics;
 
 namespace CaptureOnlyMovements;
 
@@ -45,13 +44,9 @@ public class Recorder(
 
         try
         {
-            // Get the path to the current user's Videos folder
+            // Get the filename for the output video
             string videosFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.MyVideos);
-
-            // Define your desired output filename
             var outputName = $"{DateTime.Now:yyyy-MM-dd HH-mm-ss}.mkv";
-
-            // Combine the path and the filename to get the full output path
             string outputFullName = Path.Combine(videosFolderPath, outputName);
 
             if (File.Exists(outputFullName))
@@ -62,33 +57,42 @@ public class Recorder(
             // Get first frame for the resolution
             using var capturer = new ScreenshotCapturer();
             var frame = capturer.CaptureFrame();
-            var resolution = frame.Resolution;
-
-            var comparer = new FrameComparer(Config, resolution);
-
-            var container = new MediaContainerInfo(outputFullName);
-            using var writer = container.OpenVideoWriter(this, resolution, Config, FFMpegWriterConsole);
-
-            writer.WriteFrame(frame.Buffer);
             Application.InputFps.Tick();
+
+            // Create the comparer
+            var resolution = frame.Resolution;
+            using var comparer = new FrameComparer(Config, resolution);
+            comparer.IsDifferent(frame.Buffer); // Initialize comparer with the first frame
+
+            // Create the writer
+            var writerInfo = new MediaInfo(outputFullName);
+            using var writer = writerInfo.OpenVideoWriter(this, resolution, Config, FFMpegWriterConsole);
+
+            // Write the first frame to the video
+            writer.WriteFrame(frame.Buffer);
             Application.OutputFps.Tick();
             Console.WriteLine($"Captured frame at {DateTime.Now:HH:mm:ss.fff}   -");
 
-            comparer.IsDifferent(frame.Buffer); // Initialize comparer with the first frame
+            // Remember the previous frame date for timing
+            var previousFrameDate = DateTime.Now;
 
-            var previousDate = DateTime.Now;
+            // Iterate through next frames until the kill switch is activated
             while (!KillSwitch)
             {
+                // Capture the next frame
                 frame = capturer.CaptureFrame(frame.Buffer);
                 Application.InputFps.Tick();
 
+                // Check if the frame is different from the previous one
                 if (comparer.IsDifferent(frame.Buffer))
                 {
+                    // If so write it to the video
                     writer.WriteFrame(frame.Buffer);
                     Application.OutputFps.Tick();
-                    Console.WriteLine($"Captured frame at {DateTime.Now:HH:mm:ss.fff}   {comparer.Result_Difference}");
+                    Console.WriteLine($"Captured frame at {DateTime.Now:HH:mm:ss.fff}   {comparer.Difference}");
 
-                    previousDate = WaitForNextDateTimeHelper.Wait(Config, previousDate);
+                    // Wait for the next frame time and save previous frame date
+                    previousFrameDate = WaitForNextDateTimeHelper.Wait(Config, previousFrameDate);
                 }
             }
 

@@ -2,7 +2,7 @@
 
 namespace CaptureOnlyMovements.FrameResizers;
 
-public class BgrResizer(Resolution outputResolution)
+public class BgrResizer(Resolution outputResolution) : IDisposable
 {
     private readonly byte[] Buffer = new byte[outputResolution.PixelCount * 3];
 
@@ -37,5 +37,10 @@ public class BgrResizer(Resolution outputResolution)
         }
 
         return new Frame(Buffer, outputResolution);
+    }
+
+    public void Dispose()
+    {
+        GC.SuppressFinalize(this);
     }
 }

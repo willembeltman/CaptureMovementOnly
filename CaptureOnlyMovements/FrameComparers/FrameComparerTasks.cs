@@ -11,8 +11,8 @@ public class FrameComparerTasks(
     private readonly byte[] PreviousFrameData = new byte[resolution.Width * resolution.Height * 3];
 
     public Resolution Resolution { get; } = resolution;
-    public bool[] CalculationFrameData { get; } = new bool[resolution.Width * resolution.Height];
-    public int Result_Difference { get; private set; } = 0;
+    public bool[] MaskData { get; } = new bool[resolution.Width * resolution.Height];
+    public int Difference { get; private set; } = 0;
 
     public bool IsDifferent(byte[] newFrameData)
     {
@@ -24,7 +24,7 @@ public class FrameComparerTasks(
         bool showMask = preview?.ShowMask == true;
 
         // Reset difference counter
-        Result_Difference = 0;
+        Difference = 0;
 
         // Calculate chunk size: lines / (cpu-count * 8)
         int cpuCount = Environment.ProcessorCount;
@@ -58,7 +58,7 @@ public class FrameComparerTasks(
                         // Store mask if needed
                         if (showMask)
                         {
-                            CalculationFrameData[y * width + x] = isDifferent;
+                            MaskData[y * width + x] = isDifferent;
                         }
 
                         // Increment local sum if pixel is different
@@ -77,11 +77,11 @@ public class FrameComparerTasks(
         // Aggregate results
         foreach (var task in tasks)
         {
-            Result_Difference += task.Result;
+            Difference += task.Result;
         }
 
         // Check if frame is different
-        bool isFrameDifferent = Result_Difference > maxDiffPixels;
+        bool isFrameDifferent = Difference > maxDiffPixels;
 
         // Update PreviousFrameData if necessary
         if (isFrameDifferent)
@@ -90,5 +90,9 @@ public class FrameComparerTasks(
         }
 
         return isFrameDifferent;
+    }
+
+    public void Dispose()
+    {
     }
 }

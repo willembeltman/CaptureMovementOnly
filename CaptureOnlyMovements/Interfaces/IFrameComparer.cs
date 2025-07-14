@@ -2,10 +2,10 @@
 
 namespace CaptureOnlyMovements.Interfaces
 {
-    public interface IFrameComparer
+    public interface IFrameComparer : IDisposable
     {
-        bool[] CalculationFrameData { get; }
-        int Result_Difference { get; }
+        bool[] MaskData { get; }
+        int Difference { get; }
         Resolution Resolution { get; }
 
         bool IsDifferent(byte[] newFrameData);

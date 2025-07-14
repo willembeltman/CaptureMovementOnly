@@ -48,13 +48,9 @@ public class Converter(
 
         try
         {
-            // Get the path to the current user's Videos folder
+            // Get the filename for the output video
             string videosFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.MyVideos);
-
-            // Define your desired output filename
             var outputName = $"Converted {DateTime.Now:yyyy-MM-dd HH-mm-ss}.mkv";
-
-            // Combine the path and the filename to get the full output path
             string outputFullName = Path.Combine(videosFolderPath, outputName);
 
             if (File.Exists(outputFullName))
@@ -62,27 +58,32 @@ public class Converter(
 
             Console?.WriteLine($"Opening '{outputFullName}' to write video to.");
 
+            // Determine the resolution from the file configurations
             var width = FileConfigs.Max(a => a.Width) ?? throw new Exception("Could not determine resolution");
             var height = FileConfigs.Max(a => a.Height) ?? throw new Exception("Could not determine resolution");
             var resolution = new Resolution(width, height);
 
-            var writerInfo = new MediaContainerInfo(outputFullName);
+            // Open the writer with the determined resolution
+            var writerInfo = new MediaInfo(outputFullName);
             using var writer = writerInfo.OpenVideoWriter(this, resolution, Application.Config, FFMpegWriterConsole);
 
-            var fileConfigInfos = FileConfigs
-                .Where(a => a.FullName != null)
-                .Select(a => new FileConfigInfo(a));
-
-            foreach (var fileConfigInfo in fileConfigInfos)
+            foreach (var fileConfig in FileConfigs)
             {
-                Console?.WriteLine($"Opening '{fileConfigInfo.FileConfig.FullName}' to read video from.");
+                if (fileConfig.FullName == null) continue;
 
-                using var reader = fileConfigInfo.MediaContainer.OpenVideoReader(this, FFMpegReaderConsole);
+                Console?.WriteLine($"Opening '{fileConfig.FullName}' to read video from.");
+
+                // Open the video reader for the current file configuration
+                var readerInfo = new MediaInfo(fileConfig);
+                using var reader = readerInfo.OpenVideoReader(this, FFMpegReaderConsole);
+
+                // Read the first frame to initialize the comparer
                 var frame = reader.ReadFrame();
                 if (frame == null) continue;
 
-                var comparer = new FrameComparerTasks(fileConfigInfo.FileConfig, frame.Resolution, Preview);
-                var resizer = new BgrResizerTasks(resolution);
+                // Create the frame comparer and resizer
+                using var comparer = new FrameComparerTasks(fileConfig, frame.Resolution, Preview);
+                using var resizer = new BgrResizerTasks(resolution);
 
                 comparer.IsDifferent(frame.Buffer);
 
@@ -93,7 +94,7 @@ public class Converter(
                 Console?.WriteLine($"Captured frame #0   -");
                 Preview.SetPreview(frame);
 
-                var waitForNextIndex = new WaitForNextIndexHelper(fileConfigInfo, Application);
+                var waitForNextIndex = new WaitForNextIndexHelper(fileConfig, Application);
 
                 var frameIndex = 1;
                 while (!KillSwitch)
@@ -109,7 +110,7 @@ public class Converter(
 
                     if (Preview.ShowMask)
                     {
-                        var bwFrame = new BwFrame(comparer.CalculationFrameData, comparer.Resolution);
+                        var bwFrame = new BwFrame(comparer.MaskData, comparer.Resolution);
                         Preview.SetMask(bwFrame);
                     }
 
@@ -125,8 +126,7 @@ public class Converter(
                         Preview.SetPreview(frame);
                     }
 
-                    Console?.WriteLine($"Captured frame {frameIndex}   {comparer.Result_Difference}");
-                    
+                    Console?.WriteLine($"Captured frame {frameIndex}   {comparer.Difference}");
                 }
 
                 if (KillSwitch) break;

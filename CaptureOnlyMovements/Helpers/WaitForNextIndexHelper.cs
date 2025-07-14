@@ -14,19 +14,19 @@ public class WaitForNextIndexHelper
     private double lastTime;
     private double inputFps;
 
-    public WaitForNextIndexHelper(FileConfigInfo fileConfigInfo, IApplication application)
+    public WaitForNextIndexHelper(FileConfig fileConfig, IApplication application)
     {
-        FileConfigInfo = fileConfigInfo;
+        FileConfig = fileConfig;
         Application = application; 
         
-        inputFps = fileConfigInfo.FileConfig.Fps ?? throw new Exception($"Fps not detected in video {fileConfigInfo.FileConfig.FullName}");
+        inputFps = fileConfig.Fps ?? throw new Exception($"Fps not detected in video {fileConfig.FullName}");
         var targetFps = Application.Config.OutputFps;
-        var targetSpeed = fileConfigInfo.FileConfig.MinPlaybackSpeed;
+        var targetSpeed = fileConfig.MinPlaybackSpeed;
         interval = 1d / targetFps * targetSpeed;
         lastTime = 0d;
     }
 
-    public FileConfigInfo FileConfigInfo { get; }
+    public FileConfig FileConfig { get; }
     public IApplication Application { get; }
 
     public bool NeedToSkip(int frameIndex)

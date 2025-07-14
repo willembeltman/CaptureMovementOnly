@@ -11,8 +11,8 @@ public class FrameComparerParallel(
     private readonly byte[] PreviousFrameData = new byte[resolution.Width * resolution.Height * 3];
 
     public Resolution Resolution { get; } = resolution;
-    public bool[] CalculationFrameData { get; } = new bool[resolution.Width * resolution.Height];
-    public int Result_Difference { get; private set; }
+    public bool[] MaskData { get; } = new bool[resolution.Width * resolution.Height];
+    public int Difference { get; private set; }
 
     public bool IsDifferent(byte[] newFrameData)
     {
@@ -35,7 +35,7 @@ public class FrameComparerParallel(
 
                 if (preview?.ShowMask == true)
                 {
-                    CalculationFrameData[y * Resolution.Width + x] = isDifferent;
+                    MaskData[y * Resolution.Width + x] = isDifferent;
                 }
 
                 if (isDifferent)
@@ -54,7 +54,7 @@ public class FrameComparerParallel(
             }
         });
 
-        Result_Difference = totalDifferent;
+        Difference = totalDifferent;
 
         if (differenceExceeded)
         {
@@ -63,5 +63,9 @@ public class FrameComparerParallel(
         }
 
         return false;
+    }
+
+    public void Dispose()
+    {
     }
 }

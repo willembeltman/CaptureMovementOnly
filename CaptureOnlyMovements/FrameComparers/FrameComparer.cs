@@ -11,8 +11,8 @@ public class FrameComparer(
     private readonly byte[] PreviousFrameData = new byte[resolution.Width * resolution.Height * 3];
 
     public Resolution Resolution { get; } = resolution;
-    public bool[] CalculationFrameData { get; } = new bool[resolution.Width * resolution.Height];
-    public int Result_Difference { get; private set; }
+    public bool[] MaskData { get; } = new bool[resolution.Width * resolution.Height];
+    public int Difference { get; private set; }
 
     public bool IsDifferent(byte[] newFrameData)
     {
@@ -20,7 +20,7 @@ public class FrameComparer(
         var stride = Resolution.Width * 3;
 
         // Counter for total difference in frame 
-        Result_Difference = 0;
+        Difference = 0;
 
         // Iterate throug each pixel/color of the frame
         for (int y = 0; y < Resolution.Height; y++)
@@ -46,17 +46,17 @@ public class FrameComparer(
 
                 if (preview?.ShowMask == true)
                 {
-                    CalculationFrameData[y * Resolution.Width + x] = isDifferent;
+                    MaskData[y * Resolution.Width + x] = isDifferent;
                 }
 
                 if (isDifferent)
                 {
                     // Add difference to total difference
-                    Result_Difference++;
+                    Difference++;
                 }
 
                 // Do check if total difference hasn't exceeded threshold otherwise no need to continue iterating
-                if (Result_Difference > config.MaximumDifferentPixelCount)
+                if (Difference > config.MaximumDifferentPixelCount)
                 {
                     if (preview?.ShowMask != true)
                     {
@@ -68,12 +68,16 @@ public class FrameComparer(
         }
 
         // Do a final check for if CalculateFully is true
-        if (Result_Difference > config.MaximumDifferentPixelCount)
+        if (Difference > config.MaximumDifferentPixelCount)
         {
             Array.Copy(newFrameData, PreviousFrameData, newFrameData.Length);
             return true;
         }
 
         return false;
+    }
+
+    public void Dispose()
+    {
     }
 }
