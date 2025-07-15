@@ -61,7 +61,7 @@ public class Recorder(
 
             // Create the comparer
             var resolution = frame.Resolution;
-            using var comparer = new FrameComparer(Config, resolution);
+            using var comparer = new FrameComparerUnsafe(Config, resolution);
             comparer.IsDifferent(frame.Buffer); // Initialize comparer with the first frame
 
             // Create the writer

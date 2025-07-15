@@ -20,38 +20,37 @@
 //        int totalDifferent = 0;
 //        bool differenceExceeded = false;
 
-//        Parallel.For(0, Resolution.Height, (y, state) =>
+//        var pixelCount = Resolution.Width * Resolution.Height;
+
+//        Parallel.For(0, pixelCount, (k, state) =>
 //        {
-//            Parallel.For(0, Resolution.Width, (x, state) =>
+//            int index = k * 3;
+
+//            int diff =
+//                Math.Abs(newFrameData[index] - PreviousFrameData[index]) +
+//                Math.Abs(newFrameData[index + 1] - PreviousFrameData[index + 1]) +
+//                Math.Abs(newFrameData[index + 2] - PreviousFrameData[index + 2]);
+
+//            bool isDifferent = diff > config.MaximumPixelDifferenceValue;
+
+//            if (preview?.ShowMask == true)
 //            {
-//                int index = y * stride + x * 3;
+//                MaskData[index] = isDifferent;
+//            }
 
-//                int diff =
-//                    Math.Abs(newFrameData[index] - PreviousFrameData[index]) +
-//                    Math.Abs(newFrameData[index + 1] - PreviousFrameData[index + 1]) +
-//                    Math.Abs(newFrameData[index + 2] - PreviousFrameData[index + 2]);
-
-//                bool isDifferent = diff > config.MaximumPixelDifferenceValue;
-
-//                if (preview?.ShowMask == true)
+//            if (isDifferent)
+//            {
+//                int current = Interlocked.Increment(ref totalDifferent);
+//                if (current > config.MaximumDifferentPixelCount)
 //                {
-//                    MaskData[y * Resolution.Width + x] = isDifferent;
-//                }
-
-//                if (isDifferent)
-//                {
-//                    int current = Interlocked.Increment(ref totalDifferent);
-//                    if (current > config.MaximumDifferentPixelCount)
+//                    differenceExceeded = true;
+//                    if (preview?.ShowMask != true)
 //                    {
-//                        differenceExceeded = true;
-//                        if (preview?.ShowMask != true)
-//                        {
-//                            state.Stop(); // Abort parallel execution early
-//                            return;
-//                        }
+//                        state.Stop(); // Abort parallel execution early
+//                        return;
 //                    }
 //                }
-//            });
+//            }
 //        });
 
 //        Difference = totalDifferent;

@@ -2,44 +2,43 @@
 
 namespace CaptureOnlyMovements.FrameResizers;
 
-public class BgrResizerUnsafe(Resolution Resolution) : IDisposable
+public class BgraResizerUnsafe(Resolution Resolution) : IDisposable
 {
-    private readonly byte[] Buffer = new byte[Resolution.PixelCount * 3];
+    private readonly byte[] Buffer = new byte[Resolution.PixelCount * 4];
 
     public Frame Resize(Frame frame)
     {
-        var width = Resolution.Width;
-        var height = Resolution.Height;
-
         var inputResolution = frame.Resolution;
         if (inputResolution == Resolution)
             return frame;
 
-        var inputStride = inputResolution.Width * 3;
-        var outputStride = Resolution.Width * 3;
+        var inputStride = inputResolution.Width * 4;
+        var outputStride = Resolution.Width * 4;
 
         unsafe
         {
             fixed (byte* previousFramePointer = Buffer)
             fixed (byte* newFramePointer = frame.Buffer)
             {
-                for (int y = 0; y < height; y++)
+                for (int y = 0; y < Resolution.Height; y++)
                 {
-                    for (int x = 0; x < width; x++)
+                    for (int x = 0; x < Resolution.Width; x++)
                     {
-                        int index = y * outputStride + x * 3;
+                        int index = y * outputStride + x * 4;
                         if (x < inputResolution.Width && y < inputResolution.Height)
                         {
-                            int inputIndex = y * inputStride + x * 3;
+                            int inputIndex = y * inputStride + x * 4;
                             previousFramePointer[index + 0] = newFramePointer[inputIndex + 0];
                             previousFramePointer[index + 1] = newFramePointer[inputIndex + 1];
                             previousFramePointer[index + 2] = newFramePointer[inputIndex + 2];
+                            previousFramePointer[index + 3] = newFramePointer[inputIndex + 3];
                         }
                         else
                         {
                             previousFramePointer[index] = 0;
                             previousFramePointer[index + 1] = 0;
                             previousFramePointer[index + 2] = 0;
+                            previousFramePointer[index + 3] = 0;
                         }
                     }
                 }

@@ -19,7 +19,7 @@ public class ScreenshotCapturer : IDisposable
     {
         Factory = DXGI.CreateDXGIFactory1<IDXGIFactory1>();
         var adapterResult = Factory.EnumAdapters1(0, out Adapter);
-        if (!adapterResult.Success || Adapter == null) 
+        if (!adapterResult.Success || Adapter == null)
         {
             throw new InvalidOperationException("Failed to retrieve adapter.");
         }
@@ -117,7 +117,7 @@ public class ScreenshotCapturer : IDisposable
 
         using var stagingTexture = Device.CreateTexture2D(stagingDesc);
         var context = Device.ImmediateContext;
-        context.CopyResource(stagingTexture, texture2D); 
+        context.CopyResource(stagingTexture, texture2D);
 
         // Map staging texture to memory
         var dataBox = context.Map(stagingTexture, 0, MapMode.Read, Vortice.Direct3D11.MapFlags.None);
@@ -131,19 +131,59 @@ public class ScreenshotCapturer : IDisposable
         if (buffer == null || buffer.Length != bgrSize)
             buffer = new byte[bgrSize];
 
+        //unsafe
+        //{
+        //    byte* srcPtr = (byte*)dataBox.DataPointer;
+
+        //    for (int y = 0; y < height; y++)
+        //    {
+        //        int srcRow = y * srcStride;
+        //        int dstRow = y * dstStride;
+
+        //        for (int x = 0; x < width; x++)
+        //        {
+        //            int srcIndex = srcRow + x * 4; // BGRA
+        //            int dstIndex = dstRow + x * 3; // BGR
+
+        //            buffer[dstIndex + 0] = srcPtr[srcIndex + 0]; // B
+        //            buffer[dstIndex + 1] = srcPtr[srcIndex + 1]; // G
+        //            buffer[dstIndex + 2] = srcPtr[srcIndex + 2]; // R
+        //        }
+        //    }
+        //}
+
+        //unsafe
+        //{
+        //    byte* srcPtrBase = (byte*)dataBox.DataPointer;
+        //    fixed (byte* dstPtr = buffer)
+        //    {
+        //        var srcPtrTransfer = (nint)srcPtrBase;
+
+        //        var pixelCount = width * height;
+        //        Parallel.For(0, pixelCount, (k, state) =>
+        //        {
+        //            var srcPtr = (byte*)(srcPtrTransfer);
+
+        //            int srcIndex = k * 4; // BGRA
+        //            int dstIndex = k * 3; // BGR
+
+        //            buffer[dstIndex + 0] = srcPtr[srcIndex + 0]; // B
+        //            buffer[dstIndex + 1] = srcPtr[srcIndex + 1]; // G
+        //            buffer[dstIndex + 2] = srcPtr[srcIndex + 2]; // R
+        //        });
+        //    }
+        //}
+
         unsafe
         {
             byte* srcPtr = (byte*)dataBox.DataPointer;
-
-            for (int y = 0; y < height; y++)
+            fixed (byte* dstPtr = buffer)
             {
-                int srcRow = y * srcStride;
-                int dstRow = y * dstStride;
-
-                for (int x = 0; x < width; x++)
+                var pixelCount = width * height;
+                for (int k = 0; k < pixelCount; k++)
                 {
-                    int srcIndex = srcRow + x * 4; // BGRA
-                    int dstIndex = dstRow + x * 3; // BGR
+                    int srcIndex = k * 4; // BGRA
+                    int dstIndex = k * 3; // BGR
 
                     buffer[dstIndex + 0] = srcPtr[srcIndex + 0]; // B
                     buffer[dstIndex + 1] = srcPtr[srcIndex + 1]; // G
@@ -153,7 +193,7 @@ public class ScreenshotCapturer : IDisposable
         }
 
         // Clean up
-        context.Unmap(stagingTexture, 0); 
+        context.Unmap(stagingTexture, 0);
         DuplicatedOutput.ReleaseFrame();
 
         return new(buffer, new(width, height));
@@ -167,6 +207,6 @@ public class ScreenshotCapturer : IDisposable
         Adapter?.Dispose();
         Factory?.Dispose();
 
-        GC.SuppressFinalize(this); 
+        GC.SuppressFinalize(this);
     }
 }

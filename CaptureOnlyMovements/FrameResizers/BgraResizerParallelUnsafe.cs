@@ -2,9 +2,9 @@
 
 //namespace CaptureOnlyMovements.FrameResizers;
 
-//public class BgrResizerParallelUnsafe(Resolution Resolution) : IDisposable
+//public class BgraResizerParallelUnsafe(Resolution Resolution) : IDisposable
 //{
-//    private readonly byte[] Buffer = new byte[Resolution.PixelCount * 3];
+//    private readonly byte[] Buffer = new byte[Resolution.PixelCount * 4];
 
 //    public Frame Resize(Frame frame)
 //    {
@@ -15,8 +15,8 @@
 //        if (inputResolution == Resolution)
 //            return frame;
 
-//        var inputStride = inputResolution.Width * 3;
-//        var outputStride = Resolution.Width * 3;
+//        var inputStride = inputResolution.Width * 4;
+//        var outputStride = Resolution.Width * 4;
 
 //        unsafe
 //        {
@@ -33,19 +33,21 @@
 //                        var previousFramePointer = (byte*)(previousFramePointerTransfer);
 //                        var newFramePointer = (byte*)(newFramePointerTransfer);
 
-//                        int outputIndex = y * outputStride + x * 3;
+//                        int outputIndex = y * outputStride + x * 4;
 //                        if (x < inputResolution.Width && y < inputResolution.Height)
 //                        {
-//                            int inputIndex = y * inputStride + x * 3;
+//                            int inputIndex = y * inputStride + x * 4;
 //                            previousFramePointer[outputIndex + 0] = newFramePointer[inputIndex + 0];
 //                            previousFramePointer[outputIndex + 1] = newFramePointer[inputIndex + 1];
 //                            previousFramePointer[outputIndex + 2] = newFramePointer[inputIndex + 2];
+//                            previousFramePointer[outputIndex + 3] = newFramePointer[inputIndex + 3];
 //                        }
 //                        else
 //                        {
 //                            previousFramePointer[outputIndex] = 0;
 //                            previousFramePointer[outputIndex + 1] = 0;
 //                            previousFramePointer[outputIndex + 2] = 0;
+//                            previousFramePointer[outputIndex + 3] = 0;
 //                        }
 //                    });
 //                });

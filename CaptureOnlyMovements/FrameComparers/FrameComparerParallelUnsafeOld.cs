@@ -16,9 +16,11 @@
 
 //    public bool IsDifferent(byte[] newFrameData)
 //    {
-//        int stride = Resolution.Width * 3;
-//        int totalDifferent = 0;
-//        bool differenceExceeded = false;
+//        var width = Resolution.Width;
+//        var height = Resolution.Height;
+//        var stride = width * 3;
+//        var totalDifferent = 0;
+//        var differenceExceeded = false;
 
 //        unsafe
 //        {
@@ -30,37 +32,39 @@
 //                var newFramePointerTransfer = (nint)newFramePointerBase;
 //                var maskFramePointerTransfer = (nint)maskFramePointerBase;
 
-//                var pixelCount = Resolution.Width * Resolution.Height;
-//                Parallel.For(0, pixelCount, (k, state) =>
+//                Parallel.For(0, height, (y, state) =>
 //                {
 //                    var previousFramePointer = (byte*)(previousFramePointerTransfer);
 //                    var newFramePointer = (byte*)(newFramePointerTransfer);
 //                    var maskFramePointer = (bool*)(maskFramePointerTransfer);
 
-//                    int index = k * 3;
-
-//                    int diff =
-//                        Math.Abs(newFramePointer[index] - previousFramePointer[index]) +
-//                        Math.Abs(newFramePointer[index + 1] - previousFramePointer[index + 1]) +
-//                        Math.Abs(newFramePointer[index + 2] - previousFramePointer[index + 2]);
-
-//                    bool isDifferent = diff > config.MaximumPixelDifferenceValue;
-
-//                    if (preview?.ShowMask == true)
+//                    for (int x = 0; x < width; x++)
 //                    {
-//                        maskFramePointer[index] = isDifferent;
-//                    }
+//                        var index = y * stride + x * 3;
 
-//                    if (isDifferent)
-//                    {
-//                        int current = Interlocked.Increment(ref totalDifferent);
-//                        if (current > config.MaximumDifferentPixelCount)
+//                        var diff =
+//                            Math.Abs(previousFramePointer[index] - newFramePointer[index]) +
+//                            Math.Abs(previousFramePointer[index + 1] - newFramePointer[index + 1]) +
+//                            Math.Abs(previousFramePointer[index + 2] - newFramePointer[index + 2]);
+
+//                        var isDifferent = diff > config.MaximumPixelDifferenceValue;
+
+//                        if (preview?.ShowMask == true)
 //                        {
-//                            differenceExceeded = true;
-//                            if (preview?.ShowMask != true)
+//                            maskFramePointer[y * width + x] = isDifferent;
+//                        }
+
+//                        if (isDifferent)
+//                        {
+//                            var current = Interlocked.Increment(ref totalDifferent);
+//                            if (current > config.MaximumDifferentPixelCount)
 //                            {
-//                                state.Stop();
-//                                return;
+//                                differenceExceeded = true;
+//                                if (preview?.ShowMask != true)
+//                                {
+//                                    state.Stop(); // Abort parallel execution early
+//                                    return;
+//                                }
 //                            }
 //                        }
 //                    }
