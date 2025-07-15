@@ -29,6 +29,8 @@ public class DisplayControl : UserControl
     private byte[]? FrameBuffer1;
     private byte[]? FrameBuffer2;
     private bool FrameBufferSwitch;
+    BgrToBgraConverterParallel BgrToBgra = new BgrToBgraConverterParallel();
+    BwToBgraConverterParallel BwToBgra = new BwToBgraConverterParallel();
 
     public bool Dirty { get; private set; }
 
@@ -257,7 +259,7 @@ public class DisplayControl : UserControl
             ResizeD3D();
         }
 
-        InputBuffer = frame.Buffer.BgrToBgraParallel(InputBuffer);
+        InputBuffer = BgrToBgra.ConvertBgrToBgra(frame.Buffer, InputBuffer);
         SwitchBuffers();
     }
     public void SetFrame(BwFrame frame)
@@ -270,7 +272,7 @@ public class DisplayControl : UserControl
             ResizeD3D();
         }
 
-        InputBuffer = frame.Buffer.BwToBgraParallel(InputBuffer);
+        InputBuffer = BwToBgra.ConvertBwToBgra(frame.Buffer, InputBuffer);
         SwitchBuffers();
     }
 

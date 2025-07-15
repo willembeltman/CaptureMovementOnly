@@ -14,11 +14,9 @@ public class ScreenshotCapturer : IDisposable
     private readonly IDXGIOutput1 Output;
     private readonly ID3D11Device Device;
     private readonly IDXGIOutputDuplication DuplicatedOutput;
-    private readonly BgraToBgrConverterUnsafe BgraToBgrConverterUnsafe;
 
     public ScreenshotCapturer()
     {
-        BgraToBgrConverterUnsafe = new();
         Factory = DXGI.CreateDXGIFactory1<IDXGIFactory1>();
         var adapterResult = Factory.EnumAdapters1(0, out Adapter);
         if (!adapterResult.Success || Adapter == null) 

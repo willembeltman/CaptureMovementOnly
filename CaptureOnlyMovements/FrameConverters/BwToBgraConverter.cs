@@ -10,12 +10,12 @@ public class BwToBgraConverter : IDisposable
         }
         var black = (byte)0;
         var white = (byte)255;
-        for (int i = 0, j = 0; i < bw.Length; i++, j += 4)
+        for (int srcIndex = 0, dstIndex = 0; srcIndex < bw.Length; srcIndex++, dstIndex += 4)
         {
-            bgra[j] = bw[i] ? white : black;
-            bgra[j + 1] = bw[i] ? white : black;
-            bgra[j + 2] = bw[i] ? white : black;
-            bgra[j + 3] = 255;
+            bgra[dstIndex] = bw[srcIndex] ? white : black;
+            bgra[dstIndex + 1] = bw[srcIndex] ? white : black;
+            bgra[dstIndex + 2] = bw[srcIndex] ? white : black;
+            bgra[dstIndex + 3] = 255;
         }
         return bgra;
     }

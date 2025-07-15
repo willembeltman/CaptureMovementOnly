@@ -2,7 +2,7 @@
 
 public class BwToBgraConverterParallel : IDisposable
 {
-    public byte[] BwToBgraParallel(bool[] bw, byte[]? bgra = null)
+    public byte[] ConvertBwToBgra(bool[] bw, byte[]? bgra = null)
     {
         if (bgra == null || bw.Length * 4 != bgra.Length)
         {

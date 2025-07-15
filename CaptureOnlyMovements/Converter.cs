@@ -82,8 +82,8 @@ public class Converter(
                 if (frame == null) continue;
 
                 // Create the frame comparer and resizer
-                using var comparer = new FrameComparerTasks(fileConfig, frame.Resolution, Preview);
-                using var resizer = new BgrResizerTasks(resolution);
+                using var comparer = new FrameComparerParallelUnsafe(fileConfig, frame.Resolution, Preview);
+                using var resizer = new BgrResizerParallel(resolution);
 
                 comparer.IsDifferent(frame.Buffer);
 
@@ -146,9 +146,7 @@ public class Converter(
     }
 
     public void FatalException(Exception exception) => Application.FatalException(exception.Message, "Fatal exception");
-    //public void DebugWriteLine(string message) => Application.DebugWriteLine(message);
-    //public void FFMpegDebugWriteLine(string message) => Application.FFMpegDebugWriteLine(message);
-
+    
     public void Dispose()
     {
         KillSwitch = true;

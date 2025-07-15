@@ -2,7 +2,7 @@
 
 public class BgrToBgraConverter : IDisposable
 {
-    public byte[] BgrToBgra(byte[] bgr, byte[]? bgra = null)
+    public byte[] ConvertBgrToBgra(byte[] bgr, byte[]? bgra = null)
     {
         if (bgra == null || bgr.Length / 3 * 4 != bgra.Length)
         {
