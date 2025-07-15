@@ -13,7 +13,7 @@ public class Config : IComparerConfig, IEncoderConfig
     public string OutputPreset { get; set; } = "veryslow";
     public bool UseGpu { get; set; } = true;
 
-    public event ConfigChanged? StateChanged;
+    public event StateChangedDelegate? StateChanged;
     public void OnChangedState() => StateChanged?.Invoke();
 
     public static Config Load()

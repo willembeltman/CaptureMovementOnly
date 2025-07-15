@@ -1,8 +1,8 @@
 ﻿namespace CaptureOnlyMovements.FrameConverters;
 
-public static class BwToBgraConverter
+public class BwToBgraConverter : IDisposable
 {
-    public static byte[] BwToBgra(this bool[] bw, byte[]? bgra = null)
+    public byte[] BwToBgra(bool[] bw, byte[]? bgra = null)
     {
         if (bgra == null || bw.Length * 4 != bgra.Length)
         {
@@ -18,5 +18,9 @@ public static class BwToBgraConverter
             bgra[j + 3] = 255;
         }
         return bgra;
+    }
+
+    public void Dispose()
+    {
     }
 }

@@ -1,8 +1,8 @@
 ﻿namespace CaptureOnlyMovements.FrameConverters;
 
-public static class BgrToBgraConverterParallel
+public class BgrToBgraConverterParallel : IDisposable
 {
-    public static byte[] BgrToBgraParallel(this byte[] bgr, byte[]? bgra = null)
+    public byte[] BgrToBgraParallel(byte[] bgr, byte[]? bgra = null)
     {
         if (bgra == null || bgr.Length / 3 * 4 != bgra.Length)
         {
@@ -19,5 +19,9 @@ public static class BgrToBgraConverterParallel
             bgra[j + 3] = 255;
         });
         return bgra;
+    }
+
+    public void Dispose()
+    {
     }
 }

@@ -1,4 +1,5 @@
-﻿using CaptureOnlyMovements.Interfaces; // Zorg dat deze namespace correct is
+﻿using CaptureOnlyMovements.FrameConverters;
+using CaptureOnlyMovements.Interfaces; // Zorg dat deze namespace correct is
 using CaptureOnlyMovements.Types; // Zorg dat deze namespace correct is
 using Vortice.Direct3D;
 using Vortice.Direct3D11;
@@ -13,20 +14,18 @@ public class ScreenshotCapturer : IDisposable
     private readonly IDXGIOutput1 Output;
     private readonly ID3D11Device Device;
     private readonly IDXGIOutputDuplication DuplicatedOutput;
-
-    // Remove all lines using Adapter.GetOutput(0) and all duplicate EnumOutputs blocks
-    // Replace with a single, correct EnumOutputs usage in the constructor:
+    private readonly BgraToBgrConverterUnsafe BgraToBgrConverterUnsafe;
 
     public ScreenshotCapturer()
     {
+        BgraToBgrConverterUnsafe = new();
         Factory = DXGI.CreateDXGIFactory1<IDXGIFactory1>();
         var adapterResult = Factory.EnumAdapters1(0, out Adapter);
-        if (!adapterResult.Success || Adapter == null) // Controleer ook of Adapter niet null is na out-parameter
+        if (!adapterResult.Success || Adapter == null) 
         {
             throw new InvalidOperationException("Failed to retrieve adapter.");
         }
 
-        // --- AANGEPASTE SECTIE VOOR DEVICE CREATIE ---
         FeatureLevel[] featureLevels =
         [
             FeatureLevel.Level_11_1, // Probeer eerst 11.1
@@ -87,11 +86,6 @@ public class ScreenshotCapturer : IDisposable
 
     public Frame CaptureFrame(byte[]? buffer = null)
     {
-        // Vortice gebruikt Result.Ok om aan te geven of de operatie succesvol was.
-        // screenResource is een COM-object en moet gedisposed worden.
-
-        // TryAcquireNextFrame retourneert een Result, niet alleen een bool.
-        // We moeten controleren of de Result.IsSuccess property true is.
         var result = DuplicatedOutput.AcquireNextFrame(1,
             out OutduplFrameInfo info,
             out IDXGIResource? screenResource);
@@ -102,7 +96,7 @@ public class ScreenshotCapturer : IDisposable
             result = DuplicatedOutput.AcquireNextFrame(1, out info, out screenResource);
         }
 
-        // Gebruik een 'using' statement voor correcte disposal van COM-objecten
+        // Create texture2D from IDXGIResource
         using var texture2D = screenResource.QueryInterface<ID3D11Texture2D>();
         var desc = texture2D.Description;
 
@@ -120,21 +114,16 @@ public class ScreenshotCapturer : IDisposable
             MipLevels = 1,
             ArraySize = 1,
             SampleDescription = new SampleDescription(1, 0),
-            Usage = ResourceUsage.Staging,
-            //OptionFlags = ResourceOptionFlags.None
+            Usage = ResourceUsage.Staging
         };
 
-        using var stagingTexture = Device.CreateTexture2D(stagingDesc); // Gebruik Device.CreateTexture2D
-
-        // De ImmediateContext is nu een property van het Device, geen aparte aanroep.
+        using var stagingTexture = Device.CreateTexture2D(stagingDesc);
         var context = Device.ImmediateContext;
-        context.CopyResource(stagingTexture, texture2D); // Let op: bron en doel zijn omgewisseld hier, staging is doel
+        context.CopyResource(stagingTexture, texture2D); 
 
         // Map staging texture to memory
-        // MapMode is nu een enum direct onder Vortice.Direct3D11
         var dataBox = context.Map(stagingTexture, 0, MapMode.Read, Vortice.Direct3D11.MapFlags.None);
         var stride = dataBox.RowPitch;
-        // int size = stride * desc.Height; // Deze variabele wordt niet gebruikt
 
         // Converteer BGRA → BGR
         var srcStride = Convert.ToInt32(dataBox.RowPitch);
@@ -165,11 +154,8 @@ public class ScreenshotCapturer : IDisposable
             }
         }
 
-        context.Unmap(stagingTexture, 0); // Gebruik context.Unmap
-
-        // screenResource wordt nu automatisch gedisposed door het 'using' statement.
-        // We hoeven screenResource.Dispose() niet expliciet aan te roepen, tenzij het niet in een 'using' block zit.
-        // DuplicatedOutput.ReleaseFrame() is nog steeds nodig.
+        // Clean up
+        context.Unmap(stagingTexture, 0); 
         DuplicatedOutput.ReleaseFrame();
 
         return new(buffer, new(width, height));
@@ -177,13 +163,12 @@ public class ScreenshotCapturer : IDisposable
 
     public void Dispose()
     {
-        // Correcte disposal van de Vortice objecten
         DuplicatedOutput?.Dispose();
         Output?.Dispose();
         Device?.Dispose();
         Adapter?.Dispose();
         Factory?.Dispose();
 
-        GC.SuppressFinalize(this); // Voorkom finalization, we hebben al gedisposed
+        GC.SuppressFinalize(this); 
     }
 }

@@ -1,3 +1,3 @@
 ﻿namespace CaptureOnlyMovements.Delegates;
 
-public delegate void ConfigChanged();
+public delegate void StateChangedDelegate();
