@@ -4,6 +4,9 @@ using CaptureOnlyMovements.FrameComparers;
 using CaptureOnlyMovements.Helpers;
 using CaptureOnlyMovements.Interfaces;
 using CaptureOnlyMovements.Types;
+using System;
+using System.IO;
+using System.Threading;
 
 namespace CaptureOnlyMovements;
 

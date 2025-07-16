@@ -1,19 +1,16 @@
 ﻿using CaptureOnlyMovements.FFProbe;
 using CaptureOnlyMovements.Interfaces;
+using System;
+using System.IO;
+using System.Linq;
 
 namespace CaptureOnlyMovements.Types;
 
-public class FileConfig : IComparerConfig
+public class FileConfig(string fullName, DirectoryInfo? fFProbeDirectory = null) : IComparerConfig
 {
-    public FileConfig(string fullName, DirectoryInfo? fFProbeDirectory = null)
-    {
-        FFProbeDirectory = fFProbeDirectory ?? new DirectoryInfo(Environment.CurrentDirectory);
-        FullName = fullName;
-    }
+    internal readonly DirectoryInfo FFProbeDirectory = fFProbeDirectory ?? new DirectoryInfo(Environment.CurrentDirectory);
 
-    internal readonly DirectoryInfo FFProbeDirectory;
-
-    public string? FullName { get; }
+    public string? FullName { get; } = fullName;
     public int MaximumPixelDifferenceValue { get; set; } = new Config().MaximumPixelDifferenceValue;
     public int MaximumDifferentPixelCount { get; set; } = new Config().MaximumDifferentPixelCount;
     public int MinPlaybackSpeed { get; set; } = new Config().MinPlaybackSpeed;

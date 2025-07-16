@@ -1,4 +1,6 @@
-﻿namespace CaptureOnlyMovements.Types;
+﻿using System;
+
+namespace CaptureOnlyMovements.Types;
 
 public struct Resolution
 {

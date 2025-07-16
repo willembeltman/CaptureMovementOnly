@@ -1,4 +1,5 @@
 ﻿using CaptureOnlyMovements.Types;
+using System;
 
 namespace CaptureOnlyMovements.Interfaces;
 
@@ -11,11 +12,4 @@ public interface IApplication
 
     void FatalException(string message, string title);
     void FatalException(Exception exception);
-}
-public interface IPreview
-{
-    bool ShowMask { get; }
-    bool ShowPreview { get; }
-    void SetMask(BwFrame frame);
-    void SetPreview(Frame frame);
 }

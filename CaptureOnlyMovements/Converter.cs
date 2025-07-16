@@ -4,7 +4,11 @@ using CaptureOnlyMovements.FrameResizers;
 using CaptureOnlyMovements.Helpers;
 using CaptureOnlyMovements.Interfaces;
 using CaptureOnlyMovements.Types;
+using System;
 using System.ComponentModel;
+using System.IO;
+using System.Linq;
+using System.Threading;
 
 namespace CaptureOnlyMovements;
 

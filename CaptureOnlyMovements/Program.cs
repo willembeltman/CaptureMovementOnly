@@ -1,7 +1,8 @@
+using CaptureOnlyMovements.Forms;
 using System;
 using System.Windows.Forms;
 
-namespace CaptureOnlyMovements.Forms;
+namespace CaptureOnlyMovements;
 
 internal static class Program
 {

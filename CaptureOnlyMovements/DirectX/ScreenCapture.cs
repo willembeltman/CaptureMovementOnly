@@ -1,6 +1,9 @@
 ﻿using CaptureOnlyMovements.FrameConverters;
 using CaptureOnlyMovements.Interfaces; // Zorg dat deze namespace correct is
 using CaptureOnlyMovements.Types; // Zorg dat deze namespace correct is
+using System;
+using System.Collections.Generic;
+using System.Threading;
 using Vortice.Direct3D;
 using Vortice.Direct3D11;
 using Vortice.DXGI;

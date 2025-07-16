@@ -1,4 +1,7 @@
-﻿namespace CaptureOnlyMovements.FrameConverters;
+﻿using System;
+using System.Threading.Tasks;
+
+namespace CaptureOnlyMovements.FrameConverters;
 
 public class BwToBgraConverterTasks : IDisposable
 {

@@ -1,4 +1,6 @@
-﻿namespace CaptureOnlyMovements.Interfaces
+﻿using System;
+
+namespace CaptureOnlyMovements.Interfaces
 {
     public interface IKillSwitch
     {

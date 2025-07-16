@@ -1,4 +1,6 @@
-﻿namespace CaptureOnlyMovements.FrameConverters;
+﻿using System;
+
+namespace CaptureOnlyMovements.FrameConverters;
 
 public class BgrToBgraConverterUnsafe : IDisposable
 {

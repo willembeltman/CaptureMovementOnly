@@ -1,6 +1,10 @@
 ﻿using CaptureOnlyMovements.Interfaces;
 using CaptureOnlyMovements.Types;
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
+using System.Threading;
 
 namespace CaptureOnlyMovements.FFMpeg.Types;
 

@@ -1,5 +1,6 @@
 ﻿using CaptureOnlyMovements.Interfaces;
 using CaptureOnlyMovements.Types;
+using System;
 using System.Runtime.InteropServices;
 
 namespace CaptureOnlyMovements.FrameComparers;

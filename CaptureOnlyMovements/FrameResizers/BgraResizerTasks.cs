@@ -1,4 +1,6 @@
 ﻿using CaptureOnlyMovements.Types;
+using System;
+using System.Threading.Tasks;
 
 namespace CaptureOnlyMovements.FrameResizers;
 

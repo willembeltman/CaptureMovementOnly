@@ -3,6 +3,9 @@ using CaptureOnlyMovements.FFMpeg.Types;
 using CaptureOnlyMovements.FFProbe;
 using CaptureOnlyMovements.Interfaces;
 using CaptureOnlyMovements.Types;
+using System;
+using System.IO;
+using System.Linq;
 
 namespace CaptureOnlyMovements.FFMpeg;
 
