@@ -9,19 +9,6 @@ namespace CaptureOnlyMovements.Forms.Controls
         /// </summary>
         private System.ComponentModel.IContainer components = null;
 
-        /// <summary> 
-        /// Clean up any resources being used.
-        /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing && (components != null))
-            {
-                components.Dispose();
-            }
-            base.Dispose(disposing);
-        }
-
         #region Component Designer generated code
 
         /// <summary> 
@@ -32,7 +19,6 @@ namespace CaptureOnlyMovements.Forms.Controls
         {
             components = new System.ComponentModel.Container();
             List = new System.Windows.Forms.ListBox();
-            Timer = new System.Windows.Forms.Timer(components);
             SuspendLayout();
             // 
             // List
@@ -48,11 +34,6 @@ namespace CaptureOnlyMovements.Forms.Controls
             List.Size = new System.Drawing.Size(478, 349);
             List.TabIndex = 1;
             List.SelectionMode = SelectionMode.MultiExtended;
-            // 
-            // Timer
-            // 
-            Timer.Enabled = true;
-            Timer.Tick += Timer_Tick;
             // 
             // ConsoleControl
             // 
@@ -70,6 +51,5 @@ namespace CaptureOnlyMovements.Forms.Controls
         #endregion
 
         private System.Windows.Forms.ListBox List;
-        private System.Windows.Forms.Timer Timer;
     }
 }

@@ -42,24 +42,18 @@ public partial class ConfigForm : Form
         }
     }
 
-    private void Timer_Tick(object sender, EventArgs e)
-    {
-        InputFpsLabel.Text = Application.InputFps.CalculateFps().ToString("F2") + " fps";
-        OutputFpsLabel.Text = Application.OutputFps.CalculateFps().ToString("F2") + " fps";
-    }
 
     private void ConfigForm_VisibleChanged(object sender, EventArgs e)
     {
-        Timer.Enabled = Visible;
         if (Visible)
         {
             StateChanged();
             MaximumPixelDifferenceValue.Text = Config.MaximumPixelDifferenceValue.ToString();
             MaximumDifferentPixelCount.Text = Config.MaximumDifferentPixelCount.ToString();
             MinPlaybackSpeed.Text = Config.MinPlaybackSpeed.ToString();
-            Fps.SelectedValue = Config.OutputFps.ToString();
-            Quality.SelectedValue = Config.OutputQuality.ToString();
-            Preset.SelectedValue = Config.OutputPreset.ToString();
+            Fps.SelectedItem = Config.OutputFps.ToString();
+            Quality.SelectedItem = Config.OutputQuality.ToString();
+            Preset.SelectedItem = Config.OutputPreset.ToString();
             UseGpu.Checked = Config.UseGpu;
         }
     }

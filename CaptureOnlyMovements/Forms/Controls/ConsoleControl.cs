@@ -2,52 +2,95 @@
 using System;
 using System.Collections.Concurrent;
 using System.Linq;
+using System.Threading;
 using System.Windows.Forms;
 
-namespace CaptureOnlyMovements.Forms.Controls;
-
-public partial class ConsoleControl : UserControl, IConsole
+namespace CaptureOnlyMovements.Forms.Controls
 {
-    ConcurrentQueue<string> Queue = new ConcurrentQueue<string>();
-    private int MaxVisibleLines => List.ClientSize.Height / List.ItemHeight;
-
-    public ConsoleControl()
+    public partial class ConsoleControl : UserControl, IConsole
     {
-        InitializeComponent();
-        List.KeyDown += List_KeyDown;
-    }
+        private readonly ConcurrentQueue<string> _queue = new();
+        private readonly AutoResetEvent _signal = new(false);
+        private readonly Thread _workerThread;
 
-    public void WriteLine(string line)
-    {
-        Queue.Enqueue(line);
-    }
+        private int MaxVisibleLines => List.ClientSize.Height / List.ItemHeight;
 
-    private void Timer_Tick(object sender, System.EventArgs e)
-    {
-        while (Queue.TryDequeue(out var line))
+        public ConsoleControl()
         {
-            if (List.Items.Count > MaxVisibleLines - 1) // Determine how many lines to keep
+            InitializeComponent();
+            List.KeyDown += List_KeyDown;
+
+            // Start de achtergrondthread
+            _workerThread = new Thread(ProcessQueue)
+            {
+                IsBackground = true
+            };
+            _workerThread.Start();
+        }
+
+        public void WriteLine(string line)
+        {
+            _queue.Enqueue(line);
+            _signal.Set(); // Wek de thread op
+        }
+
+        private void ProcessQueue()
+        {
+            while (!IsDisposed)
+            {
+                _signal.WaitOne(); // Blokkeert tot er een item komt
+
+                while (_queue.TryDequeue(out var line))
+                {
+                    if (IsDisposed) return;
+
+                    // UI moet via Invoke
+                    if (List.InvokeRequired)
+                    {
+                        List.Invoke(() => AddLineToList(line));
+                    }
+                    else
+                    {
+                        AddLineToList(line);
+                    }
+                }
+            }
+        }
+
+        private void AddLineToList(string line)
+        {
+            if (List.Items.Count > MaxVisibleLines - 1)
             {
                 List.Items.RemoveAt(0);
             }
             List.Items.Add(line);
         }
-    }
-    private void List_KeyDown(object? sender, KeyEventArgs e)
-    {
-        // CTRL + C?
-        if (e.Control && e.KeyCode == Keys.C)
+
+        private void List_KeyDown(object? sender, KeyEventArgs e)
         {
-            // verzamel alle geselecteerde items
-            var lines = List.SelectedItems
-                            .Cast<object>()
-                            .Select(o => o?.ToString() ?? string.Empty);
+            if (e.Control && e.KeyCode == Keys.C)
+            {
+                var lines = List.SelectedItems
+                                .Cast<object>()
+                                .Select(o => o?.ToString() ?? string.Empty);
 
-            // zet ze als één string (met regeleinden) op het klembord
-            Clipboard.SetText(string.Join(Environment.NewLine, lines));
+                Clipboard.SetText(string.Join(Environment.NewLine, lines));
+                e.Handled = true;
+            }
+        }
 
-            // geef aan dat je de toetscombinatie hebt afgehandeld
-            e.Handled = true;
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
+            if (disposing)
+            {
+                _signal.Set(); // zorg dat de thread eruit komt
+                _signal.Dispose();
+            }
         }
     }
 }

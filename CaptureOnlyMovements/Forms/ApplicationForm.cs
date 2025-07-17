@@ -15,6 +15,11 @@ public class ApplicationForm : Form, IApplication
         InputFps = new FpsCounter();
         OutputFps = new FpsCounter();
 
+        Timer = new Timer
+        {
+            Interval = 100 // 1 seconde
+        };
+        Timer.Tick += Timer_Tick;
         NotificationIcon = new()
         {
             // Zorg ervoor dat je een geldig icoonpad hebt!
@@ -84,6 +89,7 @@ public class ApplicationForm : Form, IApplication
         Recorder = new Recorder(this, DebugForm, FFMpegDebugForm);
     }
 
+    private readonly Timer Timer;
     private readonly NotifyIcon NotificationIcon;
     private readonly ContextMenuStrip NewContextMenuStrip;
     private readonly ToolStripMenuItem StartRecordingButton;
@@ -118,13 +124,26 @@ public class ApplicationForm : Form, IApplication
         }
         else
         {
-            NotificationIcon.Icon = new System.Drawing.Icon("Computer.ico"); 
+            NotificationIcon.Icon = new System.Drawing.Icon("Computer.ico");
         }
     }
-
+    private void Timer_Tick(object? sender, EventArgs e)
+    {
+        if (Recorder.Recording)
+        {
+            Timer.Interval = 100;
+            NotificationIcon.Text = $"Capture Motion Only (Recording - Reading: {InputFps.CalculateFps().ToString("F2")} fps / Writing: {OutputFps.CalculateFps().ToString("F2")} fps)";
+        }
+        else
+        {
+            Timer.Interval = 500;
+            NotificationIcon.Text = "Capture Motion Only (Not Recording)";
+        }
+    }
     private void ApplicationForm_Load(object? sender, EventArgs e)
     {
         Hide(); // Zorgt ervoor dat het formulier verborgen is bij het laden
+        Timer.Start(); // Start de timer om de notificatie-tekst bij te werken
     }
     private void StartRecording_Click(object? sender, EventArgs e) => Recorder.Start();
     private void StopRecording_Click(object? sender, EventArgs e) => Recorder.Stop();

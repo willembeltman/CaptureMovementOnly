@@ -5,16 +5,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TaskbarClock;
 
 namespace CaptureOnlyMovements.Helpers;
 
-public class WaitForNextIndexHelper
+public class skipTillNextIndexHelper
 {
     private double interval;
     private double lastTime;
     private double inputFps;
 
-    public WaitForNextIndexHelper(FileConfig fileConfig, IApplication application)
+    public skipTillNextIndexHelper(FileConfig fileConfig, IApplication application)
     {
         FileConfig = fileConfig;
         Application = application; 
@@ -34,12 +35,17 @@ public class WaitForNextIndexHelper
         var time = Convert.ToDouble(frameIndex) / inputFps;
         if (interval < time - lastTime)
         {
-            lastTime = time;
             return false;
         }
         else
         {
             return true; // Skip frames that are not needed based on the target speed
         }
+    }
+
+    internal void Reset(int frameIndex)
+    {
+        var time = Convert.ToDouble(frameIndex) / inputFps;
+        lastTime = time;
     }
 }

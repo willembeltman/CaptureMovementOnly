@@ -94,11 +94,11 @@ public class Converter(
                 frame = resizer.Resize(frame);
 
                 writer.WriteFrame(frame.Buffer);
-                Application.InputFps.Tick();
+                Application.OutputFps.Tick();
                 Console?.WriteLine($"Captured frame #0   -");
                 Preview.SetPreview(frame);
 
-                var waitForNextIndex = new WaitForNextIndexHelper(fileConfig, Application);
+                var skipTillNextIndex = new skipTillNextIndexHelper(fileConfig, Application);
 
                 var frameIndex = 1;
                 while (!KillSwitch)
@@ -108,7 +108,7 @@ public class Converter(
                     Application.InputFps.Tick();
                     frameIndex++;
 
-                    if (waitForNextIndex.NeedToSkip(frameIndex)) continue;
+                    if (skipTillNextIndex.NeedToSkip(frameIndex)) continue;
 
                     var isDifferent = comparer.IsDifferent(frame.Buffer);
 
@@ -119,6 +119,8 @@ public class Converter(
                     }
 
                     if (!isDifferent) continue;
+
+                    skipTillNextIndex.Reset(frameIndex);
 
                     frame = resizer.Resize(frame);
 
