@@ -77,6 +77,8 @@ public class Converter(
 
                 Console?.WriteLine($"Opening '{fileConfig.FullName}' to read video from.");
 
+                var frameIndex = 0;
+
                 // Open the video reader for the current file configuration
                 var readerInfo = new MediaInfo(fileConfig);
                 using var reader = readerInfo.OpenVideoReader(this, FFMpegReaderConsole);
@@ -84,6 +86,8 @@ public class Converter(
                 // Read the first frame to initialize the comparer
                 var frame = reader.ReadFrame();
                 if (frame == null) continue;
+                Application.InputFps.Tick();
+                frameIndex++;
 
                 // Create the frame comparer and resizer
                 using var comparer = new FrameComparerTasks(fileConfig, frame.Resolution, Preview);
@@ -100,7 +104,6 @@ public class Converter(
 
                 var skipTillNextIndex = new skipTillNextIndexHelper(fileConfig, Application);
 
-                var frameIndex = 1;
                 while (!KillSwitch)
                 {
                     frame = reader.ReadFrame(frame.Buffer);
