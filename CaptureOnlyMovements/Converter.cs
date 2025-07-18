@@ -101,27 +101,23 @@ public class Converter(
 
                 writer.WriteFrame(frame);
                 Application.OutputFps.Tick();
-                Console?.WriteLine($"Captured frame #0   -");
                 Preview.WriteFrame(frame);
 
                 var skipTillNextIndex = new skipTillNextIndexHelper(fileConfig, Application);
 
                 // Setup pipeline
                 using var pipeline =
-                    new VideoPipeline(new ReadFrameAndTickFps(reader, Application.InputFps))
+                    new VideoPipeline(new ReadFrameAndTickFps(reader, Application.InputFps), Console)
                                 .Next(new SkipInitialOrNotDifferentFrames(skipTillNextIndex, comparer, Preview))
-                                .Next(new ResizeFrame(resizer), new ShowMask(Preview))
-                                .Next(new ShowPreviewAndPassThrough(Preview))
+                                .Next(new ResizeFrame(resizer), new ShowMaskTo(Preview))
+                                .Next(new ShowPreviewTo_PassThrough(Preview))
                                 .Next(new WriteFrameAndTickFps(writer, Application.OutputFps));
 
                 // Then start it
                 pipeline.Start(this);
+                pipeline.WaitForExit();
 
-
-
-
-
-
+                // Old single threaded code
                 //while (!KillSwitch)
                 //{
                 //    frame = reader.ReadFrame(frame);

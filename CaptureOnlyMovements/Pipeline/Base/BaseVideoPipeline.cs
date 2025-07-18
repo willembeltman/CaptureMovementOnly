@@ -3,55 +3,52 @@ using CaptureOnlyMovements.Pipeline.Interfaces;
 using CaptureOnlyMovements.Types;
 using System;
 
-
 namespace CaptureOnlyMovements.Pipeline.Base;
 
-public abstract class BaseVideoPipeline : BasePipeline, INextVideoPipeline
+public abstract class BaseVideoPipeline 
+    : BasePipeline, INextVideoPipeline
 {
-    public BaseVideoPipeline(BaseVideoPipeline? firstPipeline, BaseVideoPipeline? previousPipeline, string name) : base(previousPipeline, name)
+    public BaseVideoPipeline(
+        BaseVideoPipeline? firstPipeline,
+        BaseVideoPipeline? previousPipeline, 
+        string name,
+        IConsole? console) 
+        : base(firstPipeline, previousPipeline, name, console)
     {
         FirstPipeline = firstPipeline ?? this;
         PreviousPipeline = previousPipeline;
     }
 
     public BaseVideoPipeline FirstPipeline { get; }
-    protected BaseVideoPipeline? PreviousPipeline { get; }
-    protected Frame?[]? Frames { get; set; }
+    public BaseVideoPipeline? PreviousPipeline { get; }
 
-    int IPipeline.Start(IKillSwitch? cancellationToken, int count) => StartVideo(cancellationToken, count);
+    public Frame?[]? Frames { get; protected set; }
+    public BwFrame?[]? Masks { get; protected set; }
+
+    int IPipeline.Start(IKillSwitch? cancellationToken, int count) 
+        => StartVideo(cancellationToken, count);
     protected virtual int StartVideo(IKillSwitch? cancellationToken, int count)
     {
         count++;
         count = ((IPipeline?)PreviousPipeline)?.Start(cancellationToken, count) ?? count;
 
         Frames = new Frame[count];
-        Console.WriteLine($"{Name} Frames: {Frames.Length}x");
+        Console?.WriteLine($"{Name}, number of frames: {Frames.Length}x");
         Thread.Start(cancellationToken);
 
         return count;
     }
     void INextVideoPipeline.ProcessFrame(Frame frame)
     {
-        if (Frames == null) throw new Exception("How did you get here? What'd you do?");
+        if (Frames == null)
+            throw new InvalidOperationException("Pipeline not initialized. Call Start first.");
+
         FrameDone.WaitOne();
 
         Frames[FrameIndex] = frame;
-
         FrameIndex++;
         if (FrameIndex >= Frames.Length)
-        {
             FrameIndex = 0;
-        }
-
-        FrameReceived.Set();
-    }
-    void INextVideoPipeline.Stop()
-    {
-        if (Disposing) return;
-
-        FrameDone.WaitOne();
-
-        Disposing = true;
 
         FrameReceived.Set();
     }

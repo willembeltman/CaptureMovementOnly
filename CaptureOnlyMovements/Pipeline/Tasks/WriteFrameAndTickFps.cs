@@ -2,23 +2,22 @@
 using CaptureOnlyMovements.Pipeline.Interfaces;
 using CaptureOnlyMovements.Types;
 
-namespace CaptureOnlyMovements.Pipeline.Tasks
+namespace CaptureOnlyMovements.Pipeline.Tasks;
+
+public class WriteFrameAndTickFps : IFrameWriter
 {
-    internal class WriteFrameAndTickFps : IFrameWriter
+    public WriteFrameAndTickFps(VideoStreamWriter writer, FpsCounter outputFps)
     {
-        public WriteFrameAndTickFps(VideoStreamWriter writer, FpsCounter outputFps)
-        {
-            Writer = writer;
-            OutputFps = outputFps;
-        }
+        Writer = writer;
+        OutputFps = outputFps;
+    }
 
-        public VideoStreamWriter Writer { get; }
-        public FpsCounter OutputFps { get; }
+    public VideoStreamWriter Writer { get; }
+    public FpsCounter OutputFps { get; }
 
-        public void WriteFrame(Frame frame)
-        {
-            Writer.WriteFrame(frame);
-            OutputFps.Tick();
-        }
+    public void WriteFrame(Frame frame)
+    {
+        Writer.WriteFrame(frame);
+        OutputFps.Tick();
     }
 }

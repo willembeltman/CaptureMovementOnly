@@ -4,7 +4,7 @@ using CaptureOnlyMovements.Types;
 
 namespace CaptureOnlyMovements.Pipeline.Tasks;
 
-internal class ReadFrameAndTickFps : IFrameReader
+public class ReadFrameAndTickFps : IFrameReader
 {
     public ReadFrameAndTickFps(VideoStreamReader reader, FpsCounter inputFps)
     {

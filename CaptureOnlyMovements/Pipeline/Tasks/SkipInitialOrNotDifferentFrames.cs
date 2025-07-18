@@ -4,42 +4,41 @@ using CaptureOnlyMovements.Interfaces;
 using CaptureOnlyMovements.Pipeline.Interfaces;
 using CaptureOnlyMovements.Types;
 
-namespace CaptureOnlyMovements.Pipeline.Tasks
+namespace CaptureOnlyMovements.Pipeline.Tasks;
+
+public class SkipInitialOrNotDifferentFrames : IFrameProcessorWithMaskOutput
 {
-    public class SkipInitialOrNotDifferentFrames : IFrameProcessorWithMaskOutput
+    private int frameIndex;
+
+    public SkipInitialOrNotDifferentFrames(skipTillNextIndexHelper skipTillNextIndex, FrameComparerTasks comparer, IPreview preview)
     {
-        private int frameIndex;
+        SkipTillNextIndex = skipTillNextIndex;
+        Comparer = comparer;
+        Preview = preview;
+    }
 
-        public SkipInitialOrNotDifferentFrames(skipTillNextIndexHelper skipTillNextIndex, FrameComparerTasks comparer, IPreview preview)
+    public skipTillNextIndexHelper SkipTillNextIndex { get; }
+    public FrameComparerTasks Comparer { get; }
+    public IPreview Preview { get; }
+
+    public (Frame?, BwFrame?) ProcessFrame(Frame frame, BwFrame? bwFrame)
+    {
+        frameIndex++;
+
+        if (SkipTillNextIndex.NeedToSkip(frameIndex)) return (null, null);
+
+        var isDifferent = Comparer.IsDifferent(frame.Buffer);
+
+        if (Preview.ShowMask)
         {
-            SkipTillNextIndex = skipTillNextIndex;
-            Comparer = comparer;
-            Preview = preview;
+            bwFrame = new BwFrame(Comparer.MaskData, Comparer.Resolution);
+            Preview.WriteMask(bwFrame);
         }
 
-        public skipTillNextIndexHelper SkipTillNextIndex { get; }
-        public FrameComparerTasks Comparer { get; }
-        public IPreview Preview { get; }
+        if (!isDifferent) return (null, null);
 
-        public (Frame?, BwFrame?) ProcessFrame(Frame frame, BwFrame? bwFrame)
-        {
-            frameIndex++;
+        SkipTillNextIndex.Reset(frameIndex);
 
-            if (SkipTillNextIndex.NeedToSkip(frameIndex)) return (null, null);
-
-            var isDifferent = Comparer.IsDifferent(frame.Buffer);
-
-            if (Preview.ShowMask)
-            {
-                bwFrame = new BwFrame(Comparer.MaskData, Comparer.Resolution);
-                Preview.WriteMask(bwFrame);
-            }
-
-            if (!isDifferent) return (null, null);
-
-            SkipTillNextIndex.Reset(frameIndex);
-
-            return (frame, bwFrame);
-        }
+        return (frame, bwFrame);
     }
 }

@@ -1,11 +1,12 @@
-﻿using CaptureOnlyMovements.Types;
+﻿using CaptureOnlyMovements.Pipeline.Base;
+using CaptureOnlyMovements.Types;
 
 
 namespace CaptureOnlyMovements.Pipeline.Interfaces
 {
     public interface IMaskPipeline : IPipeline
     {
-        INextMaskPipeline FirstMaskPipeline { get; }
+        BaseMaskPipeline FirstMaskPipeline { get; }
 
         void WriteMask(BwFrame mask);
     }

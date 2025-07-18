@@ -7,8 +7,12 @@ namespace CaptureOnlyMovements.Pipeline;
 
 public class MaskPipelineExecuter : BaseMaskPipeline, IMaskWriter
 {
-    public MaskPipelineExecuter(INextMaskPipeline? firstPipeline, BaseMaskPipeline previousPipeline, IMaskWriter maskWriter)
-        : base(firstPipeline, previousPipeline, maskWriter.GetType().Name)
+    public MaskPipelineExecuter(
+        BaseMaskPipeline? firstPipeline, 
+        BaseMaskPipeline previousPipeline,
+        IMaskWriter maskWriter,
+        IConsole? console)
+        : base(firstPipeline, previousPipeline, maskWriter.GetType().Name, console)
     {
         Writer = maskWriter;
     }
@@ -17,32 +21,38 @@ public class MaskPipelineExecuter : BaseMaskPipeline, IMaskWriter
 
     protected override void Kernel(object? objCancellationToken)
     {
-        var cancellationToken = (IKillSwitch?)objCancellationToken;
-        while (!Disposing)
+        try
         {
-            if (Masks == null)
-                throw new Exception("How did you get here? What'd you do?");
-
-            if (!FrameReceived.WaitOne(10_000)) continue;
-
-            if (Disposing)
+            while (!Disposing)
             {
-            }
-            else
-            {
-                var frameIndex = FrameIndex - 1;
-                if (frameIndex < 0)
+                if (Masks == null)
+                    throw new InvalidOperationException("Pipeline not initialized. Call Start first.");
+
+                if (!FrameReceived.WaitOne(10_000)) 
+                    continue;
+
+                if (!Disposing)
                 {
-                    frameIndex = Masks.Length - 1;
+                    var frameIndex = FrameIndex - 1;
+                    if (frameIndex < 0)
+                    {
+                        frameIndex = Masks.Length - 1;
+                    }
+
+                    if (Masks[frameIndex] != null)
+                    {
+                        Writer.WriteMask(Masks[frameIndex]);
+                    }
                 }
 
-                if (Masks[frameIndex] != null)
-                {
-                    Writer.WriteMask(Masks[frameIndex]);
-                }
+                FrameDone.Set();
             }
-
-            FrameDone.Set();
+        }
+        catch (Exception ex)
+        {
+            Disposing = true;
+            Console?.WriteLine($"{Name} crashed: {ex.Message}");
+            StopAll();
         }
     }
 }

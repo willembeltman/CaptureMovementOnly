@@ -4,19 +4,24 @@ using CaptureOnlyMovements.Types;
 
 namespace CaptureOnlyMovements.Pipeline.Tasks;
 
-public class ShowPreviewAndPassThrough : IFrameProcessor
+public class ShowMaskTo : IMaskWriter, IFrameWriter
 {
-    public ShowPreviewAndPassThrough(IPreview preview)
+    public ShowMaskTo(IPreview preview)
     {
         Preview = preview;
     }
 
     public IPreview Preview { get; }
 
-    public Frame? ProcessFrame(Frame frame)
+    public void WriteFrame(Frame frame)
     {
         if (Preview.ShowPreview)
             Preview.WriteFrame(frame);
-        return frame;
+    }
+
+    public void WriteMask(BwFrame mask)
+    {
+        if (Preview.ShowMask)
+            Preview.WriteMask(mask);
     }
 }

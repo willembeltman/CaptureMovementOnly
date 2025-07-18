@@ -16,7 +16,7 @@ namespace CaptureOnlyMovements.Forms.SubForms
 
             Files = [];
             Application = application;
-            Converter = new Converter(this, this, null, Console1, Console2, Files);
+            Converter = new Converter(this, this, Console1, null, Console2, Files);
 
             Load += ConverterForm_Load;
             VisibleChanged += ConverterForm_VisibleChange;
