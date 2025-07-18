@@ -3,6 +3,8 @@ using CaptureOnlyMovements.FrameComparers;
 using CaptureOnlyMovements.FrameResizers;
 using CaptureOnlyMovements.Helpers;
 using CaptureOnlyMovements.Interfaces;
+using CaptureOnlyMovements.Pipeline;
+using CaptureOnlyMovements.Pipeline.Tasks;
 using CaptureOnlyMovements.Types;
 using System;
 using System.ComponentModel;
@@ -97,46 +99,62 @@ public class Converter(
 
                 frame = resizer.Resize(frame);
 
-                writer.WriteFrame(frame.Buffer);
+                writer.WriteFrame(frame);
                 Application.OutputFps.Tick();
                 Console?.WriteLine($"Captured frame #0   -");
-                Preview.SetPreview(frame);
+                Preview.WriteFrame(frame);
 
                 var skipTillNextIndex = new skipTillNextIndexHelper(fileConfig, Application);
 
-                while (!KillSwitch)
-                {
-                    frame = reader.ReadFrame(frame.Buffer);
-                    if (frame == null) break;
-                    Application.InputFps.Tick();
-                    frameIndex++;
+                // Setup pipeline
+                using var pipeline =
+                    new VideoPipeline(new ReadFrameAndTickFps(reader, Application.InputFps))
+                                .Next(new SkipInitialOrNotDifferentFrames(skipTillNextIndex, comparer, Preview))
+                                .Next(new ResizeFrame(resizer), new ShowMask(Preview))
+                                .Next(new ShowPreviewAndPassThrough(Preview))
+                                .Next(new WriteFrameAndTickFps(writer, Application.OutputFps));
 
-                    if (skipTillNextIndex.NeedToSkip(frameIndex)) continue;
+                // Then start it
+                pipeline.Start(this);
 
-                    var isDifferent = comparer.IsDifferent(frame.Buffer);
 
-                    if (Preview.ShowMask)
-                    {
-                        var bwFrame = new BwFrame(comparer.MaskData, comparer.Resolution);
-                        Preview.SetMask(bwFrame);
-                    }
 
-                    if (!isDifferent) continue;
 
-                    skipTillNextIndex.Reset(frameIndex);
 
-                    frame = resizer.Resize(frame);
 
-                    writer.WriteFrame(frame.Buffer);
-                    Application.OutputFps.Tick();
+                //while (!KillSwitch)
+                //{
+                //    frame = reader.ReadFrame(frame);
+                //    if (frame == null) break;
+                //    Application.InputFps.Tick();
+                //    frameIndex++;
 
-                    if (Preview.ShowPreview)
-                    {
-                        Preview.SetPreview(frame);
-                    }
+                //    if (skipTillNextIndex.NeedToSkip(frameIndex)) continue;
 
-                    Console?.WriteLine($"Captured frame {frameIndex}   {comparer.Difference}");
-                }
+                //    var isDifferent = comparer.IsDifferent(frame.Buffer);
+
+                //    if (Preview.ShowMask)
+                //    {
+                //        var bwFrame = new BwFrame(comparer.MaskData, comparer.Resolution);
+                //        Preview.WriteMask(bwFrame);
+                //    }
+
+                //    if (!isDifferent) continue;
+
+                //    skipTillNextIndex.Reset(frameIndex);
+
+                //    frame = resizer.Resize(frame);
+
+                //    if (Preview.ShowPreview)
+                //    {
+                //        Preview.WriteFrame(frame);
+                //    }
+
+                //    writer.WriteFrame(frame);
+                //    Application.OutputFps.Tick();
+
+                //    Console?.WriteLine($"Captured frame {frameIndex}   {comparer.Difference}");
+                //}
 
                 if (KillSwitch) break;
             }

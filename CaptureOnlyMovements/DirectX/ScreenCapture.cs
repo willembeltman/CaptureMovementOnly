@@ -1,5 +1,4 @@
-﻿using CaptureOnlyMovements.FrameConverters;
-using CaptureOnlyMovements.Interfaces; // Zorg dat deze namespace correct is
+﻿using CaptureOnlyMovements.Interfaces; // Zorg dat deze namespace correct is
 using CaptureOnlyMovements.Types; // Zorg dat deze namespace correct is
 using System;
 using System.Collections.Generic;

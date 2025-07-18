@@ -1,4 +1,5 @@
 ﻿using CaptureOnlyMovements.Interfaces;
+using CaptureOnlyMovements.Pipeline.Interfaces;
 using CaptureOnlyMovements.Types;
 using System;
 using System.Collections.Generic;
@@ -8,7 +9,7 @@ using System.Threading;
 
 namespace CaptureOnlyMovements.FFMpeg.Types;
 
-public class VideoStreamReader : IDisposable
+public class VideoStreamReader : IDisposable, IFrameReader
 {
     public VideoStreamReader(
         IKillSwitch killSwitch,
@@ -82,20 +83,24 @@ public class VideoStreamReader : IDisposable
     public IEnumerable<byte[]> ReadEnumerable(IKillSwitch killSwitch)
     {
         var frame = ReadFrame();
+        if (frame == null)
+            yield break;
         if (!killSwitch.KillSwitch && frame != null)
             yield return frame.Buffer;
         while (!killSwitch.KillSwitch && frame != null)
         {
-            frame = ReadFrame(frame.Buffer);
+            frame = ReadFrame(frame);
             if (frame == null) break;
             yield return frame.Buffer;
         }
     }
 
-    public Frame? ReadFrame(byte[]? buffer = null)
+    public Frame? ReadFrame(Frame? frame = null)
     {
         var byteLength = Resolution.PixelCount * 3;
-        buffer ??= new byte[byteLength];
+        var buffer = frame?.Buffer;
+        if (buffer?.Length != byteLength)
+            buffer = new byte[byteLength];
 
         var endOfVideo = false;
         var read = 0;
@@ -130,4 +135,5 @@ public class VideoStreamReader : IDisposable
         StandardErrorReader?.Dispose();
         GC.SuppressFinalize(this);
     }
+
 }

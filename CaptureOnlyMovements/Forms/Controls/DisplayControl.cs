@@ -1,4 +1,5 @@
 ﻿using CaptureOnlyMovements.FrameConverters;
+using CaptureOnlyMovements.Pipeline.Interfaces;
 using CaptureOnlyMovements.Types;
 using System;
 using System.Runtime.InteropServices;
@@ -12,7 +13,7 @@ using MapFlags = Vortice.Direct3D11.MapFlags;
 
 namespace CaptureOnlyMovements.Forms.Controls;
 
-public class DisplayControl : UserControl
+public class DisplayControl : UserControl, IMaskWriter, IFrameWriter
 {
     public DisplayControl()
     {
@@ -249,7 +250,7 @@ public class DisplayControl : UserControl
         ResizeD3D();
     }
 
-    public void SetFrame(Frame frame)
+    public void WriteFrame(Frame frame)
     {
         if (frame.Resolution != Resolution)
         {
@@ -262,7 +263,7 @@ public class DisplayControl : UserControl
         InputBuffer = BgrToBgra.ConvertBgrToBgra(frame.Buffer, InputBuffer);
         SwitchBuffers();
     }
-    public void SetFrame(BwFrame frame)
+    public void WriteMask(BwFrame frame)
     {
         if (frame.Resolution != Resolution)
         {

@@ -30,7 +30,7 @@ public class MediaInfo
     public FileInfo FileInfo { get; }
 
     private FFProbeRapport? _FFProbeRapport;
-    public FFProbeRapport FFProbeRapport 
+    public FFProbeRapport FFProbeRapport
         => _FFProbeRapport ??= FFProbeRapport.GetRapport(FileInfo.FullName, FFProbeDirectory);
 
     public VideoStreamReader OpenVideoReader(

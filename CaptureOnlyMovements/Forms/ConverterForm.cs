@@ -21,6 +21,7 @@ namespace CaptureOnlyMovements.Forms.SubForms
             Load += ConverterForm_Load;
             VisibleChanged += ConverterForm_VisibleChange;
             Application.Config.StateChanged += StateChanged;
+            Icon = new System.Drawing.Icon("Computer.ico");
         }
 
         public BindingList<FileConfig> Files { get; }
@@ -30,7 +31,10 @@ namespace CaptureOnlyMovements.Forms.SubForms
         private void StateChanged()
         {
             if (InvokeRequired)
+            {
                 Invoke(StateChanged);
+                return;
+            }
 
             if (Converter.Converting)
             {
@@ -40,10 +44,12 @@ namespace CaptureOnlyMovements.Forms.SubForms
                 StartButton.Enabled = false;
                 AddFilesButton.Enabled = false;
                 StopButton.Enabled = true;
+                Icon = new System.Drawing.Icon("ComputerRecording.ico");
             }
             else
             {
                 FileGrid_SelectionChanged(this, new EventArgs());
+                Icon = new System.Drawing.Icon("Computer.ico");
             }
         }
         private void FileGrid_SelectionChanged(object sender, System.EventArgs e)
@@ -196,8 +202,8 @@ namespace CaptureOnlyMovements.Forms.SubForms
         public bool ShowMask => ShowDiffernceCheckbox.Checked;
         public bool ShowPreview => ShowPreviewCheckbox.Checked;
 
-        public void SetMask(BwFrame frame) => displayControl1.SetFrame(frame);
-        public void SetPreview(Frame frame) => displayControl1.SetFrame(frame);
+        public void WriteMask(BwFrame frame) => displayControl1.WriteMask(frame);
+        public void WriteFrame(Frame frame) => displayControl1.WriteFrame(frame);
 
         #endregion
 
@@ -218,5 +224,6 @@ namespace CaptureOnlyMovements.Forms.SubForms
             }
             base.Dispose(disposing);
         }
+
     }
 }

@@ -1,12 +1,7 @@
 ﻿namespace CaptureOnlyMovements.Forms
 {
-    partial class FFMpegDebugForm
+    partial class DebugForm
     {
-        /// <summary>
-        /// Required designer variable.
-        /// </summary>
-        private System.ComponentModel.IContainer components = null;
-
         #region Windows Form Designer generated code
 
         /// <summary>
@@ -26,32 +21,24 @@
             Console.Location = new System.Drawing.Point(0, 0);
             Console.Margin = new System.Windows.Forms.Padding(3, 5, 3, 5);
             Console.Name = "Console";
-            Console.Size = new System.Drawing.Size(696, 352);
-            Console.TabIndex = 1;
+            Console.Size = new System.Drawing.Size(696, 348);
+            Console.TabIndex = 0;
             // 
-            // FFMpegDebugForm
+            // DebugForm
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            ClientSize = new System.Drawing.Size(696, 352);
+            ClientSize = new System.Drawing.Size(696, 348);
             Controls.Add(Console);
             Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            Name = "FFMpegDebugForm";
+            Name = "DebugForm";
             Text = "OpenDebugForm";
+            Icon = new System.Drawing.Icon("Computer.ico");
             ResumeLayout(false);
         }
 
         #endregion
 
         private Controls.ConsoleControl Console;
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing && (components != null))
-            {
-                components.Dispose();
-            }
-            base.Dispose(disposing);
-        }
     }
 }

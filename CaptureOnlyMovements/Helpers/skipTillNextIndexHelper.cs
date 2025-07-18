@@ -1,11 +1,6 @@
 ﻿using CaptureOnlyMovements.Interfaces;
 using CaptureOnlyMovements.Types;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.TaskbarClock;
 
 namespace CaptureOnlyMovements.Helpers;
 
@@ -18,8 +13,8 @@ public class skipTillNextIndexHelper
     public skipTillNextIndexHelper(FileConfig fileConfig, IApplication application)
     {
         FileConfig = fileConfig;
-        Application = application; 
-        
+        Application = application;
+
         inputFps = fileConfig.Fps ?? throw new Exception($"Fps not detected in video {fileConfig.FullName}");
         var targetFps = Application.Config.OutputFps;
         var targetSpeed = fileConfig.MinPlaybackSpeed;

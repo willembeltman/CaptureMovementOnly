@@ -42,7 +42,7 @@ public class FrameComparerUnsafe(
 
                     if (preview?.ShowMask == true)
                     {
-                        maskFramePointer[index] = isDifferent;
+                        maskFramePointer[k] = isDifferent;
                     }
 
                     if (isDifferent)
@@ -71,5 +71,6 @@ public class FrameComparerUnsafe(
 
     public void Dispose()
     {
+        GC.SuppressFinalize(this);
     }
 }

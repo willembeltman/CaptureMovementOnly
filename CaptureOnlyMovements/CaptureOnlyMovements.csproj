@@ -34,19 +34,16 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Forms\ApplicationForm.cs">
+    <Compile Update="Forms\ConverterForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="Forms\SubForms\ConverterForm.cs">
+    <Compile Update="Forms\DebugForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="Forms\SubForms\DebugForm.cs">
+    <Compile Update="Forms\FFMpegDebugForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="Forms\SubForms\FFMpegDebugForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Update="Forms\SubForms\SettingsForm.cs">
+    <Compile Update="Forms\SettingsForm.cs">
       <SubType>Form</SubType>
     </Compile>
 	  <Compile Update="Forms\Controls\ConsoleControl.cs">

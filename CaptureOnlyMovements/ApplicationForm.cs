@@ -1,17 +1,18 @@
-﻿using CaptureOnlyMovements.Forms.SubForms;
+﻿using CaptureOnlyMovements.Forms;
+using CaptureOnlyMovements.Forms.SubForms;
 using CaptureOnlyMovements.Interfaces;
 using CaptureOnlyMovements.Types;
 using System;
 using System.Windows.Forms;
 
-namespace CaptureOnlyMovements.Forms;
+namespace CaptureOnlyMovements;
 
 public class ApplicationForm : Form, IApplication
 {
     public ApplicationForm()
     {
         Config = Config.Load();
-        Config.StateChanged += ConfigChanged;
+        Config.StateChanged += StateChanged;
         InputFps = new FpsCounter();
         OutputFps = new FpsCounter();
 
@@ -66,6 +67,10 @@ public class ApplicationForm : Form, IApplication
         OpenFFMpegDebugButton.Click += OpenFFMpegDebug_Click;
         NewContextMenuStrip.Items.Add(OpenFFMpegDebugButton);
 
+        var OpenMaskButton = new ToolStripMenuItem("Open mask window");
+        OpenMaskButton.Click += OpenMaskButton_Click;
+        NewContextMenuStrip.Items.Add(OpenMaskButton);
+
 
         NewContextMenuStrip.Items.Add(new ToolStripSeparator());
 
@@ -86,7 +91,8 @@ public class ApplicationForm : Form, IApplication
         ConfigForm = new ConfigForm(this);
         DebugForm = new DebugForm();
         FFMpegDebugForm = new FFMpegDebugForm();
-        Recorder = new Recorder(this, DebugForm, FFMpegDebugForm);
+        MaskForm = new MaskForm(this);
+        Recorder = new Recorder(this, DebugForm, FFMpegDebugForm, MaskForm);
     }
 
     private readonly Timer Timer;
@@ -100,6 +106,7 @@ public class ApplicationForm : Form, IApplication
     private readonly ConfigForm ConfigForm;
     private readonly ConverterForm ConverterForm;
     private readonly FFMpegDebugForm FFMpegDebugForm;
+    private readonly MaskForm MaskForm;
 
     public Config Config { get; }
     public FpsCounter InputFps { get; }
@@ -107,11 +114,11 @@ public class ApplicationForm : Form, IApplication
 
     public bool IsBusy => Recorder.Recording || ConverterForm.IsBusy;
 
-    private void ConfigChanged()
+    private void StateChanged()
     {
         if (InvokeRequired)
         {
-            Invoke(new Action(() => ConfigChanged()));
+            Invoke(new Action(() => StateChanged()));
             return;
         }
 
@@ -151,6 +158,8 @@ public class ApplicationForm : Form, IApplication
     private void OpenSettings_Click(object? sender, EventArgs e) => ConfigForm.Show();
     private void OpenDebug_Click(object? sender, EventArgs e) => DebugForm.Show();
     private void OpenFFMpegDebug_Click(object? sender, EventArgs e) => FFMpegDebugForm.Show();
+
+    private void OpenMaskButton_Click(object? sender, EventArgs e) => MaskForm.Show();
     private void ExitMenuItem_Click(object? sender, EventArgs e) => Exit();
 
     public void FatalException(Exception exception) => FatalException(exception.Message, "Fatal exception");
@@ -163,6 +172,7 @@ public class ApplicationForm : Form, IApplication
     private void Exit()
     {
         Recorder.Dispose();
+        MaskForm.Dispose();
         DebugForm.Dispose();
         ConfigForm.Dispose();
         ConverterForm.Dispose();
@@ -180,6 +190,7 @@ public class ApplicationForm : Form, IApplication
         if (disposing)
         {
             Recorder.Dispose();
+            MaskForm.Dispose();
             DebugForm.Dispose();
             ConfigForm.Dispose();
             ConverterForm.Dispose();

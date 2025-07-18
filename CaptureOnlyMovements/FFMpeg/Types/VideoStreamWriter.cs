@@ -1,6 +1,7 @@
 ﻿using CaptureOnlyMovements.Enums;
 using CaptureOnlyMovements.Helpers;
 using CaptureOnlyMovements.Interfaces;
+using CaptureOnlyMovements.Pipeline.Interfaces;
 using CaptureOnlyMovements.Types;
 using System;
 using System.Diagnostics;
@@ -9,7 +10,7 @@ using System.IO;
 
 namespace CaptureOnlyMovements.FFMpeg.Types;
 
-public class VideoStreamWriter : IDisposable
+public class VideoStreamWriter : IDisposable, IFrameWriter
 {
     public VideoStreamWriter(
         IKillSwitch killSwitch,
@@ -144,8 +145,9 @@ Please download FFmpeg and place it in the specified location. The program will 
     private readonly Process Process;
     private readonly BinaryWriter Writer;
 
-    public void WriteFrame(byte[] frameData)
+    public void WriteFrame(Frame frame)
     {
+        var frameData = frame.Buffer;
         if (frameData == null || frameData.Length == 0)
         {
             throw new ArgumentException("Frame data cannot be null or empty.", nameof(frameData));

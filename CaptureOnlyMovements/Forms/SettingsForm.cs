@@ -11,7 +11,10 @@ public partial class ConfigForm : Form
     {
         InitializeComponent();
         Application = application;
+        VisibleChanged += ConfigForm_VisibleChanged;
         Config.StateChanged += StateChanged;
+        SaveButton.Click += SaveButton_Click;
+        Icon = new System.Drawing.Icon("Computer.ico");
     }
 
     public IApplication Application { get; }
@@ -32,6 +35,7 @@ public partial class ConfigForm : Form
             Quality.Enabled = false;
             Preset.Enabled = false;
             UseGpu.Enabled = false;
+            Icon = new System.Drawing.Icon("ComputerRecording.ico");
         }
         else
         {
@@ -39,11 +43,12 @@ public partial class ConfigForm : Form
             Quality.Enabled = true;
             Preset.Enabled = true;
             UseGpu.Enabled = true;
+            Icon = new System.Drawing.Icon("Computer.ico");
         }
     }
 
 
-    private void ConfigForm_VisibleChanged(object sender, EventArgs e)
+    private void ConfigForm_VisibleChanged(object? sender, EventArgs e)
     {
         if (Visible)
         {
@@ -58,7 +63,7 @@ public partial class ConfigForm : Form
         }
     }
 
-    private void SaveButton_Click(object sender, EventArgs e)
+    private void SaveButton_Click(object? sender, EventArgs e)
     {
         Config.MaximumPixelDifferenceValue = Convert.ToInt32(MaximumPixelDifferenceValue.Text);
         Config.MaximumDifferentPixelCount = Convert.ToInt32(MaximumDifferentPixelCount.Text);
@@ -84,8 +89,11 @@ public partial class ConfigForm : Form
     {
         if (disposing && (components != null))
         {
-            Config.StateChanged -= StateChanged;
             components.Dispose();
+        }
+        if (disposing)
+        {
+            Config.StateChanged -= StateChanged;
         }
         base.Dispose(disposing);
     }

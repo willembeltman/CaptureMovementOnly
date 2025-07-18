@@ -3,6 +3,8 @@ using CaptureOnlyMovements.FFMpeg;
 using CaptureOnlyMovements.FrameComparers;
 using CaptureOnlyMovements.Helpers;
 using CaptureOnlyMovements.Interfaces;
+using CaptureOnlyMovements.Pipeline;
+using CaptureOnlyMovements.Pipeline.Tasks;
 using CaptureOnlyMovements.Types;
 using System;
 using System.IO;
@@ -13,7 +15,8 @@ namespace CaptureOnlyMovements;
 public class Recorder(
     IApplication Application,
     IConsole Console,
-    IConsole FFMpegWriterConsole)
+    IConsole FFMpegWriterConsole,
+    IPreview? Preview = null)
     : IDisposable, IKillSwitch
 {
     private Thread? WriterThread;
@@ -58,13 +61,13 @@ public class Recorder(
             Console.WriteLine($"Opening '{outputFullName}' to write video to.");
 
             // Get first frame for the resolution
-            using var capturer = new ScreenshotCapturer();
-            var frame = capturer.CaptureFrame();
+            using var reader = new ScreenshotCapturer();
+            var frame = reader.CaptureFrame();
             Application.InputFps.Tick();
 
             // Create the comparer
             var resolution = frame.Resolution;
-            using var comparer = new FrameComparerUnsafe(Config, resolution);
+            using var comparer = new FrameComparerUnsafe(Config, resolution, Preview);
             comparer.IsDifferent(frame.Buffer); // Initialize comparer with the first frame
 
             // Create the writer
@@ -72,30 +75,33 @@ public class Recorder(
             using var writer = writerInfo.OpenVideoWriter(this, resolution, Config, FFMpegWriterConsole);
 
             // Write the first frame to the video
-            writer.WriteFrame(frame.Buffer);
+            writer.WriteFrame(frame);
             Application.OutputFps.Tick();
             Console.WriteLine($"Captured frame at {DateTime.Now:HH:mm:ss.fff}   -");
 
             // Remember the previous frame date for timing
-            var previousFrameDate = DateTime.Now;
+            var waitTillNextTime = new WaitForNextDateTimeHelper(Config, Application);
 
             // Iterate through next frames until the kill switch is activated
             while (!KillSwitch)
             {
                 // Capture the next frame
-                frame = capturer.CaptureFrame(frame.Buffer);
+                frame = reader.CaptureFrame(frame.Buffer);
                 Application.InputFps.Tick();
 
                 // Check if the frame is different from the previous one
                 if (comparer.IsDifferent(frame.Buffer))
                 {
+                    if (Preview?.ShowMask == true)
+                        Preview.WriteMask(new BwFrame(comparer.MaskData, comparer.Resolution));
+
                     // If so write it to the video
-                    writer.WriteFrame(frame.Buffer);
+                    writer.WriteFrame(frame);
                     Application.OutputFps.Tick();
                     Console.WriteLine($"Captured frame at {DateTime.Now:HH:mm:ss.fff}   {comparer.Difference}");
 
-                    // Wait for the next frame time and save previous frame date
-                    previousFrameDate = WaitForNextDateTimeHelper.Wait(Config, previousFrameDate);
+                    // Wait for the next frame time and save previous frame date (if needed)
+                    waitTillNextTime.Wait();
                 }
             }
 

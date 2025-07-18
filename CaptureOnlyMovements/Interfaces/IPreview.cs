@@ -1,11 +1,9 @@
-﻿using CaptureOnlyMovements.Types;
+﻿using CaptureOnlyMovements.Pipeline.Interfaces;
 
 namespace CaptureOnlyMovements.Interfaces;
 
-public interface IPreview
+public interface IPreview : IMaskWriter, IFrameWriter
 {
     bool ShowMask { get; }
     bool ShowPreview { get; }
-    void SetMask(BwFrame frame);
-    void SetPreview(Frame frame);
 }

@@ -1,14 +1,27 @@
-﻿using CaptureOnlyMovements.Types;
+﻿using CaptureOnlyMovements.Interfaces;
+using CaptureOnlyMovements.Types;
 using System;
 using System.Threading;
 
 namespace CaptureOnlyMovements.Helpers;
 
-public static class WaitForNextDateTimeHelper
+public class WaitForNextDateTimeHelper
 {
-    public static DateTime Wait(Config config, DateTime previousDate)
+    public WaitForNextDateTimeHelper(Config config, IApplication application)
     {
-        var minWait = TimeSpan.FromMilliseconds(1000.0 / config.OutputFps * config.MinPlaybackSpeed);
+        Config = config;
+        Application = application;
+        previousDate = DateTime.Now;
+    }
+
+    public Config Config { get; }
+    public IApplication Application { get; }
+
+    private DateTime previousDate;
+
+    public void Wait()
+    {
+        var minWait = TimeSpan.FromMilliseconds(1000.0 / Config.OutputFps * Config.MinPlaybackSpeed);
         var timespanSinceLastFrame = DateTime.Now - previousDate;
         if (timespanSinceLastFrame < minWait)
         {
@@ -16,6 +29,5 @@ public static class WaitForNextDateTimeHelper
             Thread.Sleep(sleep);
         }
         previousDate = DateTime.Now;
-        return previousDate;
     }
 }

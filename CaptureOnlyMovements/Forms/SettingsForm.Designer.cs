@@ -222,7 +222,6 @@
             SaveButton.TabIndex = 16;
             SaveButton.Text = "Apply and close";
             SaveButton.UseVisualStyleBackColor = true;
-            SaveButton.Click += SaveButton_Click;
             // 
             // label10
             // 
@@ -242,7 +241,6 @@
             Name = "ConfigForm";
             Padding = new System.Windows.Forms.Padding(5);
             Text = "Settings";
-            VisibleChanged += ConfigForm_VisibleChanged;
             tableLayoutPanel1.ResumeLayout(false);
             tableLayoutPanel1.PerformLayout();
             ResumeLayout(false);
