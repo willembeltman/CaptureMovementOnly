@@ -5,8 +5,7 @@ using System;
 
 namespace CaptureOnlyMovements.Pipeline.Interfaces;
 
-public interface INextMaskPipeline : IMaskPipeline, IDisposable
+public interface INextMaskPipeline : IMaskPipeline
 {
     void ProcessMask(BwFrame frame);
-    void Stop();
 }

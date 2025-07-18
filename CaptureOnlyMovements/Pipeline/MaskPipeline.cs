@@ -20,7 +20,7 @@ public class MaskPipeline : BaseMaskPipeline
         : base(firstPipeline, previousPipeline, maskProcessor.GetType().Name, console)
         => MaskProcessor = maskProcessor;
 
-    private readonly IMaskProcessor MaskProcessor;
+    private readonly IMaskProcessor? MaskProcessor;
 
     public MaskPipeline Next(IMaskProcessor maskProcessor)
     {
@@ -41,7 +41,7 @@ public class MaskPipeline : BaseMaskPipeline
         {
             while (!Disposing)
             {
-                if (MaskProcessor == null || Masks == null)
+                if (Masks == null)
                     throw new InvalidOperationException("Pipeline not initialized. Call Start first.");
 
                 if (!FrameReceived.WaitOne(10_000))

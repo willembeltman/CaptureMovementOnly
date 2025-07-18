@@ -109,9 +109,9 @@ public class Converter(
                 using var pipeline =
                     new VideoPipeline(new ReadFrameAndTickFps(reader, Application.InputFps), Console)
                                 .Next(new SkipInitialOrNotDifferentFrames(skipTillNextIndex, comparer, Preview))
-                                .Next(new ResizeFrame(resizer), new ShowMaskTo(Preview))
+                                .Next(new ResizeFrame(resizer), new MaskPipelineExecuter(new ShowMaskTo(Preview)))
                                 .Next(new ShowPreviewTo_PassThrough(Preview))
-                                .Next(new WriteFrameAndTickFps(writer, Application.OutputFps));
+                                .Out(new WriteFrameAndTickFps(writer, Application.OutputFps));
 
                 // Then start it
                 pipeline.Start(this);

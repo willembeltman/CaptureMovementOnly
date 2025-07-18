@@ -29,7 +29,7 @@ public class VideoPipeline : BaseVideoPipeline
         NextPipeline = nextPipeline;
         return nextPipeline;
     }
-    public VideoPipelineExecuter Next(IFrameWriter writer)
+    public VideoPipelineExecuter Out(IFrameWriter writer)
     {
         var nextPipeline = new VideoPipelineExecuter(FirstPipeline, this, writer, Console);
         NextPipeline = nextPipeline;

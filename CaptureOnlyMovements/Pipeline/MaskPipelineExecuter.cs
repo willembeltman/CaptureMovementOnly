@@ -8,16 +8,20 @@ namespace CaptureOnlyMovements.Pipeline;
 public class MaskPipelineExecuter : BaseMaskPipeline, IMaskWriter
 {
     public MaskPipelineExecuter(
-        BaseMaskPipeline? firstPipeline, 
+        IMaskWriter maskWriter,
+        IConsole? console = null)
+        : base(null, null, maskWriter.GetType().Name, console)
+        => MaskWriter = maskWriter;
+
+    public MaskPipelineExecuter(
+        BaseMaskPipeline? firstPipeline,
         BaseMaskPipeline previousPipeline,
         IMaskWriter maskWriter,
         IConsole? console)
         : base(firstPipeline, previousPipeline, maskWriter.GetType().Name, console)
-    {
-        Writer = maskWriter;
-    }
+        => MaskWriter = maskWriter;
 
-    private readonly IMaskWriter Writer;
+    private readonly IMaskWriter MaskWriter;
 
     protected override void Kernel(object? objCancellationToken)
     {
@@ -41,7 +45,7 @@ public class MaskPipelineExecuter : BaseMaskPipeline, IMaskWriter
 
                     if (Masks[frameIndex] != null)
                     {
-                        Writer.WriteMask(Masks[frameIndex]);
+                        MaskWriter.WriteMask(Masks[frameIndex]);
                     }
                 }
 

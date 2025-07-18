@@ -6,7 +6,7 @@ using System.Threading;
 
 namespace CaptureOnlyMovements.Pipeline.Base;
 
-public abstract class BasePipeline : IDisposable
+public abstract class BasePipeline : IBasePipeline
 {
     protected BasePipeline(
         BasePipeline? firstPipeline,
@@ -30,15 +30,14 @@ public abstract class BasePipeline : IDisposable
     protected int FrameIndex;
     protected bool Disposing;
 
-    public INextVideoPipeline? NextPipeline { get; protected set; }
-    public IMaskWriter? NextMaskWriter { get; protected set; }
-    public INextMaskPipeline? NextMaskPipeline { get; protected set; }
+    protected INextVideoPipeline? NextPipeline { get; set; }
+    protected INextMaskPipeline? NextMaskPipeline { get; set; }
 
     public string Name { get; }
 
     protected abstract void Kernel(object? obj);
 
-    public void Stop()
+    void IBasePipeline.Stop()
     {
         if (Disposing)
             return;
@@ -60,7 +59,7 @@ public abstract class BasePipeline : IDisposable
             yield return item;
             while (item?.NextPipeline != null)
             {
-                item = item.NextPipeline as BaseVideoPipeline;
+                item = item.NextPipeline as BasePipeline;
                 yield return item!;
             }
         }

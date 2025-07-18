@@ -32,20 +32,6 @@ public class VideoPipelineWithMaskOutput : BaseVideoPipeline
         return count;
     }
 
-    public VideoPipeline Next(IFrameProcessor frameProcessor, IMaskWriter? maskWriter = null)
-    {
-        var nextPipeline = new VideoPipeline(FirstPipeline, this, frameProcessor, Console);
-        NextPipeline = nextPipeline;
-        NextMaskWriter = maskWriter;
-        return nextPipeline;
-    }
-    public VideoPipelineExecuter Next(IFrameWriter frameWriter, IMaskWriter? maskWriter = null)
-    {
-        var nextPipeline = new VideoPipelineExecuter(FirstPipeline, this, frameWriter, Console);
-        NextPipeline = nextPipeline;
-        NextMaskWriter = maskWriter;
-        return nextPipeline;
-    }
     public VideoPipeline Next(IFrameProcessor frameProcessor, MaskPipelineExecuter? maskPipelineExecuter)
     {
         var nextPipeline = new VideoPipeline(FirstPipeline, this, frameProcessor, Console);
@@ -95,7 +81,7 @@ public class VideoPipelineWithMaskOutput : BaseVideoPipeline
                     var mask = Masks[frameIndex];
                     if (mask != null)
                     {
-                        NextMaskWriter?.WriteMask(mask);
+                        //NextMaskWriter?.WriteMask(mask);
                         NextMaskPipeline?.ProcessMask(mask);
                     }
                 }

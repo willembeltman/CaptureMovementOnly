@@ -2,7 +2,7 @@
 
 namespace CaptureOnlyMovements.Pipeline.Interfaces;
 
-public interface IPipeline
+public interface IPipeline : IBasePipeline
 {
     int Start(IKillSwitch? cancellationToken, int count);
 }
