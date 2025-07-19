@@ -14,7 +14,6 @@ using System.Threading;
 
 namespace CaptureOnlyMovements;
 
-public delegate void ChangeStateDelegate(bool running);
 public class Converter(
     IApplication Application,
     IPreview Preview,

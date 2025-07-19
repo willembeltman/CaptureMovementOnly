@@ -3,8 +3,6 @@ using CaptureOnlyMovements.FFMpeg;
 using CaptureOnlyMovements.FrameComparers;
 using CaptureOnlyMovements.Helpers;
 using CaptureOnlyMovements.Interfaces;
-using CaptureOnlyMovements.Pipeline;
-using CaptureOnlyMovements.Pipeline.Tasks;
 using CaptureOnlyMovements.Types;
 using System;
 using System.IO;
