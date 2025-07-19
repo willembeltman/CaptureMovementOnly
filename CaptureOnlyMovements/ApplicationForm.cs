@@ -61,14 +61,14 @@ public class ApplicationForm : Form, IApplication
         NewContextMenuStrip.Items.Add(OpenFFMpegDebugButton);
 
         var OpenMaskButton = new ToolStripMenuItem("Open mask window");
-        OpenMaskButton.Click += OpenMaskButton_Click;
+        OpenMaskButton.Click += OpenMask_Click;
         NewContextMenuStrip.Items.Add(OpenMaskButton);
 
         NewContextMenuStrip.Items.Add(new ToolStripSeparator());
 
-        var ExitMenuItem = new ToolStripMenuItem("Close");
-        ExitMenuItem.Click += ExitMenuItem_Click;
-        NewContextMenuStrip.Items.Add(ExitMenuItem);
+        var ExitMenuButton = new ToolStripMenuItem("Close");
+        ExitMenuButton.Click += ExitMenuItem_Click;
+        NewContextMenuStrip.Items.Add(ExitMenuButton);
 
         NotificationIcon.ContextMenuStrip = NewContextMenuStrip;
 
@@ -148,8 +148,7 @@ public class ApplicationForm : Form, IApplication
     private void OpenSettings_Click(object? sender, EventArgs e) => ConfigForm.Show();
     private void OpenDebug_Click(object? sender, EventArgs e) => DebugForm.Show();
     private void OpenFFMpegDebug_Click(object? sender, EventArgs e) => FFMpegDebugForm.Show();
-
-    private void OpenMaskButton_Click(object? sender, EventArgs e) => MaskForm.Show();
+    private void OpenMask_Click(object? sender, EventArgs e) => MaskForm.Show();
     private void ExitMenuItem_Click(object? sender, EventArgs e) => Exit();
 
     public void FatalException(Exception exception) => FatalException(exception.Message, "Fatal exception");
