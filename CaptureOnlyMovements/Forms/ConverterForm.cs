@@ -189,6 +189,7 @@ namespace CaptureOnlyMovements.Forms.SubForms
         public FpsCounter InputFps { get; } = new FpsCounter();
         public FpsCounter OutputFps { get; } = new FpsCounter();
 
+        public IWorkingEncoders WorkingEncoders => Application.WorkingEncoders;
         public Config Config => Application.Config;
         public bool IsBusy => Converter.Converting;
 

@@ -1,4 +1,5 @@
-﻿using CaptureOnlyMovements.Types;
+﻿using CaptureOnlyMovements.Forms;
+using CaptureOnlyMovements.Types;
 using System;
 
 namespace CaptureOnlyMovements.Interfaces;
@@ -9,6 +10,7 @@ public interface IApplication
     bool IsBusy { get; }
     FpsCounter InputFps { get; }
     FpsCounter OutputFps { get; }
+    IWorkingEncoders WorkingEncoders { get; }
 
     void FatalException(string message, string title);
     void FatalException(Exception exception);

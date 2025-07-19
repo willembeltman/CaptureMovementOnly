@@ -1,5 +1,6 @@
 ﻿using CaptureOnlyMovements.Enums;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Management;
 using System.Runtime.InteropServices;
@@ -8,7 +9,16 @@ namespace CaptureOnlyMovements.Helpers;
 
 public static class GpuDetector
 {
-    public static GpuEnum DetectGpu()
+    public static EncoderEnum DetectGpu()
+    {
+        var list = ListEncoders();
+
+        if (list.Contains(EncoderEnum.INTEL_HEVC)) return EncoderEnum.INTEL_HEVC;
+        if (list.Contains(EncoderEnum.NVIDIA_HEVC)) return EncoderEnum.NVIDIA_HEVC;
+        if (list.Contains(EncoderEnum.AMD_HEVC)) return EncoderEnum.AMD_HEVC;
+        return EncoderEnum.SOFTWARE_HEVC; // Fallback naar software-encoding
+    }
+    public static List<EncoderEnum> ListEncoders()
     {
         bool hasNvidia = false;
         bool hasAmd = false;
@@ -55,10 +65,23 @@ public static class GpuDetector
             Console.WriteLine($"GPU detection failed: {ex.Message}");
         }
 
-        if (hasIntel) return GpuEnum.Intel;
-        if (hasNvidia) return GpuEnum.Nvidia;
-        if (hasAmd) return GpuEnum.AMD;
-        return GpuEnum.Unknown; // Fallback naar software-encoding
-    }
+        var list = new List<EncoderEnum>();
+        if (hasNvidia)
+        {
+            list.Add(EncoderEnum.NVIDIA_H264);
+            list.Add(EncoderEnum.NVIDIA_HEVC);
+        }
+        if (hasAmd)
+        {
+            list.Add(EncoderEnum.AMD_H264);
+            list.Add(EncoderEnum.AMD_HEVC);
+        }
+        if (hasIntel)
+        {
+            list.Add(EncoderEnum.INTEL_H264);
+            list.Add(EncoderEnum.INTEL_HEVC);
+        }
 
+        return list;
+    }
 }

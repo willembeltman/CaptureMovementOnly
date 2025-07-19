@@ -2,11 +2,11 @@
 
 public enum PresetEnum
 {
-    veryfast,
-    faster,
-    fast,
+    VeryFast,
+    Faster,
+    Fast,
     medium,
-    slow,
-    slower,
-    veryslow
+    Slow,
+    Slower,
+    VerySlow
 }

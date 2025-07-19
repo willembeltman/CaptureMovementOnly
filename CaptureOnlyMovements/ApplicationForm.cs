@@ -12,23 +12,32 @@ public class ApplicationForm : Form, IApplication
     public ApplicationForm()
     {
         Config = Config.Load();
-        Config.StateChanged += StateChanged;
+
         InputFps = new FpsCounter();
         OutputFps = new FpsCounter();
+
+        DebugForm = new DebugForm();
+        FFMpegDebugForm = new FFMpegDebugForm();
+
+        MaskForm = new MaskForm(this);
+        ConfigForm = new ConfigForm(this);
+        ConverterForm = new ConverterForm(this);
+        DetectEncodersForm = new DetectEncodersForm(this);
+        Recorder = new Recorder(this, DebugForm, FFMpegDebugForm, MaskForm);
 
         Timer = new Timer
         {
             Interval = 100
         };
-        Timer.Tick += Timer_Tick;
-        NotificationIcon = new()
+
+        NotificationIcon = new NotifyIcon()
         {
             Icon = new System.Drawing.Icon("Computer.ico"),
             Visible = true,
             Text = "Capture Motion Only"
         };
 
-        NewContextMenuStrip = new();
+        NewContextMenuStrip = new ContextMenuStrip();
 
         StartRecordingButton = new ToolStripMenuItem("Start recording");
         StartRecordingButton.Click += StartRecording_Click;
@@ -72,36 +81,33 @@ public class ApplicationForm : Form, IApplication
 
         NotificationIcon.ContextMenuStrip = NewContextMenuStrip;
 
-        Load += ApplicationForm_Load;
-        ShowInTaskbar = false;
-        WindowState = FormWindowState.Minimized; 
-        Hide(); 
 
-        ConverterForm = new ConverterForm(this);
-        ConfigForm = new ConfigForm(this);
-        DebugForm = new DebugForm();
-        FFMpegDebugForm = new FFMpegDebugForm();
-        MaskForm = new MaskForm(this);
-        Recorder = new Recorder(this, DebugForm, FFMpegDebugForm, MaskForm);
+        Load += ApplicationForm_Load;
+        Config.StateChanged += StateChanged;
+        Timer.Tick += Timer_Tick;
+        ShowInTaskbar = false;
+        WindowState = FormWindowState.Minimized;
+        Hide();
     }
 
     private readonly Timer Timer;
+    private readonly Recorder Recorder;
+    private readonly MaskForm MaskForm;
+    private readonly DebugForm DebugForm;
+    private readonly ConfigForm ConfigForm;
     private readonly NotifyIcon NotificationIcon;
+    private readonly ConverterForm ConverterForm;
+    private readonly FFMpegDebugForm FFMpegDebugForm;
+    private readonly DetectEncodersForm DetectEncodersForm;
+
     private readonly ContextMenuStrip NewContextMenuStrip;
     private readonly ToolStripMenuItem StartRecordingButton;
     private readonly ToolStripMenuItem StopRecordingButton;
 
-    private readonly Recorder Recorder;
-    private readonly DebugForm DebugForm;
-    private readonly ConfigForm ConfigForm;
-    private readonly ConverterForm ConverterForm;
-    private readonly FFMpegDebugForm FFMpegDebugForm;
-    private readonly MaskForm MaskForm;
-
     public Config Config { get; }
     public FpsCounter InputFps { get; }
     public FpsCounter OutputFps { get; }
-
+    public IWorkingEncoders WorkingEncoders => DetectEncodersForm;
     public bool IsBusy => Recorder.Recording || ConverterForm.IsBusy;
 
     private void StateChanged()
@@ -139,7 +145,8 @@ public class ApplicationForm : Form, IApplication
     }
     private void ApplicationForm_Load(object? sender, EventArgs e)
     {
-        Hide(); 
+        Hide();
+        DetectEncodersForm.Show();
         Timer.Start(); 
     }
     private void StartRecording_Click(object? sender, EventArgs e) => Recorder.Start();
@@ -166,6 +173,7 @@ public class ApplicationForm : Form, IApplication
         ConfigForm.Dispose();
         ConverterForm.Dispose();
         FFMpegDebugForm.Dispose();
+        DetectEncodersForm.Dispose();
 
         if (NotificationIcon != null)
         {
@@ -185,6 +193,7 @@ public class ApplicationForm : Form, IApplication
             ConverterForm.Dispose();
             FFMpegDebugForm.Dispose();
             NotificationIcon.Dispose();
+            DetectEncodersForm.Dispose();
         }
         base.Dispose(disposing);
     }

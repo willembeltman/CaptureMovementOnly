@@ -52,10 +52,6 @@ public class MediaInfo
         IEncoderConfig config,
         IConsole? console = null)
     {
-        var qualityEnum = Enum.Parse<QualityEnum>(config.OutputQuality);
-        var presetEnum = Enum.Parse<PresetEnum>(config.OutputPreset);
-        var fps = config.OutputFps;
-        var useGpu = config.UseGpu;
-        return new VideoStreamWriter(killSwitch, this, resolution, fps, qualityEnum, presetEnum, useGpu, console);
+        return new VideoStreamWriter(killSwitch, this, resolution, config.OutputFps, config.OutputQuality, config.OutputPreset, config.OutputEncoder, console);
     }
 }
