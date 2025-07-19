@@ -18,13 +18,12 @@ public class ApplicationForm : Form, IApplication
 
         Timer = new Timer
         {
-            Interval = 100 // 1 seconde
+            Interval = 100
         };
         Timer.Tick += Timer_Tick;
         NotificationIcon = new()
         {
-            // Zorg ervoor dat je een geldig icoonpad hebt!
-            Icon = new System.Drawing.Icon("Computer.ico"), // Vervang dit pad
+            Icon = new System.Drawing.Icon("Computer.ico"),
             Visible = true,
             Text = "Capture Motion Only"
         };
@@ -149,8 +148,8 @@ public class ApplicationForm : Form, IApplication
     }
     private void ApplicationForm_Load(object? sender, EventArgs e)
     {
-        Hide(); // Zorgt ervoor dat het formulier verborgen is bij het laden
-        Timer.Start(); // Start de timer om de notificatie-tekst bij te werken
+        Hide(); 
+        Timer.Start(); 
     }
     private void StartRecording_Click(object? sender, EventArgs e) => Recorder.Start();
     private void StopRecording_Click(object? sender, EventArgs e) => Recorder.Stop();
