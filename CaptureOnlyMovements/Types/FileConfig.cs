@@ -6,14 +6,14 @@ using System.Linq;
 
 namespace CaptureOnlyMovements.Types;
 
-public class FileConfig(string fullName, DirectoryInfo? fFProbeDirectory = null) : IComparerConfig
+public class FileConfig(string fullName, Config Config, DirectoryInfo? fFProbeDirectory = null) : IComparerConfig
 {
     internal readonly DirectoryInfo FFProbeDirectory = fFProbeDirectory ?? new DirectoryInfo(Environment.CurrentDirectory);
 
     public string? FullName { get; } = fullName;
-    public int MaximumPixelDifferenceValue { get; set; } = new Config().MaximumPixelDifferenceValue;
-    public int MaximumDifferentPixelCount { get; set; } = new Config().MaximumDifferentPixelCount;
-    public int MinPlaybackSpeed { get; set; } = new Config().MinPlaybackSpeed;
+    public int MaximumPixelDifferenceValue { get; set; } = Config.MaximumPixelDifferenceValue;
+    public int MaximumDifferentPixelCount { get; set; } = Config.MaximumDifferentPixelCount;
+    public int MinPlaybackSpeed { get; set; } = Config.MinPlaybackSpeed;
 
     private string? _FFProbeRapportFullName;
     private FFProbeRapport? _FFProbeRapport;

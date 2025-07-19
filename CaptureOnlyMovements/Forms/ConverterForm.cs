@@ -91,7 +91,7 @@ namespace CaptureOnlyMovements.Forms.SubForms
             {
                 foreach (var a in dialog.FileNames)
                 {
-                    Files.Add(new FileConfig(a));
+                    Files.Add(new FileConfig(a, Application.Config));
                 }
             }
         }
