@@ -38,25 +38,19 @@ public class ApplicationForm : Form, IApplication
         StopRecordingButton.Click += StopRecording_Click;
         NewContextMenuStrip.Items.Add(StopRecordingButton);
 
-
         NewContextMenuStrip.Items.Add(new ToolStripSeparator());
-
 
         var OpenConverterButton = new ToolStripMenuItem("Convert video(s)");
         OpenConverterButton.Click += OpenConverter_Click;
         NewContextMenuStrip.Items.Add(OpenConverterButton);
 
-
         NewContextMenuStrip.Items.Add(new ToolStripSeparator());
-
 
         var OpenSettingsButton = new ToolStripMenuItem("Open settings window");
         OpenSettingsButton.Click += OpenSettings_Click;
         NewContextMenuStrip.Items.Add(OpenSettingsButton);
 
-
         NewContextMenuStrip.Items.Add(new ToolStripSeparator());
-
 
         var OpenDebugButton = new ToolStripMenuItem("Open main debug window");
         OpenDebugButton.Click += OpenDebug_Click;
@@ -70,14 +64,11 @@ public class ApplicationForm : Form, IApplication
         OpenMaskButton.Click += OpenMaskButton_Click;
         NewContextMenuStrip.Items.Add(OpenMaskButton);
 
-
         NewContextMenuStrip.Items.Add(new ToolStripSeparator());
-
 
         var ExitMenuItem = new ToolStripMenuItem("Close");
         ExitMenuItem.Click += ExitMenuItem_Click;
         NewContextMenuStrip.Items.Add(ExitMenuItem);
-
 
         NotificationIcon.ContextMenuStrip = NewContextMenuStrip;
 
