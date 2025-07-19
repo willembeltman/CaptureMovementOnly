@@ -9,9 +9,9 @@ namespace CaptureOnlyMovements.Forms.Controls
 {
     public partial class ConsoleControl : UserControl, IConsole
     {
-        private readonly ConcurrentQueue<string> _queue = new();
-        private readonly AutoResetEvent _signal = new(false);
-        private readonly Thread _workerThread;
+        private readonly ConcurrentQueue<string> Queue = new();
+        private readonly AutoResetEvent Signal = new(false);
+        private readonly Thread Thread;
 
         private int MaxVisibleLines => List.ClientSize.Height / List.ItemHeight;
 
@@ -21,26 +21,26 @@ namespace CaptureOnlyMovements.Forms.Controls
             List.KeyDown += List_KeyDown;
 
             // Start de achtergrondthread
-            _workerThread = new Thread(ProcessQueue)
+            Thread = new Thread(ProcessQueue)
             {
                 IsBackground = true
             };
-            _workerThread.Start();
+            Thread.Start();
         }
 
         public void WriteLine(string line)
         {
-            _queue.Enqueue(line);
-            _signal.Set(); // Wek de thread op
+            Queue.Enqueue(line);
+            Signal.Set(); // Wek de thread op
         }
 
         private void ProcessQueue()
         {
             while (!IsDisposed)
             {
-                _signal.WaitOne(); // Blokkeert tot er een item komt
+                Signal.WaitOne(); // Blokkeert tot er een item komt
 
-                while (_queue.TryDequeue(out var line))
+                while (Queue.TryDequeue(out var line))
                 {
                     if (IsDisposed) return;
 
@@ -88,8 +88,8 @@ namespace CaptureOnlyMovements.Forms.Controls
             }
             if (disposing)
             {
-                _signal.Set(); // zorg dat de thread eruit komt
-                _signal.Dispose();
+                Signal.Set(); // zorg dat de thread eruit komt
+                Signal.Dispose();
             }
         }
     }

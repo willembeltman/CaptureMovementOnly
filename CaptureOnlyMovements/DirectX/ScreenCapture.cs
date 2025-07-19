@@ -1,5 +1,5 @@
-﻿using CaptureOnlyMovements.Interfaces; // Zorg dat deze namespace correct is
-using CaptureOnlyMovements.Types; // Zorg dat deze namespace correct is
+﻿using CaptureOnlyMovements.Interfaces;
+using CaptureOnlyMovements.Types;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -63,9 +63,7 @@ public class ScreenshotCapturer : IDisposable
                 throw new InvalidOperationException("Failed to create Direct3D11 device even with WARP fallback.");
             }
         }
-        // --- EINDE AANGEPASTE SECTIE ---
 
-        // Correct output acquisition
         var outputResult = Adapter.EnumOutputs(0, out IDXGIOutput output);
         if (!outputResult.Success || output == null)
         {

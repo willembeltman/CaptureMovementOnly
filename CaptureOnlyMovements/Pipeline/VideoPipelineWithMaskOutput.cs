@@ -81,7 +81,6 @@ public class VideoPipelineWithMaskOutput : BaseVideoPipeline
                     var mask = Masks[frameIndex];
                     if (mask != null)
                     {
-                        //NextMaskWriter?.WriteMask(mask);
                         NextMaskPipeline?.ProcessMask(mask);
                     }
                 }

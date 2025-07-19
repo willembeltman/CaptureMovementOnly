@@ -47,7 +47,6 @@ public partial class MaskForm : Form, IPreview
         throw new Exception("Should not be called because we return false in ShowPreview");
     }
 
-    // Belangrijk: Overrides om te zorgen dat de applicatie niet sluit als het formulier gesloten wordt
     protected override void OnFormClosing(FormClosingEventArgs e)
     {
         // Voorkom dat het formulier direct sluit als de gebruiker op X klikt

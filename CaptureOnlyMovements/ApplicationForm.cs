@@ -82,9 +82,9 @@ public class ApplicationForm : Form, IApplication
         NotificationIcon.ContextMenuStrip = NewContextMenuStrip;
 
         Load += ApplicationForm_Load;
-        ShowInTaskbar = false; // Verberg de applicatie van de taakbalk
-        WindowState = FormWindowState.Minimized; // Minimaliseer het venster
-        Hide(); // Verberg het venster
+        ShowInTaskbar = false;
+        WindowState = FormWindowState.Minimized; 
+        Hide(); 
 
         ConverterForm = new ConverterForm(this);
         ConfigForm = new ConfigForm(this);
@@ -121,8 +121,8 @@ public class ApplicationForm : Form, IApplication
             return;
         }
 
-        StartRecordingButton.Visible = !Recorder.Recording; // Verberg de startknop
-        StopRecordingButton.Visible = Recorder.Recording; // Toon de stopknop
+        StartRecordingButton.Visible = !Recorder.Recording;
+        StopRecordingButton.Visible = Recorder.Recording; 
 
         if (Recorder.Recording)
         {

@@ -76,7 +76,6 @@ public partial class ConfigForm : Form
         Hide();
     }
 
-    // Belangrijk: Overrides om te zorgen dat de applicatie niet sluit als het formulier gesloten wordt
     protected override void OnFormClosing(FormClosingEventArgs e)
     {
         // Voorkom dat het formulier direct sluit als de gebruiker op X klikt

@@ -18,14 +18,11 @@ public class DisplayControl : UserControl, IMaskWriter, IFrameWriter
     public DisplayControl()
     {
         BackColor = System.Drawing.Color.Black;
-        //Resize += DisplayControl_Resize;
         Load += DisplayControl_Load;
         Disposed += DisplayControl_Disposed;
     }
 
     public Resolution Resolution { get; private set; }
-    //public BgrResizer? BgrResizer { get; private set; }
-    //public BgraResizer? BgraResizer { get; private set; }
 
     private byte[]? FrameBuffer1;
     private byte[]? FrameBuffer2;
