@@ -4,7 +4,7 @@ using System;
 
 namespace CaptureOnlyMovements.FrameResizers;
 
-public class BgraResizerUnsafe(Resolution Resolution) : IBgraResizer
+public class BgraResizerUnsafe(Resolution Resolution) : IFrameResizer
 {
     private readonly byte[] Buffer = new byte[Resolution.PixelCount * 4];
 

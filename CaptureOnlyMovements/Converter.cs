@@ -91,7 +91,7 @@ public class Converter(
                 frameIndex++;
 
                 // Create the frame comparer and resizer
-                using var comparer = new FrameComparerTasks(fileConfig, frame.Resolution, Preview);
+                using var comparer = new FrameComparerUnsafe2(fileConfig, frame.Resolution, Preview);
                 using var resizer = new BgrResizerUnsafe(resolution);
 
                 comparer.IsDifferent(frame.Buffer);
@@ -105,10 +105,12 @@ public class Converter(
                 var skipTillNextIndex = new skipTillNextIndexHelper(fileConfig, Application);
 
                 // Setup pipeline
+                using var maskPipeline =
+                     new MaskPipelineExecuter(new ShowMaskTo(Preview));
                 using var pipeline =
                     new VideoPipeline(new ReadFrameAndTickFps(reader, Application.InputFps), Console)
                                 .Next(new SkipInitialOrNotDifferentFrames(skipTillNextIndex, comparer, Preview))
-                                .Next(new ResizeFrame(resizer), new MaskPipelineExecuter(new ShowMaskTo(Preview)))
+                                .Next(new ResizeFrame(resizer), maskPipeline)
                                 .Next(new ShowPreviewTo_PassThrough(Preview))
                                 .Next(new WriteFrameAndTickFps(writer, Application.OutputFps));
 
@@ -116,7 +118,7 @@ public class Converter(
                 pipeline.Start(this);
                 pipeline.WaitForExit();
 
-                // Old single threaded code
+                // Old single threaded / single buffer code
                 //while (!KillSwitch)
                 //{
                 //    frame = reader.ReadFrame(frame);

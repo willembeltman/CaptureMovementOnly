@@ -1,5 +1,4 @@
-﻿using CaptureOnlyMovements.FrameComparers;
-using CaptureOnlyMovements.Helpers;
+﻿using CaptureOnlyMovements.Helpers;
 using CaptureOnlyMovements.Interfaces;
 using CaptureOnlyMovements.Pipeline.Interfaces;
 using CaptureOnlyMovements.Types;
@@ -35,7 +34,7 @@ public class SkipInitialOrNotDifferentFrames : IFrameProcessorWithMaskOutput
             Preview.WriteMask(bwFrame);
         }
 
-        if (!isDifferent) return (null, null);
+        if (!isDifferent) return (null, bwFrame);
 
         SkipTillNextIndex.Reset(frameIndex);
 

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace CaptureOnlyMovements.FrameResizers;
 
-public class BgrResizerParallel(Resolution Resolution) : IBgrResizer
+public class BgrResizerParallel(Resolution Resolution) : IFrameResizer
 {
     private readonly byte[] Buffer = new byte[Resolution.PixelCount * 3];
 

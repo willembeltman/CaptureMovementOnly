@@ -8,7 +8,7 @@ namespace CaptureOnlyMovements.FrameResizers;
 /// <summary>
 /// Resize BGR‑24 naar een andere resolutie met Parallel.For + unsafe pointers.
 /// </summary>
-public class BgrResizerParallelUnsafe2(Resolution targetResolution) : IBgrResizer
+public class BgrResizerParallelUnsafe2(Resolution targetResolution) : IFrameResizer
 {
     private readonly byte[] _buffer = new byte[targetResolution.PixelCount * 3];
 

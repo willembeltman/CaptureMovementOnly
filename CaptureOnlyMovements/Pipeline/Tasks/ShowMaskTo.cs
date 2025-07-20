@@ -6,22 +6,22 @@ namespace CaptureOnlyMovements.Pipeline.Tasks;
 
 public class ShowMaskTo : IMaskWriter, IFrameWriter
 {
-    public ShowMaskTo(IPreview preview)
+    public ShowMaskTo(IPreview? preview)
     {
         Preview = preview;
     }
 
-    public IPreview Preview { get; }
+    public IPreview? Preview { get; }
 
     public void WriteFrame(Frame frame)
     {
-        if (Preview.ShowPreview)
+        if (Preview?.ShowPreview == true)
             Preview.WriteFrame(frame);
     }
 
     public void WriteMask(BwFrame mask)
     {
-        if (Preview.ShowMask)
+        if (Preview?.ShowMask == true)
             Preview.WriteMask(mask);
     }
 }

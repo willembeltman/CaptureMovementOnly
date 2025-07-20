@@ -3,6 +3,8 @@ using CaptureOnlyMovements.FFMpeg;
 using CaptureOnlyMovements.FrameComparers;
 using CaptureOnlyMovements.Helpers;
 using CaptureOnlyMovements.Interfaces;
+using CaptureOnlyMovements.Pipeline;
+using CaptureOnlyMovements.Pipeline.Tasks;
 using CaptureOnlyMovements.Types;
 using System;
 using System.IO;
@@ -65,7 +67,7 @@ public class Recorder(
 
             // Create the comparer
             var resolution = frame.Resolution;
-            using var comparer = new FrameComparerTasks(Config, resolution, Preview);
+            using var comparer = new FrameComparerUnsafe2(Config, resolution, Preview);
             comparer.IsDifferent(frame.Buffer); // Initialize comparer with the first frame
 
             // Create the writer
@@ -79,6 +81,22 @@ public class Recorder(
 
             // Remember the previous frame date for timing
             var waitTillNextTime = new WaitForNextDateTimeHelper(Config, Application);
+
+
+            // Setup pipeline
+            using var maskPipeline = 
+                new MaskPipelineExecuter(new ShowMaskTo(Preview));
+
+            using var pipeline =
+                new VideoPipeline(new WaitThenReadFrameThenTickFps(waitTillNextTime, reader, Application.InputFps), Console)
+                            .Next(new SkipNotDifferentFrames(comparer, Preview))
+                            .Next(new ShowPreviewTo_PassThrough(Preview), maskPipeline)
+                            .Next(new WriteFrameAndTickFps(writer, Application.OutputFps));
+
+            // Then start it
+            pipeline.Start(this);
+            pipeline.WaitForExit();
+
 
             // Iterate through next frames until the kill switch is activated
             while (!KillSwitch)

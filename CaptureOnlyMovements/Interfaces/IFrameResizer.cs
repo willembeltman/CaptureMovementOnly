@@ -3,7 +3,7 @@ using System;
 
 namespace CaptureOnlyMovements.Interfaces;
 
-public interface IBgrResizer : IDisposable
+public interface IFrameResizer : IDisposable
 {
     Frame Resize(Frame frame);
 }
