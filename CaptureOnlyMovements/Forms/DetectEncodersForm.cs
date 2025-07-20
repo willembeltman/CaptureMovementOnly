@@ -10,7 +10,7 @@ using System.Windows.Forms;
 
 namespace CaptureOnlyMovements.Forms
 {
-    public partial class DetectEncodersForm : Form, IWorkingEncoders
+    public partial class DetectEncodersForm : Form, IEncoderCollection
     {
         public EncoderEnum[] List { get; private set; } = Array.Empty<EncoderEnum>();
         public IApplication Application { get; }

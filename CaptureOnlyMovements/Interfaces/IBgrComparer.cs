@@ -3,7 +3,7 @@ using System;
 
 namespace CaptureOnlyMovements.Interfaces;
 
-public interface IFrameComparer : IDisposable
+public interface IBgrComparer : IDisposable
 {
     bool[] MaskData { get; }
     int Difference { get; }

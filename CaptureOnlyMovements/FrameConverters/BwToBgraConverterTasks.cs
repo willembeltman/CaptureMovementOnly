@@ -1,16 +1,17 @@
-﻿using System;
+﻿using CaptureOnlyMovements.Interfaces;
+using System;
 using System.Threading.Tasks;
 
 namespace CaptureOnlyMovements.FrameConverters;
 
-public class BwToBgraConverterTasks : IDisposable
+public class BwToBgraConverterTasks : IBwToBgraConverter
 {
     /// <summary>
     /// Converteert een BW‐buffer (8‑bpp) naar BGRA (32‑bpp) in parallel.
     /// </summary>
-    public byte[] ConvertBwToBgra(bool[] bw, byte[]? bgra = null)
+    public byte[] BwToBgra(bool[] bw, byte[]? bgra = null)
     {
-        if (bw == null) throw new ArgumentNullException(nameof(bw));
+        ArgumentNullException.ThrowIfNull(bw);
         int pixelCount = bw.Length / 3;
 
         if (bgra == null || pixelCount * 4 != bgra.Length)
@@ -52,5 +53,8 @@ public class BwToBgraConverterTasks : IDisposable
         return bgra;
     }
 
-    public void Dispose() { }
+    public void Dispose()
+    {
+        GC.SuppressFinalize(this);
+    }
 }

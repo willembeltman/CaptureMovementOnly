@@ -270,7 +270,7 @@ public class DisplayControl : UserControl, IMaskWriter, IFrameWriter
             ResizeD3D();
         }
 
-        InputBuffer = BwToBgra.ConvertBwToBgra(frame.Buffer, InputBuffer);
+        InputBuffer = BwToBgra.BwToBgra(frame.Buffer, InputBuffer);
         SwitchBuffers();
     }
 

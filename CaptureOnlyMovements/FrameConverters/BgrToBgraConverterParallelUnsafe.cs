@@ -1,42 +1,47 @@
-﻿//namespace CaptureOnlyMovements.FrameConverters;
+﻿using CaptureOnlyMovements.Interfaces;
+using System;
+using System.Threading.Tasks;
 
-//public class BgrToBgraConverterParallelUnsafe : IDisposable
-//{
-//    public byte[] ConvertBgrToBgra(byte[] bgr, byte[]? bgra = null)
-//    {
-//        if (bgra == null || bgr.Length / 3 * 4 != bgra.Length)
-//        {
-//            bgra = new byte[bgr.Length / 3 * 4];
-//        }
+namespace CaptureOnlyMovements.FrameConverters;
 
-//        unsafe
-//        {
-//            fixed (byte* bgrPointerBase = bgr)
-//            fixed (byte* bgraPointerBase = bgra)
-//            {
-//                var bgrPointerTransfer = (nint)bgrPointerBase;
-//                var bgraPointerTransfer = (nint)bgraPointerBase;
+public class BgrToBgraConverterParallelUnsafe : IBgrToBgraConverter
+{
+    public byte[] ConvertBgrToBgra(byte[] bgr, byte[]? bgra = null)
+    {
+        if (bgra == null || bgr.Length / 3 * 4 != bgra.Length)
+        {
+            bgra = new byte[bgr.Length / 3 * 4];
+        }
 
-//                int pixelCount = bgr.Length / 3;
-//                Parallel.For(0, pixelCount, k =>
-//                {
-//                    var bgrPointer = (byte*)(bgrPointerTransfer);
-//                    var bgraPointer = (byte*)(bgraPointerTransfer);
+        unsafe
+        {
+            fixed (byte* bgrPointerBase = bgr)
+            fixed (byte* bgraPointerBase = bgra)
+            {
+                var bgrPointerTransfer = (nint)bgrPointerBase;
+                var bgraPointerTransfer = (nint)bgraPointerBase;
 
-//                    int i = k * 3;
-//                    int j = k * 4;
-//                    bgraPointer[j] = bgrPointer[i];
-//                    bgraPointer[j + 1] = bgrPointer[i + 1];
-//                    bgraPointer[j + 2] = bgrPointer[i + 2];
-//                    bgraPointer[j + 3] = 255;
-//                });
-//            }
-//        }
+                int pixelCount = bgr.Length / 3;
+                Parallel.For(0, pixelCount, k =>
+                {
+                    var bgrPointer = (byte*)(bgrPointerTransfer);
+                    var bgraPointer = (byte*)(bgraPointerTransfer);
 
-//        return bgra;
-//    }
+                    int i = k * 3;
+                    int j = k * 4;
+                    bgraPointer[j] = bgrPointer[i];
+                    bgraPointer[j + 1] = bgrPointer[i + 1];
+                    bgraPointer[j + 2] = bgrPointer[i + 2];
+                    bgraPointer[j + 3] = 255;
+                });
+            }
+        }
 
-//    public void Dispose()
-//    {
-//    }
-//}
+        return bgra;
+    }
+
+    public void Dispose()
+    {
+        GC.SuppressFinalize(this);
+    }
+}

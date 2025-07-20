@@ -27,11 +27,11 @@ public class MaskPipelineExecuter : BaseMaskPipeline, IMaskWriter
     {
         try
         {
+            if (Masks == null)
+                throw new InvalidOperationException("Pipeline not initialized. Call Start first.");
+
             while (!Disposing)
             {
-                if (Masks == null)
-                    throw new InvalidOperationException("Pipeline not initialized. Call Start first.");
-
                 if (!FrameReceived.WaitOne(10_000)) 
                     continue;
 
@@ -43,10 +43,10 @@ public class MaskPipelineExecuter : BaseMaskPipeline, IMaskWriter
                         frameIndex = Masks.Length - 1;
                     }
 
-                    if (Masks[frameIndex] != null)
-                    {
-                        MaskWriter.WriteMask(Masks[frameIndex]);
-                    }
+                    var mask = Masks[frameIndex];
+                    if (mask != null)
+                        using (ProcessStopwatch.NewMeasurement())
+                            MaskWriter.WriteMask(mask);
                 }
 
                 FrameDone.Set();

@@ -26,7 +26,7 @@ public class WaitForNextDateTimeHelper
         if (timespanSinceLastFrame < minWait)
         {
             var sleep = minWait - timespanSinceLastFrame;
-            Thread.Sleep(sleep);
+            Thread.Sleep((int)sleep.TotalMilliseconds);
         }
         previousDate = DateTime.Now;
     }

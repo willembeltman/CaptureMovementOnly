@@ -10,7 +10,7 @@ public class SkipInitialOrNotDifferentFrames : IFrameProcessorWithMaskOutput
 {
     private int frameIndex;
 
-    public SkipInitialOrNotDifferentFrames(skipTillNextIndexHelper skipTillNextIndex, FrameComparerTasks comparer, IPreview preview)
+    public SkipInitialOrNotDifferentFrames(skipTillNextIndexHelper skipTillNextIndex, IBgrComparer comparer, IPreview preview)
     {
         SkipTillNextIndex = skipTillNextIndex;
         Comparer = comparer;
@@ -18,7 +18,7 @@ public class SkipInitialOrNotDifferentFrames : IFrameProcessorWithMaskOutput
     }
 
     public skipTillNextIndexHelper SkipTillNextIndex { get; }
-    public FrameComparerTasks Comparer { get; }
+    public IBgrComparer Comparer { get; }
     public IPreview Preview { get; }
 
     public (Frame?, BwFrame?) ProcessFrame(Frame frame, BwFrame? bwFrame)

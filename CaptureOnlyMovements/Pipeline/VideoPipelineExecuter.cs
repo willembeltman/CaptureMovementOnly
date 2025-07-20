@@ -36,11 +36,11 @@ public class VideoPipelineExecuter : BaseVideoPipeline
     {
         try
         {
+            if (Frames == null)
+                throw new InvalidOperationException("Pipeline not initialized. Call Start first.");
+
             while (!Disposing)
             {
-                if (Frames == null)
-                    throw new InvalidOperationException("Pipeline not initialized. Call Start first.");
-
                 if (!FrameReceived.WaitOne(10_000))
                     continue;
 
@@ -52,7 +52,8 @@ public class VideoPipelineExecuter : BaseVideoPipeline
 
                     var frame = Frames[frameIndex];
                     if (frame != null)
-                        Writer.WriteFrame(frame);
+                        using (ProcessStopwatch.NewMeasurement())
+                            Writer.WriteFrame(frame);
                 }
 
                 FrameDone.Set();
@@ -64,6 +65,15 @@ public class VideoPipelineExecuter : BaseVideoPipeline
             Console?.WriteLine($"{Name} crashed: {ex.Message}");
             StopAll();
         }
+
+        Console?.WriteLine($"");
+        Console?.WriteLine($"All done, statistics:");
+        foreach (var pipeline in AllPipelines)
+        {
+            Console?.WriteLine($"{pipeline.Name}: {pipeline.ProcessStopwatch.TimeSpend:F2}s / {pipeline.ProcessStopwatch.Count} = {pipeline.ProcessStopwatch.AverageMS:F2}ms each task");
+        }
+        Console?.WriteLine($"Average FPS: {FirstPipeline.ProcessStopwatch.AverageFPS:F2}fps");
+        Console?.WriteLine($"");
 
         Stopped.Set();
     }

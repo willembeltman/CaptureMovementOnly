@@ -107,7 +107,7 @@ public class ApplicationForm : Form, IApplication
     public Config Config { get; }
     public FpsCounter InputFps { get; }
     public FpsCounter OutputFps { get; }
-    public IWorkingEncoders WorkingEncoders => DetectEncodersForm;
+    public IEncoderCollection WorkingEncoders => DetectEncodersForm;
     public bool IsBusy => Recorder.Recording || ConverterForm.IsBusy;
 
     private void StateChanged()

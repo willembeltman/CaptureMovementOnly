@@ -99,7 +99,7 @@ Please download FFmpeg and place it in the specified location. The program will 
         var frameData = frame.Buffer;
         if (frameData == null || frameData.Length == 0)
         {
-            throw new ArgumentException("Frame data cannot be null or empty.", nameof(frameData));
+            throw new ArgumentException("Frame data cannot be null or empty.", nameof(frame));
         }
         if (frameData.Length != Resolution.PixelCount * 3)
         {

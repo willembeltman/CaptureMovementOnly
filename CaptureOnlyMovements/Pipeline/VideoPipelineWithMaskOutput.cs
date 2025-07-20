@@ -21,7 +21,23 @@ public class VideoPipelineWithMaskOutput : BaseVideoPipeline
     protected override int StartVideo(IKillSwitch? cancellationToken, int count)
     {
         count++;
-        count = ((IPipeline?)PreviousPipeline)!.Start(cancellationToken, count);
+        var previousPipeline = (IPipeline?)PreviousPipeline;
+        if (previousPipeline == null)
+            throw new Exception(
+                @"This should not be possible! 
+
+You can only create a `VideoPipelineWithMaskOutput` with the Next() command, 
+thus it always has a previous pipeline. This does not, so, IDK anymore.
+
+I hope everything shuts down responsibly because who knows which threads are started, 
+if the previous pipeline is null and you somehow got here. 
+
+This is buggy.
+
+If you are a user reading this, IDK, this is very very buggy. 
+So maybe just throw this copy away and re-download it.");
+
+        count = previousPipeline.Start(cancellationToken, count);
         NextMaskPipeline?.Start(cancellationToken, 2);
 
         Frames = new Frame[count];
@@ -35,14 +51,14 @@ public class VideoPipelineWithMaskOutput : BaseVideoPipeline
     public VideoPipeline Next(IFrameProcessor frameProcessor, MaskPipelineExecuter? maskPipelineExecuter)
     {
         var nextPipeline = new VideoPipeline(FirstPipeline, this, frameProcessor, Console);
-        NextPipeline = nextPipeline;
+        NextVideoPipeline = nextPipeline;
         NextMaskPipeline = maskPipelineExecuter;
         return nextPipeline;
     }
     public VideoPipelineExecuter Next(IFrameWriter frameWriter, MaskPipelineExecuter? maskPipelineExecuter)
     {
         var nextPipeline = new VideoPipelineExecuter(FirstPipeline, this, frameWriter, Console);
-        NextPipeline = nextPipeline;
+        NextVideoPipeline = nextPipeline;
         NextMaskPipeline = maskPipelineExecuter;
         return nextPipeline;
     }
@@ -51,18 +67,18 @@ public class VideoPipelineWithMaskOutput : BaseVideoPipeline
     {
         try
         {
+            if (Processor == null || Frames == null || Masks == null)
+                throw new InvalidOperationException("Pipeline not initialized. Call Start first.");
+
             while (!Disposing)
             {
-                if (Processor == null || Frames == null || Masks == null)
-                    throw new InvalidOperationException("Pipeline not initialized. Call Start first.");
-
                 if (!FrameReceived.WaitOne(10_000))
                     continue;
 
                 if (Disposing)
                 {
                     ((INextMaskPipeline?)NextMaskPipeline?.FirstMaskPipeline)?.Stop();
-                    NextPipeline?.Stop();
+                    NextVideoPipeline?.Stop();
                 }
                 else
                 {
@@ -72,17 +88,17 @@ public class VideoPipelineWithMaskOutput : BaseVideoPipeline
 
                     var frame = Frames[frameIndex]
                         ?? throw new Exception("Something goes terribly wrong, this frame should be filled because this pipeline alsways has a previous pipeline.");
-                    (Frames[frameIndex], Masks[frameIndex]) = Processor.ProcessFrame(frame, Masks[frameIndex]);
+
+                    using (ProcessStopwatch.NewMeasurement())
+                        (Frames[frameIndex], Masks[frameIndex]) = Processor.ProcessFrame(frame, Masks[frameIndex]);
 
                     frame = Frames[frameIndex];
                     if (frame != null)
-                        NextPipeline?.ProcessFrame(frame);
+                        NextVideoPipeline?.ProcessFrame(frame);
 
                     var mask = Masks[frameIndex];
                     if (mask != null)
-                    {
                         NextMaskPipeline?.ProcessMask(mask);
-                    }
                 }
 
                 FrameDone.Set();
@@ -93,7 +109,7 @@ public class VideoPipelineWithMaskOutput : BaseVideoPipeline
             Disposing = true;
             StopAll();
             ((INextMaskPipeline?)NextMaskPipeline?.FirstMaskPipeline)?.Stop();
-            NextPipeline?.Stop();
+            NextVideoPipeline?.Stop();
             Console?.WriteLine($"{Name} crashed: {ex.Message}");
         }
     }

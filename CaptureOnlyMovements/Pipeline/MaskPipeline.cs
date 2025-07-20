@@ -20,7 +20,7 @@ public class MaskPipeline : BaseMaskPipeline
         : base(firstPipeline, previousPipeline, maskProcessor.GetType().Name, console)
         => MaskProcessor = maskProcessor;
 
-    private readonly IMaskProcessor? MaskProcessor;
+    private readonly IMaskProcessor MaskProcessor;
 
     public MaskPipeline Next(IMaskProcessor maskProcessor)
     {
@@ -39,11 +39,11 @@ public class MaskPipeline : BaseMaskPipeline
     {
         try
         {
+            if (Masks == null)
+                throw new InvalidOperationException("Pipeline not initialized. Call Start first.");
+
             while (!Disposing)
             {
-                if (Masks == null)
-                    throw new InvalidOperationException("Pipeline not initialized. Call Start first.");
-
                 if (!FrameReceived.WaitOne(10_000))
                     continue;
 
@@ -55,9 +55,14 @@ public class MaskPipeline : BaseMaskPipeline
                     if (frameIndex < 0)
                         frameIndex = Masks.Length - 1;
 
-                    Masks[frameIndex] = MaskProcessor.ProcessMask(Masks[frameIndex]);
-                    if (Masks[frameIndex] != null)
-                        NextMaskPipeline?.ProcessMask(Masks[frameIndex]);
+                    var mask = Masks[frameIndex];
+                    if (mask != null)
+                        using (ProcessStopwatch.NewMeasurement())
+                            Masks[frameIndex] = MaskProcessor.ProcessMask(mask);
+
+                    mask = Masks[frameIndex];
+                    if (mask != null)
+                        NextMaskPipeline?.ProcessMask(mask);
                 }
 
                 FrameDone.Set();

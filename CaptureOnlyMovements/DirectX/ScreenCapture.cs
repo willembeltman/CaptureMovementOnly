@@ -1,4 +1,5 @@
-﻿using CaptureOnlyMovements.Interfaces;
+﻿using CaptureOnlyMovements.FrameConverters;
+using CaptureOnlyMovements.Interfaces;
 using CaptureOnlyMovements.Types;
 using System;
 using System.Collections.Generic;
@@ -11,15 +12,20 @@ namespace CaptureOnlyMovements.DirectX;
 
 public class ScreenshotCapturer : IDisposable
 {
+    private readonly IConsole Console;
     private readonly IDXGIFactory1 Factory;
     private readonly IDXGIAdapter1 Adapter;
     private readonly IDXGIOutput1 Output;
     private readonly ID3D11Device Device;
     private readonly IDXGIOutputDuplication DuplicatedOutput;
+    private readonly BgraToBgrConverterUnsafe BgraToBgr;
 
-    public ScreenshotCapturer()
+    public ScreenshotCapturer(IConsole console)
     {
+        Console = console;
         Factory = DXGI.CreateDXGIFactory1<IDXGIFactory1>();
+        BgraToBgr = new BgraToBgrConverterUnsafe();
+
         var adapterResult = Factory.EnumAdapters1(0, out Adapter);
         if (!adapterResult.Success || Adapter == null)
         {
@@ -71,6 +77,10 @@ public class ScreenshotCapturer : IDisposable
         }
         Output = output.QueryInterface<IDXGIOutput1>();
         DuplicatedOutput = Output.DuplicateOutput(Device);
+
+
+        Console.WriteLine(Device.FeatureLevel.ToString());  // >= 11.0 = goed
+        Console.WriteLine(Adapter.Description.Description);  // "Microsoft Basic Render Driver" = WARP!
     }
 
     public IEnumerable<byte[]> ReadEnumerable(IKillSwitch killSwitch)
@@ -85,13 +95,13 @@ public class ScreenshotCapturer : IDisposable
     public Frame CaptureFrame(byte[]? buffer = null)
     {
         var result = DuplicatedOutput.AcquireNextFrame(1,
-            out OutduplFrameInfo info,
+            out OutduplFrameInfo _,
             out IDXGIResource? screenResource);
 
         while (!result.Success || screenResource == null)
         {
             Thread.Sleep(1); // Wait for the next frame
-            result = DuplicatedOutput.AcquireNextFrame(1, out info, out screenResource);
+            result = DuplicatedOutput.AcquireNextFrame(1, out _, out screenResource);
         }
 
         // Create texture2D from IDXGIResource
@@ -121,76 +131,9 @@ public class ScreenshotCapturer : IDisposable
 
         // Map staging texture to memory
         var dataBox = context.Map(stagingTexture, 0, MapMode.Read, Vortice.Direct3D11.MapFlags.None);
-        var stride = dataBox.RowPitch;
 
         // Converteer BGRA → BGR
-        var srcStride = Convert.ToInt32(dataBox.RowPitch);
-        int dstStride = width * 3;
-        int bgrSize = dstStride * height;
-
-        if (buffer == null || buffer.Length != bgrSize)
-            buffer = new byte[bgrSize];
-
-        //unsafe
-        //{
-        //    byte* srcPtr = (byte*)dataBox.DataPointer;
-
-        //    for (int y = 0; y < height; y++)
-        //    {
-        //        int srcRow = y * srcStride;
-        //        int dstRow = y * dstStride;
-
-        //        for (int x = 0; x < width; x++)
-        //        {
-        //            int srcIndex = srcRow + x * 4; // BGRA
-        //            int dstIndex = dstRow + x * 3; // BGR
-
-        //            buffer[dstIndex + 0] = srcPtr[srcIndex + 0]; // B
-        //            buffer[dstIndex + 1] = srcPtr[srcIndex + 1]; // G
-        //            buffer[dstIndex + 2] = srcPtr[srcIndex + 2]; // R
-        //        }
-        //    }
-        //}
-
-        //unsafe
-        //{
-        //    byte* srcPtrBase = (byte*)dataBox.DataPointer;
-        //    fixed (byte* dstPtr = buffer)
-        //    {
-        //        var srcPtrTransfer = (nint)srcPtrBase;
-
-        //        var pixelCount = width * height;
-        //        Parallel.For(0, pixelCount, (k, state) =>
-        //        {
-        //            var srcPtr = (byte*)(srcPtrTransfer);
-
-        //            int srcIndex = k * 4; // BGRA
-        //            int dstIndex = k * 3; // BGR
-
-        //            buffer[dstIndex + 0] = srcPtr[srcIndex + 0]; // B
-        //            buffer[dstIndex + 1] = srcPtr[srcIndex + 1]; // G
-        //            buffer[dstIndex + 2] = srcPtr[srcIndex + 2]; // R
-        //        });
-        //    }
-        //}
-
-        unsafe
-        {
-            byte* srcPtr = (byte*)dataBox.DataPointer;
-            fixed (byte* dstPtr = buffer)
-            {
-                var pixelCount = width * height;
-                for (int k = 0; k < pixelCount; k++)
-                {
-                    int srcIndex = k * 4; // BGRA
-                    int dstIndex = k * 3; // BGR
-
-                    buffer[dstIndex + 0] = srcPtr[srcIndex + 0]; // B
-                    buffer[dstIndex + 1] = srcPtr[srcIndex + 1]; // G
-                    buffer[dstIndex + 2] = srcPtr[srcIndex + 2]; // R
-                }
-            }
-        }
+        buffer = BgraToBgr.ConvertBgraToBgr(dataBox, width, height, buffer);
 
         // Clean up
         context.Unmap(stagingTexture, 0);
@@ -206,6 +149,7 @@ public class ScreenshotCapturer : IDisposable
         Device?.Dispose();
         Adapter?.Dispose();
         Factory?.Dispose();
+        BgraToBgr?.Dispose();
 
         GC.SuppressFinalize(this);
     }

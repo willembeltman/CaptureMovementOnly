@@ -10,7 +10,7 @@ public interface IApplication
     bool IsBusy { get; }
     FpsCounter InputFps { get; }
     FpsCounter OutputFps { get; }
-    IWorkingEncoders WorkingEncoders { get; }
+    IEncoderCollection WorkingEncoders { get; }
 
     void FatalException(string message, string title);
     void FatalException(Exception exception);

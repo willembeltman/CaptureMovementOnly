@@ -2,7 +2,7 @@
 
 namespace CaptureOnlyMovements.Interfaces;
 
-public interface IWorkingEncoders
+public interface IEncoderCollection
 {
     EncoderEnum[] List { get; }
 }

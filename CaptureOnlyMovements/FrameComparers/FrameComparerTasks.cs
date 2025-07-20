@@ -8,7 +8,7 @@ namespace CaptureOnlyMovements.FrameComparers;
 public class FrameComparerTasks(
     IComparerConfig config,
     Resolution resolution,
-    IPreview? preview = null) : IFrameComparer
+    IPreview? preview = null) : IBgrComparer
 {
     private readonly byte[] PreviousFrameData = new byte[resolution.Width * resolution.Height * 3];
 
@@ -96,5 +96,6 @@ public class FrameComparerTasks(
 
     public void Dispose()
     {
+        GC.SuppressFinalize(this);
     }
 }

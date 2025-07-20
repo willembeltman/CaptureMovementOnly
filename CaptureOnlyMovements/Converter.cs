@@ -110,7 +110,7 @@ public class Converter(
                                 .Next(new SkipInitialOrNotDifferentFrames(skipTillNextIndex, comparer, Preview))
                                 .Next(new ResizeFrame(resizer), new MaskPipelineExecuter(new ShowMaskTo(Preview)))
                                 .Next(new ShowPreviewTo_PassThrough(Preview))
-                                .Out(new WriteFrameAndTickFps(writer, Application.OutputFps));
+                                .Next(new WriteFrameAndTickFps(writer, Application.OutputFps));
 
                 // Then start it
                 pipeline.Start(this);

@@ -1,10 +1,11 @@
-﻿using CaptureOnlyMovements.Types;
+﻿using CaptureOnlyMovements.Interfaces;
+using CaptureOnlyMovements.Types;
 using System;
 using System.Threading.Tasks;
 
 namespace CaptureOnlyMovements.FrameResizers;
 
-public class BgrResizerTasks(Resolution outputResolution) : IDisposable
+public class BgrResizerTasks(Resolution outputResolution) : IBgrResizer
 {
     private readonly byte[] Buffer = new byte[outputResolution.PixelCount * 3];
 

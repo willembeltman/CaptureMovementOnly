@@ -59,13 +59,13 @@ public class Recorder(
             Console.WriteLine($"Opening '{outputFullName}' to write video to.");
 
             // Get first frame for the resolution
-            using var reader = new ScreenshotCapturer();
+            using var reader = new ScreenshotCapturer(Console);
             var frame = reader.CaptureFrame();
             Application.InputFps.Tick();
 
             // Create the comparer
             var resolution = frame.Resolution;
-            using var comparer = new FrameComparerUnsafe(Config, resolution, Preview);
+            using var comparer = new FrameComparerTasks(Config, resolution, Preview);
             comparer.IsDifferent(frame.Buffer); // Initialize comparer with the first frame
 
             // Create the writer
@@ -83,6 +83,9 @@ public class Recorder(
             // Iterate through next frames until the kill switch is activated
             while (!KillSwitch)
             {
+                // Wait for the next frame time and save previous frame date (if needed)
+                waitTillNextTime.Wait();
+
                 // Capture the next frame
                 frame = reader.CaptureFrame(frame.Buffer);
                 Application.InputFps.Tick();
@@ -97,9 +100,6 @@ public class Recorder(
                     writer.WriteFrame(frame);
                     Application.OutputFps.Tick();
                     Console.WriteLine($"Captured frame at {DateTime.Now:HH:mm:ss.fff}   {comparer.Difference}");
-
-                    // Wait for the next frame time and save previous frame date (if needed)
-                    waitTillNextTime.Wait();
                 }
             }
 

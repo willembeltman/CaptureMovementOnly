@@ -25,8 +25,8 @@ public partial class ConfigForm : Form
 
     private void ConfigForm_Load(object? sender, EventArgs e)
     {
-        Quality.DataSource = Enum.GetNames(typeof(QualityEnum));
-        Preset.DataSource = Enum.GetNames(typeof(PresetEnum));
+        Quality.DataSource = Enum.GetNames<QualityEnum>();
+        Preset.DataSource = Enum.GetNames<PresetEnum>();
         Encoder.DataSource = Application.WorkingEncoders.List.Select(a => a.ToString()).ToArray();
     }
 

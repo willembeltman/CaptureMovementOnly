@@ -19,6 +19,7 @@ public abstract class BasePipeline : IBasePipeline
         Thread = new Thread(Kernel);
         Name = name;
         Console = console;
+        ProcessStopwatch = new ProcessTimer();
     }
 
     private readonly BasePipeline FirstPipeline;
@@ -30,7 +31,8 @@ public abstract class BasePipeline : IBasePipeline
     protected int FrameIndex;
     protected bool Disposing;
 
-    protected INextVideoPipeline? NextPipeline { get; set; }
+    public ProcessTimer ProcessStopwatch { get; }
+    protected INextVideoPipeline? NextVideoPipeline { get; set; }
     protected INextMaskPipeline? NextMaskPipeline { get; set; }
 
     public string Name { get; }
@@ -57,9 +59,9 @@ public abstract class BasePipeline : IBasePipeline
         {
             var item = FirstPipeline;
             yield return item;
-            while (item?.NextPipeline != null)
+            while (item?.NextVideoPipeline != null)
             {
-                item = item.NextPipeline as BasePipeline;
+                item = item.NextVideoPipeline as BasePipeline;
                 yield return item!;
             }
         }
