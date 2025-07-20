@@ -91,7 +91,7 @@ public class Converter(
                 frameIndex++;
 
                 // Create the frame comparer and resizer
-                using var comparer = new FrameComparerUnsafe2(fileConfig, frame.Resolution, Preview);
+                using var comparer = new FrameComparerTasks(fileConfig, frame.Resolution, Preview);
                 using var resizer = new BgrResizerUnsafe(resolution);
 
                 comparer.IsDifferent(frame.Buffer);

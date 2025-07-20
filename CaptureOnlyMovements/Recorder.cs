@@ -52,7 +52,7 @@ public class Recorder(
         {
             // Get the filename for the output video
             string videosFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.MyVideos);
-            var outputName = $"{DateTime.Now:yyyy-MM-dd HH-mm-ss}.mkv";
+            var outputName = $"{Config.OutputFileNamePrefix}{DateTime.Now:yyyy-MM-dd HH-mm-ss}.mkv";
             string outputFullName = Path.Combine(videosFolderPath, outputName);
 
             if (File.Exists(outputFullName))
@@ -67,7 +67,7 @@ public class Recorder(
 
             // Create the comparer
             var resolution = frame.Resolution;
-            using var comparer = new FrameComparerUnsafe2(Config, resolution, Preview);
+            using var comparer = new FrameComparerUnsafe(Config, resolution, Preview);
             comparer.IsDifferent(frame.Buffer); // Initialize comparer with the first frame
 
             // Create the writer
