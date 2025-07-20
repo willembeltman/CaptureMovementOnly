@@ -1,11 +1,10 @@
 ﻿using CaptureOnlyMovements.FrameComparers;
 using CaptureOnlyMovements.Interfaces;
-using CaptureOnlyMovements.Pipeline.Interfaces;
 using CaptureOnlyMovements.Types;
 
 namespace CaptureOnlyMovements.Pipeline.Tasks
 {
-    internal class SkipNotDifferentFrames : IFrameProcessorWithMaskOutput
+    internal class SkipNotDifferentFrames : IFrameProcessorWithMask
     {
         public SkipNotDifferentFrames(IBgrComparer comparer, IPreview? preview)
         {

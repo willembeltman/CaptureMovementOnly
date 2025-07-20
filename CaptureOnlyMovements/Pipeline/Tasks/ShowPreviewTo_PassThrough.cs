@@ -1,5 +1,4 @@
 ﻿using CaptureOnlyMovements.Interfaces;
-using CaptureOnlyMovements.Pipeline.Interfaces;
 using CaptureOnlyMovements.Types;
 
 namespace CaptureOnlyMovements.Pipeline.Tasks;

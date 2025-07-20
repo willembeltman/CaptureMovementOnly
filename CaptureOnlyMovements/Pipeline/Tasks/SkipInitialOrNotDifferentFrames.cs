@@ -1,11 +1,10 @@
 ﻿using CaptureOnlyMovements.Helpers;
 using CaptureOnlyMovements.Interfaces;
-using CaptureOnlyMovements.Pipeline.Interfaces;
 using CaptureOnlyMovements.Types;
 
 namespace CaptureOnlyMovements.Pipeline.Tasks;
 
-public class SkipInitialOrNotDifferentFrames : IFrameProcessorWithMaskOutput
+public class SkipInitialOrNotDifferentFrames : IFrameProcessorWithMask
 {
     private int frameIndex;
 

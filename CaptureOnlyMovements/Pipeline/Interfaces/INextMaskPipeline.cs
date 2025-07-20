@@ -7,5 +7,5 @@ namespace CaptureOnlyMovements.Pipeline.Interfaces;
 
 public interface INextMaskPipeline : IMaskPipeline
 {
-    void ProcessMask(BwFrame frame);
+    void HandleNextMask(BwFrame frame);
 }

@@ -8,19 +8,18 @@ namespace CaptureOnlyMovements.Pipeline;
 public class MaskPipeline : BaseMaskPipeline
 {
     public MaskPipeline(
+        IConsole? console = null)
+        : base(null, null, null, null, "Basdfas", console) { }
+    public MaskPipeline(
         IMaskProcessor maskProcessor,
         IConsole? console = null)
-        : base(null, null, maskProcessor.GetType().Name, console)
-        => MaskProcessor = maskProcessor;
+        : base(null, null, maskProcessor, null, maskProcessor.GetType().Name, console) { }
     public MaskPipeline(
         BaseMaskPipeline firstPipeline,
         BaseMaskPipeline previousPipeline,
         IMaskProcessor maskProcessor,
         IConsole? console)
-        : base(firstPipeline, previousPipeline, maskProcessor.GetType().Name, console)
-        => MaskProcessor = maskProcessor;
-
-    private readonly IMaskProcessor MaskProcessor;
+        : base(firstPipeline, previousPipeline, maskProcessor, null, maskProcessor.GetType().Name, console) { }
 
     public MaskPipeline Next(IMaskProcessor maskProcessor)
     {
@@ -28,9 +27,9 @@ public class MaskPipeline : BaseMaskPipeline
         NextMaskPipeline = nextPipeline;
         return nextPipeline;
     }
-    public MaskPipelineExecuter Next(IMaskWriter maskWriter)
+    public MaskPipelineWriter Next(IMaskWriter maskWriter)
     {
-        var nextPipeline = new MaskPipelineExecuter(FirstMaskPipeline, this, maskWriter, Console);
+        var nextPipeline = new MaskPipelineWriter(FirstMaskPipeline, this, maskWriter, Console);
         NextMaskPipeline = nextPipeline;
         return nextPipeline;
     }
@@ -56,13 +55,13 @@ public class MaskPipeline : BaseMaskPipeline
                         frameIndex = Masks.Length - 1;
 
                     var mask = Masks[frameIndex];
-                    if (mask != null)
-                        using (ProcessStopwatch.NewMeasurement())
+                    if (mask != null && MaskProcessor != null)
+                        using (Statistics.NewMeasurement())
                             Masks[frameIndex] = MaskProcessor.ProcessMask(mask);
 
                     mask = Masks[frameIndex];
                     if (mask != null)
-                        NextMaskPipeline?.ProcessMask(mask);
+                        NextMaskPipeline?.HandleNextMask(mask);
                 }
 
                 FrameDone.Set();

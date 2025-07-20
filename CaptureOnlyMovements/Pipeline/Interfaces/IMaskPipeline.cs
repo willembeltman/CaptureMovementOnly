@@ -7,5 +7,4 @@ public interface IMaskPipeline : IPipeline
 {
     BaseMaskPipeline FirstMaskPipeline { get; }
 
-    void WriteMask(BwFrame mask);
 }

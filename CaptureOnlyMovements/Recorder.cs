@@ -84,19 +84,17 @@ public class Recorder(
 
 
             // Setup pipeline
-            using var maskPipeline = 
-                new MaskPipelineExecuter(new ShowMaskTo(Preview));
+            using var maskPipeline =
+                 new MaskPipeline(Console)
+                            .Next(new ShowMaskTo(Preview));
 
             using var pipeline =
-                new VideoPipeline(new WaitThenReadFrameThenTickFps(waitTillNextTime, reader, Application.InputFps), Console)
+                new VideoPipeline(Console)
                             .Next(new SkipNotDifferentFrames(comparer, Preview))
                             .Next(new ShowPreviewTo_PassThrough(Preview), maskPipeline)
                             .Next(new WriteFrameAndTickFps(writer, Application.OutputFps));
 
-            // Then start it
             pipeline.Start(this);
-            pipeline.WaitForExit();
-
 
             // Iterate through next frames until the kill switch is activated
             while (!KillSwitch)
@@ -108,18 +106,50 @@ public class Recorder(
                 frame = reader.CaptureFrame(frame.Buffer);
                 Application.InputFps.Tick();
 
-                // Check if the frame is different from the previous one
-                if (comparer.IsDifferent(frame.Buffer))
-                {
-                    if (Preview?.ShowMask == true)
-                        Preview.WriteMask(new BwFrame(comparer.MaskData, comparer.Resolution));
-
-                    // If so write it to the video
-                    writer.WriteFrame(frame);
-                    Application.OutputFps.Tick();
-                    Console.WriteLine($"Captured frame at {DateTime.Now:HH:mm:ss.fff}   {comparer.Difference}");
-                }
+                pipeline.WriteFrame(frame);
             }
+
+
+            pipeline.Stop();
+
+            //// Setup pipeline
+            //using var maskPipeline =
+            //     new MaskPipeline()
+            //                .Next(new ShowMaskTo(Preview));
+
+            //using var pipeline =
+            //    new VideoPipeline(new WaitThenReadFrameThenTickFps(waitTillNextTime, reader, Application.InputFps))
+            //                .Next(new SkipNotDifferentFrames(comparer, Preview))
+            //                .Next(new ShowPreviewTo_PassThrough(Preview), maskPipeline)
+            //                .Next(new WriteFrameAndTickFps(writer, Application.OutputFps));
+
+            //// Then start it
+            //pipeline.Start(this);
+            //pipeline.WaitForExit();
+
+
+            //// Iterate through next frames until the kill switch is activated
+            //while (!KillSwitch)
+            //{
+            //    // Wait for the next frame time and save previous frame date (if needed)
+            //    waitTillNextTime.Wait();
+
+            //    // Capture the next frame
+            //    frame = reader.CaptureFrame(frame.Buffer);
+            //    Application.InputFps.Tick();
+
+            //    // Check if the frame is different from the previous one
+            //    if (comparer.IsDifferent(frame.Buffer))
+            //    {
+            //        if (Preview?.ShowMask == true)
+            //            Preview.WriteMask(new BwFrame(comparer.MaskData, comparer.Resolution));
+
+            //        // If so write it to the video
+            //        writer.WriteFrame(frame);
+            //        Application.OutputFps.Tick();
+            //        Console.WriteLine($"Captured frame at {DateTime.Now:HH:mm:ss.fff}   {comparer.Difference}");
+            //    }
+            //}
 
             Console.WriteLine($"Closed '{outputFullName}' and stopped capturing.");
         }

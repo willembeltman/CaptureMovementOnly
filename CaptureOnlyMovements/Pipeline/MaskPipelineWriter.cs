@@ -1,27 +1,27 @@
 ﻿using CaptureOnlyMovements.Interfaces;
 using CaptureOnlyMovements.Pipeline.Base;
 using CaptureOnlyMovements.Pipeline.Interfaces;
+using CaptureOnlyMovements.Types;
 using System;
 
 namespace CaptureOnlyMovements.Pipeline;
 
-public class MaskPipelineExecuter : BaseMaskPipeline, IMaskWriter
+public class MaskPipelineWriter : BaseMaskPipeline, IMaskWriter
 {
-    public MaskPipelineExecuter(
+    public MaskPipelineWriter(
         IMaskWriter maskWriter,
         IConsole? console = null)
-        : base(null, null, maskWriter.GetType().Name, console)
-        => MaskWriter = maskWriter;
+        : base(null, null, null, maskWriter, maskWriter.GetType().Name, console) { }
 
-    public MaskPipelineExecuter(
+    public MaskPipelineWriter(
         BaseMaskPipeline? firstPipeline,
         BaseMaskPipeline previousPipeline,
         IMaskWriter maskWriter,
         IConsole? console)
-        : base(firstPipeline, previousPipeline, maskWriter.GetType().Name, console)
-        => MaskWriter = maskWriter;
+        : base(firstPipeline, previousPipeline, null, maskWriter, maskWriter.GetType().Name, console) { }
 
-    private readonly IMaskWriter MaskWriter;
+    public void WriteMask(BwFrame mask)
+        => ((INextMaskPipeline)FirstMaskPipeline).HandleNextMask(mask);
 
     protected override void Kernel(object? objCancellationToken)
     {
@@ -44,8 +44,8 @@ public class MaskPipelineExecuter : BaseMaskPipeline, IMaskWriter
                     }
 
                     var mask = Masks[frameIndex];
-                    if (mask != null)
-                        using (ProcessStopwatch.NewMeasurement())
+                    if (mask != null && MaskWriter != null)
+                        using (Statistics.NewMeasurement())
                             MaskWriter.WriteMask(mask);
                 }
 

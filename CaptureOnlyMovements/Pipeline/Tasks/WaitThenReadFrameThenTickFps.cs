@@ -1,6 +1,6 @@
 ﻿using CaptureOnlyMovements.DirectX;
 using CaptureOnlyMovements.Helpers;
-using CaptureOnlyMovements.Pipeline.Interfaces;
+using CaptureOnlyMovements.Interfaces;
 using CaptureOnlyMovements.Types;
 
 namespace CaptureOnlyMovements.Pipeline.Tasks;

@@ -19,7 +19,7 @@ public abstract class BasePipeline : IBasePipeline
         Thread = new Thread(Kernel);
         Name = name;
         Console = console;
-        ProcessStopwatch = new ProcessTimer();
+        Statistics = new PipelineStatistics();
     }
 
     private readonly BasePipeline FirstPipeline;
@@ -31,7 +31,7 @@ public abstract class BasePipeline : IBasePipeline
     protected int FrameIndex;
     protected bool Disposing;
 
-    public ProcessTimer ProcessStopwatch { get; }
+    public PipelineStatistics Statistics { get; }
     protected INextVideoPipeline? NextVideoPipeline { get; set; }
     protected INextMaskPipeline? NextMaskPipeline { get; set; }
 

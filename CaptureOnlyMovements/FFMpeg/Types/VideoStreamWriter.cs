@@ -1,6 +1,5 @@
 ﻿using CaptureOnlyMovements.Enums;
 using CaptureOnlyMovements.Interfaces;
-using CaptureOnlyMovements.Pipeline.Interfaces;
 using CaptureOnlyMovements.Types;
 using System;
 using System.Diagnostics;

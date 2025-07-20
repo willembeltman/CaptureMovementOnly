@@ -6,24 +6,41 @@ using System;
 namespace CaptureOnlyMovements.Pipeline.Base;
 
 public abstract class BaseVideoPipeline 
-    : BasePipeline, INextVideoPipeline
+    : BasePipeline, IBaseVideoPipeline
 {
     public BaseVideoPipeline(
         BaseVideoPipeline? firstPipeline,
-        BaseVideoPipeline? previousPipeline, 
+        BaseVideoPipeline? previousPipeline,
+        IFrameReader? reader,
+        IFrameProcessor? processor,
+        IFrameProcessorWithMask? processorWithMask,
+        IFrameWriter? writer,
         string name,
         IConsole? console) 
         : base(firstPipeline, previousPipeline, name, console)
     {
         FirstPipeline = firstPipeline ?? this;
         PreviousPipeline = previousPipeline;
+        Reader = reader;
+        Processor = processor;
+        ProcessorWithMask = processorWithMask;
+        Writer = writer;
     }
 
-    public BaseVideoPipeline FirstPipeline { get; }
-    public BaseVideoPipeline? PreviousPipeline { get; }
+    protected BaseVideoPipeline FirstPipeline { get; }
+    protected BaseVideoPipeline? PreviousPipeline { get; }
+    protected IFrameReader? Reader { get; }
+    protected IFrameProcessor? Processor { get; }
+    protected IFrameProcessorWithMask? ProcessorWithMask { get; }
+    protected IFrameWriter? Writer { get; }
+    protected Frame?[]? Frames { get; set; }
+    protected BwFrame?[]? Masks { get; set; }
 
-    public Frame?[]? Frames { get; protected set; }
-    public BwFrame?[]? Masks { get; protected set; }
+
+    IFrameReader? IBaseVideoPipeline.Reader => Reader;
+    IFrameProcessor? IBaseVideoPipeline.Processor => Processor;
+    IFrameProcessorWithMask? IBaseVideoPipeline.ProcessorWithMask => ProcessorWithMask;
+    IFrameWriter? IBaseVideoPipeline.Writer => Writer;
 
     int IPipeline.Start(IKillSwitch? cancellationToken, int count) 
         => StartVideo(cancellationToken, count);
@@ -38,7 +55,7 @@ public abstract class BaseVideoPipeline
 
         return count;
     }
-    void INextVideoPipeline.ProcessFrame(Frame frame)
+    void INextVideoPipeline.HandleNextFrame(Frame frame)
     {
         if (Frames == null)
             throw new InvalidOperationException("Pipeline not initialized. Call Start first.");

@@ -1,28 +1,29 @@
 ﻿using CaptureOnlyMovements.Interfaces;
 using CaptureOnlyMovements.Pipeline.Base;
-using CaptureOnlyMovements.Pipeline.Interfaces;
 using System;
-using System.Threading;
+using System.Diagnostics;
 
 namespace CaptureOnlyMovements.Pipeline;
 
 public class VideoPipeline : BaseVideoPipeline
 {
     public VideoPipeline(
+        IConsole? console = null)
+        : base(null, null, null, null, null, null, "WriteFrame receiver", console) { }
+    public VideoPipeline(
         IFrameReader reader,
         IConsole? console = null)
-        : base(null, null, reader.GetType().Name, console)
-        => Reader = reader;
+        : base(null, null, reader, null, null, null, reader.GetType().Name, console) { }
+    public VideoPipeline(
+        IFrameProcessor processor,
+        IConsole? console = null)
+        : base(null, null, null, processor, null, null, processor.GetType().Name, console) { }
     public VideoPipeline(
         BaseVideoPipeline firstPipeline,
         BaseVideoPipeline previousPipeline,
         IFrameProcessor processor,
         IConsole? console)
-        : base(firstPipeline, previousPipeline, processor.GetType().Name, console)
-        => Processor = processor;
-
-    private readonly IFrameReader? Reader;
-    private readonly IFrameProcessor? Processor;
+        : base(firstPipeline, previousPipeline, null, processor, null, null, processor.GetType().Name, console) { }
 
     public VideoPipeline Next(IFrameProcessor processor)
     {
@@ -30,13 +31,13 @@ public class VideoPipeline : BaseVideoPipeline
         NextVideoPipeline = nextPipeline;
         return nextPipeline;
     }
-    public VideoPipelineExecuter Next(IFrameWriter writer)
+    public VideoPipelineWriter Next(IFrameWriter writer)
     {
-        var nextPipeline = new VideoPipelineExecuter(FirstPipeline, this, writer, Console);
+        var nextPipeline = new VideoPipelineWriter(FirstPipeline, this, writer, Console);
         NextVideoPipeline = nextPipeline;
         return nextPipeline;
     }
-    public VideoPipelineWithMaskOutput Next(IFrameProcessorWithMaskOutput processor)
+    public VideoPipelineWithMaskOutput Next(IFrameProcessorWithMask processor)
     {
         var nextPipeline = new VideoPipelineWithMaskOutput(FirstPipeline, this, processor, Console);
         NextVideoPipeline = nextPipeline;
@@ -49,13 +50,13 @@ public class VideoPipeline : BaseVideoPipeline
         {
             var cancellationToken = (IKillSwitch?)objCancellationToken;
 
-            if (PreviousPipeline == null)
+            if (PreviousPipeline == null && Reader != null)
             {
                 ReaderKernel(cancellationToken);
             }
             else 
             {
-                ProcessorKernel(cancellationToken);
+                ProcessorKernel();
             }
         }
         catch (Exception ex)
@@ -83,7 +84,7 @@ public class VideoPipeline : BaseVideoPipeline
             }
             else
             {
-                using (ProcessStopwatch.NewMeasurement())
+                using (Statistics.NewMeasurement())
                     Frames[FrameIndex] = Reader.ReadFrame(Frames[FrameIndex]);
 
                 var frame = Frames[FrameIndex];
@@ -95,7 +96,7 @@ public class VideoPipeline : BaseVideoPipeline
                     Disposing = true;
                 }
                 else
-                    NextVideoPipeline?.ProcessFrame(frame);
+                    NextVideoPipeline?.HandleNextFrame(frame);
 
                 FrameIndex++;
                 if (FrameIndex >= Frames.Length)
@@ -103,13 +104,13 @@ public class VideoPipeline : BaseVideoPipeline
             }
         }
     }
-    private void ProcessorKernel(IKillSwitch? cancellationToken)
+    private void ProcessorKernel()
     {
         if (Frames == null)
             throw new InvalidOperationException("Pipeline not initialized. Call Start first.");
 
-        if (Processor == null)
-            throw new Exception("Pipeline must either be a source or a processor.");
+        //if (Processor == null)
+        //    throw new Exception("Pipeline must either be a source or a processor.");
 
         while (!Disposing)
         {
@@ -127,12 +128,13 @@ public class VideoPipeline : BaseVideoPipeline
                 var frame = Frames[frameIndex];
                 if (frame != null)
                 {
-                    using (ProcessStopwatch.NewMeasurement())
-                        Frames[frameIndex] = Processor.ProcessFrame(frame);
+                    if (Processor != null)
+                        using (Statistics.NewMeasurement())
+                            Frames[frameIndex] = Processor.ProcessFrame(frame);
 
                     frame = Frames[frameIndex];
                     if (frame != null)
-                        NextVideoPipeline?.ProcessFrame(frame);
+                        NextVideoPipeline?.HandleNextFrame(frame);
                 }
             }
 

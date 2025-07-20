@@ -1,6 +1,6 @@
 ﻿using CaptureOnlyMovements.Types;
 
-namespace CaptureOnlyMovements.Pipeline.Interfaces;
+namespace CaptureOnlyMovements.Interfaces;
 
 public interface IFrameReader
 {

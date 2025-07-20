@@ -9,17 +9,23 @@ public abstract class BaseMaskPipeline : BasePipeline, INextMaskPipeline
 {
     public BaseMaskPipeline(
         BaseMaskPipeline? firstPipeline,
-        BaseMaskPipeline? previousPipeline, 
+        BaseMaskPipeline? previousPipeline,
+        IMaskProcessor? processor,
+        IMaskWriter? maskWriter,
         string name,
         IConsole? console)
         : base(firstPipeline, previousPipeline, name, console)
     {
         FirstMaskPipeline = firstPipeline ?? this;
         PreviousMaskPipeline = previousPipeline;
+        MaskProcessor = processor;
+        MaskWriter = maskWriter;
     }
 
     public BaseMaskPipeline FirstMaskPipeline { get; }
     public BaseMaskPipeline? PreviousMaskPipeline { get; }
+    public IMaskProcessor? MaskProcessor { get; }
+    public IMaskWriter? MaskWriter { get; }
     protected BwFrame[]? Masks { get; set; }
 
     int IPipeline.Start(IKillSwitch? cancellationToken, int count) 
@@ -36,10 +42,7 @@ public abstract class BaseMaskPipeline : BasePipeline, INextMaskPipeline
         return count;
     }
 
-    public void WriteMask(BwFrame mask)
-        => ((INextMaskPipeline)FirstMaskPipeline).ProcessMask(mask);
-
-    void INextMaskPipeline.ProcessMask(BwFrame mask)
+    void INextMaskPipeline.HandleNextMask(BwFrame mask)
     {
         if (Masks == null)
             throw new InvalidOperationException("Pipeline not initialized. Call Start first.");

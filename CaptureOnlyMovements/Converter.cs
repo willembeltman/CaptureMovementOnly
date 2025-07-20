@@ -106,7 +106,7 @@ public class Converter(
 
                 // Setup pipeline
                 using var maskPipeline =
-                     new MaskPipelineExecuter(new ShowMaskTo(Preview));
+                     new MaskPipelineWriter(new ShowMaskTo(Preview));
                 using var pipeline =
                     new VideoPipeline(new ReadFrameAndTickFps(reader, Application.InputFps), Console)
                                 .Next(new SkipInitialOrNotDifferentFrames(skipTillNextIndex, comparer, Preview))

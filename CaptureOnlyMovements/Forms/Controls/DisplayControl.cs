@@ -1,4 +1,5 @@
 ﻿using CaptureOnlyMovements.FrameConverters;
+using CaptureOnlyMovements.Interfaces;
 using CaptureOnlyMovements.Pipeline.Interfaces;
 using CaptureOnlyMovements.Types;
 using System;

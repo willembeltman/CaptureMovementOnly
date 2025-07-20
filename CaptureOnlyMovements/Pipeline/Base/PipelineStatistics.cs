@@ -3,9 +3,9 @@ using System.Diagnostics;
 
 namespace CaptureOnlyMovements.Pipeline.Base;
 
-public class ProcessTimer
+public class PipelineStatistics
 {
-    public ProcessTimer()
+    public PipelineStatistics()
     {
         StartStopwatch = Stopwatch.StartNew();
         Stopwatch = new Stopwatch();
@@ -26,18 +26,19 @@ public class ProcessTimer
 
     public class Measurement : IDisposable
     {
-        public Measurement(ProcessTimer processTimer)
+        public Measurement(PipelineStatistics processTimer)
         {
             ProcessTimer = processTimer;
             ProcessTimer.Stopwatch.Start();
         }
 
-        public ProcessTimer ProcessTimer { get; }
+        public PipelineStatistics ProcessTimer { get; }
 
         public void Dispose()
         {
             ProcessTimer.Stopwatch.Stop();
             ProcessTimer.Count++;
+            GC.SuppressFinalize(this);
         }
     }
 }

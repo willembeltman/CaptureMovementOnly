@@ -6,24 +6,24 @@ using System;
 
 namespace CaptureOnlyMovements.Pipeline;
 
-public class VideoPipelineWithMaskOutput : BaseVideoPipeline
+public class VideoPipelineWithMaskOutput(
+    BaseVideoPipeline firstPipeline,
+    BaseVideoPipeline previousPipeline,
+    IFrameProcessorWithMask processorWithMask,
+    IConsole? console) 
+    : BaseVideoPipeline(
+        firstPipeline,
+        previousPipeline,
+        null, null, processorWithMask, null, 
+        processorWithMask.GetType().Name, 
+        console)
 {
-    public VideoPipelineWithMaskOutput(
-        BaseVideoPipeline firstPipeline,
-        BaseVideoPipeline previousPipeline,
-        IFrameProcessorWithMaskOutput processor,
-        IConsole? console)
-        : base(firstPipeline, previousPipeline, processor.GetType().Name, console)
-        => Processor = processor;
-
-    private readonly IFrameProcessorWithMaskOutput Processor;
-
     protected override int StartVideo(IKillSwitch? cancellationToken, int count)
     {
         count++;
-        var previousPipeline = (IPipeline?)PreviousPipeline;
-        if (previousPipeline == null)
-            throw new Exception(
+        var previousPipeline = 
+            (IPipeline?)PreviousPipeline 
+            ?? throw new Exception(
                 @"This should not be possible! 
 
 You can only create a `VideoPipelineWithMaskOutput` with the Next() command, 
@@ -36,7 +36,6 @@ This is buggy.
 
 If you are a user reading this, IDK, this is very very buggy. 
 So maybe just throw this copy away and re-download it.");
-
         count = previousPipeline.Start(cancellationToken, count);
         NextMaskPipeline?.Start(cancellationToken, 2);
 
@@ -48,16 +47,16 @@ So maybe just throw this copy away and re-download it.");
         return count;
     }
 
-    public VideoPipeline Next(IFrameProcessor frameProcessor, MaskPipelineExecuter? maskPipelineExecuter)
+    public VideoPipeline Next(IFrameProcessor frameProcessor, MaskPipelineWriter? maskPipelineExecuter)
     {
         var nextPipeline = new VideoPipeline(FirstPipeline, this, frameProcessor, Console);
         NextVideoPipeline = nextPipeline;
         NextMaskPipeline = maskPipelineExecuter;
         return nextPipeline;
     }
-    public VideoPipelineExecuter Next(IFrameWriter frameWriter, MaskPipelineExecuter? maskPipelineExecuter)
+    public VideoPipelineWriter Next(IFrameWriter frameWriter, MaskPipelineWriter? maskPipelineExecuter)
     {
-        var nextPipeline = new VideoPipelineExecuter(FirstPipeline, this, frameWriter, Console);
+        var nextPipeline = new VideoPipelineWriter(FirstPipeline, this, frameWriter, Console);
         NextVideoPipeline = nextPipeline;
         NextMaskPipeline = maskPipelineExecuter;
         return nextPipeline;
@@ -67,7 +66,7 @@ So maybe just throw this copy away and re-download it.");
     {
         try
         {
-            if (Processor == null || Frames == null || Masks == null)
+            if (ProcessorWithMask == null || Frames == null || Masks == null)
                 throw new InvalidOperationException("Pipeline not initialized. Call Start first.");
 
             while (!Disposing)
@@ -89,16 +88,17 @@ So maybe just throw this copy away and re-download it.");
                     var frame = Frames[frameIndex]
                         ?? throw new Exception("Something goes terribly wrong, this frame should be filled because this pipeline alsways has a previous pipeline.");
 
-                    using (ProcessStopwatch.NewMeasurement())
-                        (Frames[frameIndex], Masks[frameIndex]) = Processor.ProcessFrame(frame, Masks[frameIndex]);
+                    if (ProcessorWithMask != null)
+                        using (Statistics.NewMeasurement())
+                            (Frames[frameIndex], Masks[frameIndex]) = ProcessorWithMask.ProcessFrame(frame, Masks[frameIndex]);
 
                     frame = Frames[frameIndex];
                     if (frame != null)
-                        NextVideoPipeline?.ProcessFrame(frame);
+                        NextVideoPipeline?.HandleNextFrame(frame);
 
                     var mask = Masks[frameIndex];
                     if (mask != null)
-                        NextMaskPipeline?.ProcessMask(mask);
+                        NextMaskPipeline?.HandleNextMask(mask);
                 }
 
                 FrameDone.Set();

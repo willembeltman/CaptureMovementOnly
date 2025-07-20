@@ -1,22 +1,25 @@
 ﻿using CaptureOnlyMovements.Interfaces;
 using CaptureOnlyMovements.Pipeline.Base;
 using CaptureOnlyMovements.Pipeline.Interfaces;
+using CaptureOnlyMovements.Types;
 using System;
 using System.Threading;
 
 namespace CaptureOnlyMovements.Pipeline;
 
-public class VideoPipelineExecuter : BaseVideoPipeline
+public class VideoPipelineWriter(
+    BaseVideoPipeline firstPipeline,
+    BaseVideoPipeline previousPipeline,
+    IFrameWriter writer,
+    IConsole? console) 
+    : BaseVideoPipeline(
+        firstPipeline, 
+        previousPipeline,
+        null, null, null, writer,
+        writer.GetType().Name, 
+        console), 
+    IFrameWriter
 {
-    public VideoPipelineExecuter(
-        BaseVideoPipeline firstPipeline, 
-        BaseVideoPipeline previousPipeline,
-        IFrameWriter writer,
-        IConsole? console)
-        : base(firstPipeline, previousPipeline, writer.GetType().Name, console) 
-        => Writer = writer;
-
-    private readonly IFrameWriter Writer;
     private readonly AutoResetEvent Stopped = new(false);
     public bool Started { get; private set; }
 
@@ -25,11 +28,26 @@ public class VideoPipelineExecuter : BaseVideoPipeline
         base.StartVideo(cancellationToken, 1);
         Started = true;
     }
+    public void Stop()
+    {
+        ((IBasePipeline)FirstPipeline).Stop();
+    }
 
     public void WaitForExit()
     {
+        if (((IBaseVideoPipeline)FirstPipeline).Reader == null)
+            throw new Exception("You cannot WaitForExit a pipeline without reader.");
+
         if (!Started) return;
         Stopped.WaitOne();
+    }
+
+    public void WriteFrame(Frame frame)
+    {
+        if (((IBaseVideoPipeline)FirstPipeline).Reader != null)
+            throw new Exception($"You cannot write to a pipeline with a reader, please remove the frame reader from the first pipeline.");
+        
+        ((INextVideoPipeline)FirstPipeline).HandleNextFrame(frame);
     }
 
     protected override void Kernel(object? objCancellationToken)
@@ -51,8 +69,8 @@ public class VideoPipelineExecuter : BaseVideoPipeline
                         frameIndex = Frames.Length - 1;
 
                     var frame = Frames[frameIndex];
-                    if (frame != null)
-                        using (ProcessStopwatch.NewMeasurement())
+                    if (frame != null && Writer != null)
+                        using (Statistics.NewMeasurement())
                             Writer.WriteFrame(frame);
                 }
 
@@ -70,9 +88,9 @@ public class VideoPipelineExecuter : BaseVideoPipeline
         Console?.WriteLine($"All done, statistics:");
         foreach (var pipeline in AllPipelines)
         {
-            Console?.WriteLine($"{pipeline.Name}: {pipeline.ProcessStopwatch.TimeSpend:F2}s / {pipeline.ProcessStopwatch.Count} = {pipeline.ProcessStopwatch.AverageMS:F2}ms each task");
+            Console?.WriteLine($"{pipeline.Name}: {pipeline.Statistics.TimeSpend:F2}s / {pipeline.Statistics.Count} = {pipeline.Statistics.AverageMS:F2}ms each task");
         }
-        Console?.WriteLine($"Average FPS: {FirstPipeline.ProcessStopwatch.AverageFPS:F2}fps");
+        Console?.WriteLine($"Average FPS: {FirstPipeline.Statistics.AverageFPS:F2}fps");
         Console?.WriteLine($"");
 
         Stopped.Set();
