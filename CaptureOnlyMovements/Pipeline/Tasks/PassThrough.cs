@@ -1,7 +1,7 @@
 ﻿using CaptureOnlyMovements.Pipeline.Interfaces;
 using CaptureOnlyMovements.Types;
 
-namespace CaptureOnlyMovements
+namespace CaptureOnlyMovements.Pipeline.Tasks
 {
     internal class PassThrough : IMaskProcessor
     {

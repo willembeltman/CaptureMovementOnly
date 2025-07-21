@@ -9,20 +9,17 @@ namespace CaptureOnlyMovements.Helpers;
 
 public static class GpuDetector
 {
-    public static EncoderEnum DetectGpu()
+    public static GpuEnum DetectGpu()
     {
-        var list = ListEncoders();
-
-        if (list.Contains(EncoderEnum.INTEL_HEVC)) return EncoderEnum.INTEL_HEVC;
-        if (list.Contains(EncoderEnum.NVIDIA_HEVC)) return EncoderEnum.NVIDIA_HEVC;
-        if (list.Contains(EncoderEnum.AMD_HEVC)) return EncoderEnum.AMD_HEVC;
-        return EncoderEnum.SOFTWARE_HEVC; // Fallback naar software-encoding
+        var list = ListGpus();
+        if (list.Contains(GpuEnum.INTEL)) return GpuEnum.INTEL; // Beste
+        if (list.Contains(GpuEnum.NVIDIA)) return GpuEnum.NVIDIA;
+        if (list.Contains(GpuEnum.AMD)) return GpuEnum.AMD;
+        return GpuEnum.SOFTWARE; // Fallback naar software-encoding (aller beste btw)
     }
-    public static List<EncoderEnum> ListEncoders()
+    public static List<GpuEnum> ListGpus()
     {
-        bool hasNvidia = false;
-        bool hasAmd = false;
-        bool hasIntel = false;
+        var list = new List<GpuEnum>();
 
         try
         {
@@ -32,9 +29,9 @@ public static class GpuDetector
                 foreach (var obj in searcher.Get())
                 {
                     string name = obj["Name"]!.ToString()!.ToLower() ?? "";
-                    if (name.Contains("nvidia")) hasNvidia = true;
-                    if (name.Contains("amd") || name.Contains("radeon")) hasAmd = true;
-                    if (name.Contains("intel")) hasIntel = true;
+                    if (name.Contains("nvidia") && !list.Contains(GpuEnum.NVIDIA)) list.Add(GpuEnum.NVIDIA);
+                    if ((name.Contains("amd") || name.Contains("radeon")) && !list.Contains(GpuEnum.AMD)) list.Add(GpuEnum.AMD);
+                    if (name.Contains("intel") && !list.Contains(GpuEnum.INTEL)) list.Add(GpuEnum.INTEL);
                 }
             }
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
@@ -55,33 +52,15 @@ public static class GpuDetector
                 string output = process.StandardOutput.ReadToEnd();
                 process.WaitForExit();
                 output = output.ToLower();
-                if (output.Contains("nvidia")) hasNvidia = true;
-                if (output.Contains("amd") || output.Contains("radeon")) hasAmd = true;
-                if (output.Contains("intel")) hasIntel = true;
+                if (output.Contains("nvidia") && !list.Contains(GpuEnum.NVIDIA)) list.Add(GpuEnum.NVIDIA);
+                if ((output.Contains("amd") || output.Contains("radeon")) && !list.Contains(GpuEnum.AMD)) list.Add(GpuEnum.AMD);
+                if (output.Contains("intel") && !list.Contains(GpuEnum.INTEL)) list.Add(GpuEnum.INTEL);
             }
         }
         catch (Exception ex)
         {
             Console.WriteLine($"GPU detection failed: {ex.Message}");
         }
-
-        var list = new List<EncoderEnum>();
-        if (hasNvidia)
-        {
-            list.Add(EncoderEnum.NVIDIA_H264);
-            list.Add(EncoderEnum.NVIDIA_HEVC);
-        }
-        if (hasAmd)
-        {
-            list.Add(EncoderEnum.AMD_H264);
-            list.Add(EncoderEnum.AMD_HEVC);
-        }
-        if (hasIntel)
-        {
-            list.Add(EncoderEnum.INTEL_H264);
-            list.Add(EncoderEnum.INTEL_HEVC);
-        }
-
         return list;
     }
 }

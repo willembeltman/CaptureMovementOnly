@@ -28,33 +28,45 @@
         /// </summary>
         private void InitializeComponent()
         {
-            label1 = new System.Windows.Forms.Label();
-            progress = new System.Windows.Forms.ProgressBar();
+            TitleLabel = new System.Windows.Forms.Label();
+            ProgressBar = new System.Windows.Forms.ProgressBar();
+            StatusLabel = new System.Windows.Forms.Label();
             SuspendLayout();
             // 
-            // label1
+            // TitleLabel
             // 
-            label1.AutoSize = true;
-            label1.Location = new System.Drawing.Point(12, 9);
-            label1.Name = "label1";
-            label1.Size = new System.Drawing.Size(273, 25);
-            label1.TabIndex = 0;
-            label1.Text = "Detecting encoders, please wait...";
+            TitleLabel.AutoSize = true;
+            TitleLabel.Location = new System.Drawing.Point(20, 9);
+            TitleLabel.Name = "TitleLabel";
+            TitleLabel.Size = new System.Drawing.Size(273, 25);
+            TitleLabel.TabIndex = 0;
+            TitleLabel.Text = "Detecting encoders, please wait...";
             // 
-            // progressBar1
+            // progress
             // 
-            progress.Location = new System.Drawing.Point(12, 37);
-            progress.Name = "progressBar1";
-            progress.Size = new System.Drawing.Size(296, 46);
-            progress.TabIndex = 1;
+            ProgressBar.Location = new System.Drawing.Point(12, 37);
+            ProgressBar.Name = "progress";
+            ProgressBar.Size = new System.Drawing.Size(296, 46);
+            ProgressBar.TabIndex = 1;
+            // 
+            // StatusLabel
+            // 
+            StatusLabel.AutoSize = true;
+            StatusLabel.Font = new System.Drawing.Font("Segoe UI", 7F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 0);
+            StatusLabel.Location = new System.Drawing.Point(12, 86);
+            StatusLabel.Name = "StatusLabel";
+            StatusLabel.Size = new System.Drawing.Size(276, 19);
+            StatusLabel.TabIndex = 2;
+            StatusLabel.Text = "Quering GPUs from system information.";
             // 
             // DetectEncodersForm
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(10F, 25F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            ClientSize = new System.Drawing.Size(320, 100);
-            Controls.Add(progress);
-            Controls.Add(label1);
+            ClientSize = new System.Drawing.Size(320, 121);
+            Controls.Add(StatusLabel);
+            Controls.Add(ProgressBar);
+            Controls.Add(TitleLabel);
             FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             Name = "DetectEncodersForm";
             StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
@@ -66,7 +78,8 @@
 
         #endregion
 
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.ProgressBar progress;
+        private System.Windows.Forms.Label TitleLabel;
+        private System.Windows.Forms.ProgressBar ProgressBar;
+        private System.Windows.Forms.Label StatusLabel;
     }
 }

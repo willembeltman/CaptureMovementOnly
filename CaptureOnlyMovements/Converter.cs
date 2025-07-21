@@ -104,21 +104,58 @@ public class Converter(
 
                 var skipTillNextIndex = new SkipTillNext_Index(fileConfig, Application);
 
+
+                // ## New correct method
+
                 // Setup pipeline
                 using var maskPipeline =
-                     new MaskPipelineWriter(new ShowMaskTo(Preview));
+                     new MaskPipeline(Console)
+                                .Next(new ShowMaskTo(Preview));
+
                 using var pipeline =
-                    new VideoPipeline(new ReadFrameAndTickFps(reader, Application.InputFps), Console)
+                    new VideoPipeline(new ReadFrameAndTickFps(reader, Application.InputFps), Console) // Start pipeline with reader,
                                 .Next(new SkipInitialOrNotDifferentFrames(skipTillNextIndex, comparer, Preview))
                                 .Next(new ResizeFrame(resizer), maskPipeline)
                                 .Next(new ShowPreviewTo_PassThrough(Preview))
                                 .Next(new WriteFrameAndTickFps(writer, Application.OutputFps));
 
-                // Then start it
                 pipeline.Start(this);
                 pipeline.WaitForExit();
 
-                // Old single threaded / single buffer code
+
+                //// ## New "feed the pipeline yourself" method:
+                //// (Again, no clue why this works, although I haven't even tested it I think)
+
+                //// Setup pipeline
+                //using var maskPipeline =
+                //     new MaskPipeline(Console)
+                //                .Next(new ShowMaskTo(Preview));
+                //using var pipeline =
+                //    new VideoPipeline(Console) 
+                //                .Next(new SkipInitialOrNotDifferentFrames(skipTillNextIndex, comparer, Preview))
+                //                .Next(new ResizeFrame(resizer), maskPipeline)
+                //                .Next(new ShowPreviewTo_PassThrough(Preview))
+                //                .Next(new WriteFrameAndTickFps(writer, Application.OutputFps));
+
+
+                //pipeline.Start(this);
+
+                //// Then capture frames from the reader, until the kill switch is activated
+                //while (!KillSwitch)
+                //{
+                //    // Capture the next frame
+                //    frame = reader.ReadFrame(frame);
+                //    Application.InputFps.Tick();
+
+                //    // Feed it into the pipeline
+                //    pipeline.WriteFrame(frame);
+                //}
+
+                //// Then tell the pipeline we have stopped.
+                //pipeline.Stop();
+
+
+                //// ## Old single threaded / single buffer code
                 //while (!KillSwitch)
                 //{
                 //    frame = reader.ReadFrame(frame);

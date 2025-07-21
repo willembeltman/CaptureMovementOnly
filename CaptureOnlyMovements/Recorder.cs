@@ -82,52 +82,60 @@ public class Recorder(
             // Remember the previous frame date for timing
             var waitTillNextTime = new WaitForNext_DateTime(Config, Application);
 
+            // ## New correct method
 
             // Setup pipeline
             using var maskPipeline =
-                 new MaskPipeline(Console)
+                 new MaskPipeline()
                             .Next(new ShowMaskTo(Preview));
 
             using var pipeline =
-                new VideoPipeline(Console)
+                new VideoPipeline(new WaitThenReadFrameThenTickFps(waitTillNextTime, reader, Application.InputFps))
                             .Next(new SkipNotDifferentFrames(comparer, Preview))
                             .Next(new ShowPreviewTo_PassThrough(Preview), maskPipeline)
                             .Next(new WriteFrameAndTickFps(writer, Application.OutputFps));
 
+            // Then start it
             pipeline.Start(this);
-
-            // Iterate through next frames until the kill switch is activated
-            while (!KillSwitch)
-            {
-                // Wait for the next frame time and save previous frame date (if needed)
-                waitTillNextTime.Wait();
-
-                // Capture the next frame
-                frame = reader.CaptureFrame(frame.Buffer);
-                Application.InputFps.Tick();
-
-                pipeline.WriteFrame(frame);
-            }
+            pipeline.WaitForExit();
 
 
-            pipeline.Stop();
+            //// ## New "feed the pipeline yourself" method 
+            //// (I don't know how it is possible this works, maybe because of the wait?)
 
             //// Setup pipeline
             //using var maskPipeline =
-            //     new MaskPipeline()
+            //     new MaskPipeline(Console)
             //                .Next(new ShowMaskTo(Preview));
 
             //using var pipeline =
-            //    new VideoPipeline(new WaitThenReadFrameThenTickFps(waitTillNextTime, reader, Application.InputFps))
+            //    new VideoPipeline(Console)
             //                .Next(new SkipNotDifferentFrames(comparer, Preview))
             //                .Next(new ShowPreviewTo_PassThrough(Preview), maskPipeline)
             //                .Next(new WriteFrameAndTickFps(writer, Application.OutputFps));
 
-            //// Then start it
-            //pipeline.Start(this);
-            //pipeline.WaitForExit();
+            //pipeline.Start(this); // Start it
+
+            //// Then capture frames from the reader, until the kill switch is activated
+            //while (!KillSwitch)
+            //{
+            //    // Wait for the next frame time, this call blocks the thread till wait-time
+            //    // is timed out (if it is fast enough).
+            //    waitTillNextTime.Wait();
+
+            //    // Capture the next frame
+            //    frame = reader.CaptureFrame(frame.Buffer);
+            //    Application.InputFps.Tick();
+
+            //    // Feed it into the pipeline
+            //    pipeline.WriteFrame(frame);
+            //}
+
+            //// Then tell the pipeline we have stopped.
+            //pipeline.Stop();
 
 
+            //// ## Old single threaded / single buffer code
             //// Iterate through next frames until the kill switch is activated
             //while (!KillSwitch)
             //{

@@ -1,4 +1,5 @@
 ﻿using CaptureOnlyMovements.Enums;
+using CaptureOnlyMovements.Helpers;
 using CaptureOnlyMovements.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -19,11 +20,16 @@ namespace CaptureOnlyMovements.Forms
         {
             Application = application;
             InitializeComponent();
-            progress.Maximum = 7;
+            ProgressBar.Maximum = 7;
         }
 
         private async void DetectEncodersForm_Load(object sender, EventArgs e)
         {
+            StatusLabel.Left = (ClientRectangle.Width - StatusLabel.Width) / 2;
+            ProgressBar.Left = (ClientRectangle.Width - ProgressBar.Width) / 2;
+            TitleLabel.Left = (ClientRectangle.Width - TitleLabel.Width) / 2;
+            Invalidate();
+
             var fFMpegDirectory = new DirectoryInfo(Environment.CurrentDirectory);
 
             var workingEncoders = new List<EncoderEnum>
@@ -31,38 +37,72 @@ namespace CaptureOnlyMovements.Forms
                 EncoderEnum.SOFTWARE_H264,
                 EncoderEnum.SOFTWARE_HEVC
             };
-            
-            progress.Value = 1;
+
+            ProgressBar.Value = 1;
             Invalidate();
 
-            if (await TestEncoder("h264_nvenc", fFMpegDirectory)) 
-                workingEncoders.Add(EncoderEnum.NVIDIA_H264);
-            progress.Value = 2;
+            var gpus = GpuDetector.ListGpus();
+
+            ProgressBar.Maximum = 2 +
+                (gpus.Contains(GpuEnum.AMD) ? 2 : 0) +
+                (gpus.Contains(GpuEnum.NVIDIA) ? 2 : 0) +
+                (gpus.Contains(GpuEnum.INTEL) ? 2 : 0);
+            ProgressBar.Value = 2;
             Invalidate();
 
-            if (await TestEncoder("hevc_nvenc", fFMpegDirectory))
-                workingEncoders.Add(EncoderEnum.NVIDIA_HEVC);
-            progress.Value = 3;
-            Invalidate();
+            if (gpus.Contains(GpuEnum.AMD))
+            {
+                StatusLabel.Text = "Testing AMD encoders.";
+                StatusLabel.Left = (ClientRectangle.Width - StatusLabel.Width) / 2;
+                Invalidate();
 
-            if (await TestEncoder("h264_amf", fFMpegDirectory)) 
-                workingEncoders.Add(EncoderEnum.AMD_H264);
-            progress.Value = 4;
-            Invalidate();
+                if (await TestEncoder("h264_amf", fFMpegDirectory))
+                    workingEncoders.Add(EncoderEnum.AMD_H264);
+                ProgressBar.Value++;
+                Invalidate();
 
-            if (await TestEncoder("hevc_amf", fFMpegDirectory))
-                workingEncoders.Add(EncoderEnum.AMD_HEVC);
-            progress.Value = 5;
-            Invalidate();
+                if (await TestEncoder("hevc_amf", fFMpegDirectory))
+                    workingEncoders.Add(EncoderEnum.AMD_HEVC);
+                ProgressBar.Value++;
+                Invalidate();
+            }
 
-            if (await TestEncoder("h264_qsv", fFMpegDirectory)) 
-                workingEncoders.Add(EncoderEnum.INTEL_H264);
-            progress.Value = 6;
-            Invalidate();
+            if (gpus.Contains(GpuEnum.NVIDIA))
+            {
+                StatusLabel.Text = "Testing NVIDIA encoders.";
+                StatusLabel.Left = (ClientRectangle.Width - StatusLabel.Width) / 2;
+                Invalidate();
 
-            if (await TestEncoder("hevc_qsv", fFMpegDirectory))
-                workingEncoders.Add(EncoderEnum.INTEL_HEVC);
-            progress.Value = 7;
+                if (await TestEncoder("h264_nvenc", fFMpegDirectory))
+                    workingEncoders.Add(EncoderEnum.NVIDIA_H264);
+                ProgressBar.Value++;
+                Invalidate();
+
+                if (await TestEncoder("hevc_nvenc", fFMpegDirectory))
+                    workingEncoders.Add(EncoderEnum.NVIDIA_HEVC);
+                ProgressBar.Value++;
+                Invalidate();
+            }
+
+            if (gpus.Contains(GpuEnum.INTEL))
+            {
+                StatusLabel.Text = "Testing INTEL encoders.";
+                StatusLabel.Left = (ClientRectangle.Width - StatusLabel.Width) / 2;
+                Invalidate();
+
+                if (await TestEncoder("h264_qsv", fFMpegDirectory))
+                    workingEncoders.Add(EncoderEnum.INTEL_H264);
+                ProgressBar.Value++;
+                Invalidate();
+
+                if (await TestEncoder("hevc_qsv", fFMpegDirectory))
+                    workingEncoders.Add(EncoderEnum.INTEL_HEVC);
+                ProgressBar.Value++;
+                Invalidate();
+            }
+
+            StatusLabel.Text = "Done.";
+            StatusLabel.Left = (ClientRectangle.Width - StatusLabel.Width) / 2;
             Invalidate();
 
             List = workingEncoders.ToArray();
@@ -90,26 +130,26 @@ namespace CaptureOnlyMovements.Forms
         {
             try
             {
+                //var args =
+                //    $"-hide_banner " +
+                //    $"-loglevel error " +
+                //    $"-f lavfi " +
+                //    $"-i testsrc=duration=1:size=1280x720:rate=30 " +
+                //    $"-c:v {encoderName} " +
+                //    $"-f null -";
+
+                //if (encoderName.Contains("qsv") || encoderName.Contains("amf"))
+                //{
                 var args =
                     $"-hide_banner " +
                     $"-loglevel error " +
                     $"-f lavfi " +
                     $"-i testsrc=duration=1:size=1280x720:rate=30 " +
+                    $"-pix_fmt nv12 " +
+                    $"-vf format=nv12 " +
                     $"-c:v {encoderName} " +
                     $"-f null -";
-
-                if (encoderName.Contains("qsv") || encoderName.Contains("amf"))
-                {
-                    args =
-                        $"-hide_banner " +
-                        $"-loglevel error " +
-                        $"-f lavfi " +
-                        $"-i testsrc=duration=1:size=1280x720:rate=30 " +
-                        $"-pix_fmt nv12 " +
-                        $"-vf format=nv12 " +
-                        $"-c:v {encoderName} " +
-                        $"-f null -";
-                }
+                //}
 
                 var process = new Process
                 {

@@ -8,6 +8,7 @@ using System.Runtime.Intrinsics.X86;
 
 namespace CaptureOnlyMovements.FrameComparers;
 
+// This one skips pixels in the mask, very weird. It's the fastest way though (if this was the bottleneck)
 public unsafe class FrameComparerUnsafe2(
     IComparerConfig config,
     Resolution resolution,
