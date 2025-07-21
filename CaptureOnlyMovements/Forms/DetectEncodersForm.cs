@@ -4,6 +4,7 @@ using CaptureOnlyMovements.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -22,13 +23,35 @@ namespace CaptureOnlyMovements.Forms
             InitializeComponent();
             ProgressBar.Maximum = 7;
         }
+        
+        protected override void OnPaintBackground(PaintEventArgs e)
+        {
+            base.OnPaintBackground(e);
+
+            int i = 0;
+            int c = 255;
+            while (i < 25)
+            {
+                var pen = new Pen(Color.FromArgb(255, c, c, c));
+
+                e.Graphics.DrawRectangle(pen, new Rectangle(
+                    i, i, ClientRectangle.Width - i * 2, ClientRectangle.Height - i * 2));
+
+                c = c - 42;
+                if (c < 0) c = 0;
+                i++;
+            }
+
+            //e.Graphics.DrawRectangle(Pens.Gray, new Rectangle(2, 2, ClientRectangle.Width - 4, ClientRectangle.Height - 4));
+            //e.Graphics.DrawRectangle(Pens.White, new Rectangle(1, 1, ClientRectangle.Width - 2, ClientRectangle.Height - 2));
+        }
 
         private async void DetectEncodersForm_Load(object sender, EventArgs e)
         {
+            Picture.Left = (ClientRectangle.Width - Picture.Width) / 2;
             StatusLabel.Left = (ClientRectangle.Width - StatusLabel.Width) / 2;
             ProgressBar.Left = (ClientRectangle.Width - ProgressBar.Width) / 2;
             TitleLabel.Left = (ClientRectangle.Width - TitleLabel.Width) / 2;
-            Invalidate();
 
             var fFMpegDirectory = new DirectoryInfo(Environment.CurrentDirectory);
 
@@ -39,7 +62,6 @@ namespace CaptureOnlyMovements.Forms
             };
 
             ProgressBar.Value = 1;
-            Invalidate();
 
             var gpus = GpuDetector.ListGpus();
 
@@ -48,64 +70,55 @@ namespace CaptureOnlyMovements.Forms
                 (gpus.Contains(GpuEnum.NVIDIA) ? 2 : 0) +
                 (gpus.Contains(GpuEnum.INTEL) ? 2 : 0);
             ProgressBar.Value = 2;
-            Invalidate();
 
             if (gpus.Contains(GpuEnum.AMD))
             {
                 StatusLabel.Text = "Testing AMD encoders.";
                 StatusLabel.Left = (ClientRectangle.Width - StatusLabel.Width) / 2;
-                Invalidate();
 
                 if (await TestEncoder("h264_amf", fFMpegDirectory))
                     workingEncoders.Add(EncoderEnum.AMD_H264);
                 ProgressBar.Value++;
-                Invalidate();
 
                 if (await TestEncoder("hevc_amf", fFMpegDirectory))
                     workingEncoders.Add(EncoderEnum.AMD_HEVC);
                 ProgressBar.Value++;
-                Invalidate();
             }
 
             if (gpus.Contains(GpuEnum.NVIDIA))
             {
                 StatusLabel.Text = "Testing NVIDIA encoders.";
                 StatusLabel.Left = (ClientRectangle.Width - StatusLabel.Width) / 2;
-                Invalidate();
 
                 if (await TestEncoder("h264_nvenc", fFMpegDirectory))
                     workingEncoders.Add(EncoderEnum.NVIDIA_H264);
                 ProgressBar.Value++;
-                Invalidate();
 
                 if (await TestEncoder("hevc_nvenc", fFMpegDirectory))
                     workingEncoders.Add(EncoderEnum.NVIDIA_HEVC);
                 ProgressBar.Value++;
-                Invalidate();
             }
 
             if (gpus.Contains(GpuEnum.INTEL))
             {
                 StatusLabel.Text = "Testing INTEL encoders.";
                 StatusLabel.Left = (ClientRectangle.Width - StatusLabel.Width) / 2;
-                Invalidate();
 
                 if (await TestEncoder("h264_qsv", fFMpegDirectory))
                     workingEncoders.Add(EncoderEnum.INTEL_H264);
                 ProgressBar.Value++;
-                Invalidate();
 
                 if (await TestEncoder("hevc_qsv", fFMpegDirectory))
                     workingEncoders.Add(EncoderEnum.INTEL_HEVC);
                 ProgressBar.Value++;
-                Invalidate();
             }
 
-            StatusLabel.Text = "Done.";
+            StatusLabel.Text = "All done, have a nice day!";
             StatusLabel.Left = (ClientRectangle.Width - StatusLabel.Width) / 2;
-            Invalidate();
-
+            
             List = workingEncoders.ToArray();
+
+            await Task.Delay(2000);
 
             var oldencoder = Application.Config.OutputEncoder;
             if (!List.Contains(oldencoder))

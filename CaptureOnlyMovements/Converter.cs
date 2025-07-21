@@ -104,6 +104,7 @@ public class Converter(
 
                 var skipTillNextIndex = new SkipTillNext_Index(fileConfig, Application);
 
+                Console?.WriteLine($"Setting up pipeline.");
 
                 // ## New correct method
 
@@ -118,6 +119,8 @@ public class Converter(
                                 .Next(new ResizeFrame(resizer), maskPipeline)
                                 .Next(new ShowPreviewTo_PassThrough(Preview))
                                 .Next(new WriteFrameAndTickFps(writer, Application.OutputFps));
+
+                Console?.WriteLine($"Starting the pipeline.");
 
                 pipeline.Start(this);
                 pipeline.WaitForExit();

@@ -58,7 +58,7 @@ public class Recorder(
             if (File.Exists(outputFullName))
                 File.Delete(outputFullName); // Delete existing file
 
-            Console.WriteLine($"Opening '{outputFullName}' to write video to.");
+            Console.WriteLine($"Starting screen capture.");
 
             // Get first frame for the resolution
             using var reader = new ScreenshotCapturer(Console);
@@ -67,33 +67,41 @@ public class Recorder(
 
             // Create the comparer
             var resolution = frame.Resolution;
-            using var comparer = new FrameComparerUnsafe(Config, resolution, Preview);
+            using var comparer = new FrameComparerTasks(Config, resolution, Preview);
             comparer.IsDifferent(frame.Buffer); // Initialize comparer with the first frame
+
+            Console.WriteLine($"Opening '{outputFullName}' to write video to.");
 
             // Create the writer
             var writerInfo = new MediaInfo(outputFullName);
             using var writer = writerInfo.OpenVideoWriter(this, resolution, Config, FFMpegWriterConsole);
 
+            Console.WriteLine($"Writing first frame to the video.");
+
             // Write the first frame to the video
             writer.WriteFrame(frame);
             Application.OutputFps.Tick();
-            Console.WriteLine($"Captured frame at {DateTime.Now:HH:mm:ss.fff}   -");
+            Console.WriteLine($"Captured frame at {DateTime.Now:HH:mm:ss.fff}");
 
             // Remember the previous frame date for timing
             var waitTillNextTime = new WaitForNext_DateTime(Config, Application);
+
+            Console.WriteLine($"Setting up pipeline.");
 
             // ## New correct method
 
             // Setup pipeline
             using var maskPipeline =
-                 new MaskPipeline()
+                 new MaskPipeline(Console)
                             .Next(new ShowMaskTo(Preview));
 
             using var pipeline =
-                new VideoPipeline(new WaitThenReadFrameThenTickFps(waitTillNextTime, reader, Application.InputFps))
+                new VideoPipeline(new WaitThenReadFrameThenTickFps(waitTillNextTime, reader, Application.InputFps), Console)
                             .Next(new SkipNotDifferentFrames(comparer, Preview))
                             .Next(new ShowPreviewTo_PassThrough(Preview), maskPipeline)
                             .Next(new WriteFrameAndTickFps(writer, Application.OutputFps));
+
+            Console.WriteLine($"Starting the pipeline.");
 
             // Then start it
             pipeline.Start(this);

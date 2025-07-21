@@ -88,7 +88,7 @@ public class VideoPipelineWriter(
         Console?.WriteLine($"All done, statistics:");
         foreach (var pipeline in AllPipelines)
         {
-            Console?.WriteLine($"{pipeline.Name}: {pipeline.Statistics.TimeSpend:F2}s / {pipeline.Statistics.Count} = {pipeline.Statistics.AverageMS:F2}ms each task");
+            Console?.WriteLine($"{pipeline.Name}: {pipeline.Statistics.TimeSpend:F2}s / {pipeline.Statistics.Count} = {pipeline.Statistics.AverageMS:F2}ms each frame");
         }
         Console?.WriteLine($"Average FPS: {FirstPipeline.Statistics.AverageFPS:F2}fps");
         Console?.WriteLine($"");
