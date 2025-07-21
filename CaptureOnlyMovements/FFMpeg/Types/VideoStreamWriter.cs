@@ -232,6 +232,7 @@ Please download FFmpeg and place it in the specified location. The program will 
                 $"-f {format} " +
                 $"-pix_fmt {pixFmt} " +
                 $"{size} {frameRate} -i - " +
+                $"-vf format=nv12 " + // converteer intern naar nv12
                 $"-c:v {codec} " +
                 $"-rc vbr " +
                 $"-cq {quality} " +
