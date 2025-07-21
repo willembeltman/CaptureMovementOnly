@@ -4,13 +4,13 @@ using System;
 
 namespace CaptureOnlyMovements.Helpers;
 
-public class skipTillNextIndexHelper
+public class SkipTillNext_Index
 {
     private double interval;
     private double lastTime;
     private double inputFps;
 
-    public skipTillNextIndexHelper(FileConfig fileConfig, IApplication application)
+    public SkipTillNext_Index(FileConfig fileConfig, IApplication application)
     {
         FileConfig = fileConfig;
         Application = application;

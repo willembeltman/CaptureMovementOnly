@@ -8,14 +8,14 @@ public class SkipInitialOrNotDifferentFrames : IFrameProcessorWithMask
 {
     private int frameIndex;
 
-    public SkipInitialOrNotDifferentFrames(skipTillNextIndexHelper skipTillNextIndex, IBgrComparer comparer, IPreview preview)
+    public SkipInitialOrNotDifferentFrames(SkipTillNext_Index skipTillNextIndex, IBgrComparer comparer, IPreview preview)
     {
         SkipTillNextIndex = skipTillNextIndex;
         Comparer = comparer;
         Preview = preview;
     }
 
-    public skipTillNextIndexHelper SkipTillNextIndex { get; }
+    public SkipTillNext_Index SkipTillNextIndex { get; }
     public IBgrComparer Comparer { get; }
     public IPreview Preview { get; }
 

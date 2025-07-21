@@ -5,9 +5,9 @@ using System.Threading;
 
 namespace CaptureOnlyMovements.Helpers;
 
-public class WaitForNextDateTimeHelper
+public class WaitForNext_DateTime
 {
-    public WaitForNextDateTimeHelper(Config config, IApplication application)
+    public WaitForNext_DateTime(Config config, IApplication application)
     {
         Config = config;
         Application = application;

@@ -80,7 +80,7 @@ public class Recorder(
             Console.WriteLine($"Captured frame at {DateTime.Now:HH:mm:ss.fff}   -");
 
             // Remember the previous frame date for timing
-            var waitTillNextTime = new WaitForNextDateTimeHelper(Config, Application);
+            var waitTillNextTime = new WaitForNext_DateTime(Config, Application);
 
 
             // Setup pipeline

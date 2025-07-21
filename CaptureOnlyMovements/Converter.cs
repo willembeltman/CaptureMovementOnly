@@ -102,7 +102,7 @@ public class Converter(
                 Application.OutputFps.Tick();
                 Preview.WriteFrame(frame);
 
-                var skipTillNextIndex = new skipTillNextIndexHelper(fileConfig, Application);
+                var skipTillNextIndex = new SkipTillNext_Index(fileConfig, Application);
 
                 // Setup pipeline
                 using var maskPipeline =
