@@ -145,12 +145,12 @@ Please download FFmpeg and place it in the specified location. The program will 
         {
             EncoderEnum.NVIDIA_H264 or EncoderEnum.NVIDIA_HEVC => quality switch
             {
-                QualityEnum.Identical => "20",
-                QualityEnum.High => "23",
-                QualityEnum.Low => "30",
-                QualityEnum.Lower => "35",
-                QualityEnum.VeryLow => "40",
-                _ => "26", // Medium
+                QualityEnum.Identical => "23",
+                QualityEnum.High => "26",
+                QualityEnum.Low => "34",
+                QualityEnum.Lower => "38",
+                QualityEnum.VeryLow => "42",
+                _ => "30", // Medium
             },
 
             EncoderEnum.AMD_H264 or EncoderEnum.AMD_HEVC => quality switch
