@@ -273,6 +273,7 @@ Please download FFmpeg and place it in the specified location. The program will 
                 $"-c:v {codec} " +
                 $"-crf {quality} " +
                 $"-preset {preset} " +
+                $"-flush_packets 1 " +
                 $"-movflags +faststart {overwrite} " +
                 $"\"{fullName}\"",
         };
