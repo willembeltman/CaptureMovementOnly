@@ -7,16 +7,18 @@ namespace CaptureOnlyMovements.Pipeline.Tasks;
 
 public class WaitThenReadFrameThenTickFps : IFrameReader
 {
-    public WaitThenReadFrameThenTickFps(WaitForNext_DateTime waitTillNextTime, ScreenshotCapturer reader, FpsCounter inputFps)
+    public WaitThenReadFrameThenTickFps(WaitForNext_DateTime waitTillNextTime, ScreenshotCapturer reader, FpsCounter inputFps, IKillSwitch killSwitch)
     {
         WaitTillNextTime = waitTillNextTime;
         Reader = reader;
         InputFps = inputFps;
+        KillSwitch = killSwitch;
     }
 
     public WaitForNext_DateTime WaitTillNextTime { get; }
     public ScreenshotCapturer Reader { get; }
     public FpsCounter InputFps { get; }
+    public IKillSwitch KillSwitch { get; }
 
     public Frame? ReadFrame(Frame? frame = null)
     { 
@@ -24,7 +26,7 @@ public class WaitThenReadFrameThenTickFps : IFrameReader
         WaitTillNextTime.Wait();
 
         // Capture the next frame
-        frame = Reader.CaptureFrame(frame?.Buffer);
+        frame = Reader.CaptureFrame(KillSwitch, frame?.Buffer);
         InputFps.Tick();
 
         return frame;

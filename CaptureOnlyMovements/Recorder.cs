@@ -62,7 +62,7 @@ public class Recorder(
 
             // Get first frame for the resolution
             using var reader = new ScreenshotCapturer(Console);
-            var frame = reader.CaptureFrame();
+            var frame = reader.CaptureFrame(this);
             Application.InputFps.Tick();
 
             // Create the comparer
@@ -96,7 +96,7 @@ public class Recorder(
                             .Next(new ShowMaskTo(Preview));
 
             using var pipeline =
-                new VideoPipeline(new WaitThenReadFrameThenTickFps(waitTillNextTime, reader, Application.InputFps), Console)
+                new VideoPipeline(new WaitThenReadFrameThenTickFps(waitTillNextTime, reader, Application.InputFps, this), Console)
                             .Next(new SkipNotDifferentFrames(comparer, Preview))
                             .Next(new ShowPreviewTo_PassThrough(Preview), maskPipeline)
                             .Next(new WriteFrameAndTickFps(writer, Application.OutputFps));
