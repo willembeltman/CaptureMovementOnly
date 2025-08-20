@@ -56,7 +56,7 @@ public class MaskPipelineWriter : BaseMaskPipeline, IMaskWriter
         {
             Disposing = true;
             Console?.WriteLine($"{Name} crashed: {ex.Message}");
-            StopAll();
+            StopAll(ex);
         }
     }
 }

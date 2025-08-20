@@ -158,6 +158,8 @@ public class ApplicationForm : Form, IApplication
     private void OpenMask_Click(object? sender, EventArgs e) => MaskForm.Show();
     private void ExitMenuItem_Click(object? sender, EventArgs e) => Exit();
 
+    public void Exception(Exception exception) => Exception(exception.Message, "Fatal exception");
+    public void Exception(string message, string title) => MessageBox.Show(message, title, MessageBoxButtons.OK, MessageBoxIcon.Error);
     public void FatalException(Exception exception) => FatalException(exception.Message, "Fatal exception");
     public void FatalException(string message, string title)
     {

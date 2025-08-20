@@ -7,6 +7,7 @@ namespace CaptureOnlyMovements.Pipeline;
 
 public class VideoPipeline : BaseVideoPipeline
 {
+
     public VideoPipeline(
         IConsole? console = null)
         : base(null, null, null, null, null, null, "WriteFrame receiver", console) { }
@@ -61,9 +62,10 @@ public class VideoPipeline : BaseVideoPipeline
         }
         catch (Exception ex)
         {
+            Exception = ex;
             Disposing = true;
-            NextVideoPipeline?.Stop();
-            StopAll();
+            NextVideoPipeline?.Stop(ex);
+            StopAll(ex);
             Console?.WriteLine($"{Name} crashed: {ex.Message}");
         }
     }
@@ -79,7 +81,7 @@ public class VideoPipeline : BaseVideoPipeline
         {
             if (cancellationToken?.KillSwitch == true)
             {
-                NextVideoPipeline?.Stop();
+                NextVideoPipeline?.Stop(Exception);
                 Disposing = true;
             }
             else
@@ -92,7 +94,7 @@ public class VideoPipeline : BaseVideoPipeline
                 {
                     // Frame mag niet null zijn
                     // Dat betekend dat de reader is gestopt met readen(waarschijnlijk EOF is).
-                    NextVideoPipeline?.Stop();
+                    NextVideoPipeline?.Stop(Exception);
                     Disposing = true;
                 }
                 else
@@ -118,7 +120,7 @@ public class VideoPipeline : BaseVideoPipeline
                 continue;
 
             if (Disposing)
-                NextVideoPipeline?.Stop();
+                NextVideoPipeline?.Stop(Exception);
             else
             {
                 var frameIndex = FrameIndex - 1;

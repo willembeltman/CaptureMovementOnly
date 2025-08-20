@@ -23,8 +23,9 @@ public class ScreenshotCapturer : IDisposable
     public ScreenshotCapturer(IConsole console)
     {
         Console = console;
-        Factory = DXGI.CreateDXGIFactory1<IDXGIFactory1>();
         BgraToBgr = new BgraToBgrConverterUnsafe();
+
+        Factory = DXGI.CreateDXGIFactory1<IDXGIFactory1>();
 
         var adapterResult = Factory.EnumAdapters1(0, out Adapter);
         if (!adapterResult.Success || Adapter == null)
@@ -94,14 +95,15 @@ public class ScreenshotCapturer : IDisposable
 
     public Frame CaptureFrame(byte[]? buffer = null)
     {
-        var result = DuplicatedOutput.AcquireNextFrame(1,
+        var result = DuplicatedOutput.AcquireNextFrame(33,
             out OutduplFrameInfo _,
             out IDXGIResource? screenResource);
 
-        while (!result.Success || screenResource == null)
+        while (result.Failure || screenResource == null)
         {
             Thread.Sleep(1); // Wait for the next frame
-            result = DuplicatedOutput.AcquireNextFrame(1, out _, out screenResource);
+            result = DuplicatedOutput.AcquireNextFrame(33, out _, out screenResource);
+            if (result.Failure && result.ApiCode != "WaitTimeout") throw new Exception("Screen capture failure");
         }
 
         // Create texture2D from IDXGIResource

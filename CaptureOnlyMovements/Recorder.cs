@@ -107,6 +107,9 @@ public class Recorder(
             pipeline.Start(this);
             pipeline.WaitForExit();
 
+            if (pipeline.Exception != null)
+                Application.Exception(pipeline.Exception);
+
 
             //// ## New "feed the pipeline yourself" method 
             //// (I don't know how it is possible this works, maybe because of the wait?)
@@ -171,7 +174,7 @@ public class Recorder(
         }
         catch (Exception ex)
         {
-            Application.FatalException(ex.Message, "Error while recording");
+            Application.FatalException(ex);
         }
         finally
         {

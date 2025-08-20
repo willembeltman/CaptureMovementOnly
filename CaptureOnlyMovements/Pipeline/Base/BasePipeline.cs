@@ -31,6 +31,7 @@ public abstract class BasePipeline : IBasePipeline
     protected int FrameIndex;
     protected bool Disposing;
 
+    public Exception? Exception { get; protected set; }
     public PipelineStatistics Statistics { get; }
     protected INextVideoPipeline? NextVideoPipeline { get; set; }
     protected INextMaskPipeline? NextMaskPipeline { get; set; }
@@ -39,8 +40,10 @@ public abstract class BasePipeline : IBasePipeline
 
     protected abstract void Kernel(object? obj);
 
-    void IBasePipeline.Stop()
+    void IBasePipeline.Stop(Exception? ex)
     {
+        Exception = ex;
+
         if (Disposing)
             return;
 
@@ -48,10 +51,12 @@ public abstract class BasePipeline : IBasePipeline
         Disposing = true;
         FrameReceived.Set();
     }
-    public void StopAll()
+    public void StopAll(Exception? ex)
     {
+        Exception = ex;
+
         foreach (var p in AllPipelines)
-            ((INextVideoPipeline)p).Stop();
+            ((INextVideoPipeline)p).Stop(ex);
     }
     public IEnumerable<BasePipeline> AllPipelines
     {

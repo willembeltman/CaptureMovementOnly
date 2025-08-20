@@ -76,8 +76,8 @@ So maybe just throw this copy away and re-download it.");
 
                 if (Disposing)
                 {
-                    ((INextMaskPipeline?)NextMaskPipeline?.FirstMaskPipeline)?.Stop();
-                    NextVideoPipeline?.Stop();
+                    ((INextMaskPipeline?)NextMaskPipeline?.FirstMaskPipeline)?.Stop(Exception);
+                    NextVideoPipeline?.Stop(Exception);
                 }
                 else
                 {
@@ -107,9 +107,9 @@ So maybe just throw this copy away and re-download it.");
         catch (Exception ex)
         {
             Disposing = true;
-            StopAll();
-            ((INextMaskPipeline?)NextMaskPipeline?.FirstMaskPipeline)?.Stop();
-            NextVideoPipeline?.Stop();
+            StopAll(ex);
+            ((INextMaskPipeline?)NextMaskPipeline?.FirstMaskPipeline)?.Stop(ex);
+            NextVideoPipeline?.Stop(ex);
             Console?.WriteLine($"{Name} crashed: {ex.Message}");
         }
     }

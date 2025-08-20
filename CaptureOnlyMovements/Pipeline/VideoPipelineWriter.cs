@@ -30,7 +30,7 @@ public class VideoPipelineWriter(
     }
     public void Stop()
     {
-        ((IBasePipeline)FirstPipeline).Stop();
+        ((IBasePipeline)FirstPipeline).Stop(Exception);
     }
 
     public void WaitForExit()
@@ -81,7 +81,7 @@ public class VideoPipelineWriter(
         {
             Disposing = true;
             Console?.WriteLine($"{Name} crashed: {ex.Message}");
-            StopAll();
+            StopAll(ex);
         }
 
         Console?.WriteLine($"");

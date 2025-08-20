@@ -47,7 +47,7 @@ public class MaskPipeline : BaseMaskPipeline
                     continue;
 
                 if (Disposing)
-                    NextMaskPipeline?.Stop();
+                    NextMaskPipeline?.Stop(Exception);
                 else
                 {
                     var frameIndex = FrameIndex - 1;
@@ -70,8 +70,8 @@ public class MaskPipeline : BaseMaskPipeline
         catch (Exception ex)
         {
             Disposing = true;
-            NextMaskPipeline?.Stop();
-            StopAll();
+            NextMaskPipeline?.Stop(ex);
+            StopAll(ex);
             Console?.WriteLine($"{Name} crashed: {ex.Message}");
         }
     }

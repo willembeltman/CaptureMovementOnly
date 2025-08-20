@@ -125,6 +125,8 @@ public class Converter(
                 pipeline.Start(this);
                 pipeline.WaitForExit();
 
+                if (pipeline.Exception != null)
+                    Application.Exception(pipeline.Exception);
 
                 //// ## New "feed the pipeline yourself" method:
                 //// (Again, no clue why this works, although I haven't even tested it I think)
@@ -200,7 +202,7 @@ public class Converter(
         }
         catch (Exception ex)
         {
-            Application.FatalException(ex.Message, "Error while recording");
+            Application.FatalException(ex);
         }
         finally
         {

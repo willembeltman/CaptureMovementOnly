@@ -4,5 +4,5 @@ namespace CaptureOnlyMovements.Pipeline.Interfaces;
 
 public interface IBasePipeline : IDisposable
 {
-    void Stop();
+    void Stop(Exception? ex);
 }
