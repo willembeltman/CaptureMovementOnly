@@ -2,6 +2,8 @@
 using CaptureOnlyMovements.Interfaces;
 using CaptureOnlyMovements.Types;
 using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Windows.Forms;
 
@@ -23,6 +25,8 @@ public partial class ConfigForm : Form
     public IApplication Application { get; }
     public Config Config => Application.Config;
 
+    public List<ConfigPrefixPreset> PrefixList { get; private set; } = [];
+
     private void ConfigForm_Load(object? sender, EventArgs e)
     {
         Quality.DataSource = Enum.GetNames<QualityEnum>();
@@ -42,10 +46,7 @@ public partial class ConfigForm : Form
         Quality.Enabled = !Application.IsBusy;
         Preset.Enabled = !Application.IsBusy;
         Encoder.Enabled = !Application.IsBusy;
-        FilenamePrefix.Enabled = !Application.IsBusy;
-        btnPickExe.Enabled = !Application.IsBusy;
-        ProcessExecutebleTextBox.Enabled = !Application.IsBusy;
-        WaitForProcessCheckBox.Enabled = !Application.IsBusy;
+        PrefixPresetList.Enabled = !Application.IsBusy;
 
         if (Application.IsBusy)
         {
@@ -58,28 +59,28 @@ public partial class ConfigForm : Form
     }
 
 
-    private void btnPickExe_Click(object sender, EventArgs e)
-    {
-        OpenFileDialog form = new OpenFileDialog();
-        form.DefaultExt = "*.exe|Executebles";
-        if (form.ShowDialog() == DialogResult.OK)
-        {
-            ProcessExecutebleTextBox.Text = form.FileName;
-        }
-    }
+    //private void btnPickExe_Click(object sender, EventArgs e)
+    //{
+    //    OpenFileDialog form = new OpenFileDialog();
+    //    form.DefaultExt = "*.exe|Executebles";
+    //    if (form.ShowDialog() == DialogResult.OK)
+    //    {
+    //        ProcessExecutebleTextBox.Text = form.FileName;
+    //    }
+    //}
 
     private void ConfigForm_VisibleChanged(object? sender, EventArgs e)
     {
         if (Visible)
         {
             StateChanged();
-            ProcessExecutebleTextBox.Text = Config.ProcessExecutebleFullName;
-            WaitForProcessCheckBox.Checked = Config.WaitForProcess;
+
+            PrefixList = Config.PrefixPresets.Select(a => new ConfigPrefixPreset(a)).ToList();
+            PrefixPresetList.DataSource = new BindingList<ConfigPrefixPreset>(PrefixList);
             MaximumPixelDifferenceValue.Text = Config.MaximumPixelDifferenceValue.ToString();
             MaximumDifferentPixelCount.Text = Config.MaximumDifferentPixelCount.ToString();
             MinPlaybackSpeed.Text = Config.MinPlaybackSpeed.ToString();
             Fps.SelectedItem = Config.OutputFps.ToString();
-            FilenamePrefix.Text = Config.OutputFileNamePrefix.ToString();
             Quality.SelectedItem = Config.OutputQuality.ToString();
             Preset.SelectedItem = Config.OutputPreset.ToString();
             Encoder.SelectedItem = Config.OutputEncoder.ToString();
@@ -113,13 +114,11 @@ public partial class ConfigForm : Form
             return;
         }
 
+        Config.PrefixPresets = PrefixList.ToArray();
         Config.MaximumPixelDifferenceValue = maxPixelDiff;
         Config.MaximumDifferentPixelCount = maxDifferentPixel;
         Config.MinPlaybackSpeed = minPlaybackSpeed;
         Config.OutputFps = fps;
-        Config.ProcessExecutebleFullName = ProcessExecutebleTextBox.Text;
-        Config.WaitForProcess = WaitForProcessCheckBox.Checked;
-        Config.OutputFileNamePrefix = FilenamePrefix.Text;
         Config.OutputQuality = Enum.Parse<QualityEnum>(Quality.Text);
         Config.OutputPreset = Enum.Parse<PresetEnum>(Preset.Text);
         Config.OutputEncoder = Enum.Parse<EncoderEnum>(Encoder.Text);

@@ -7,9 +7,8 @@ namespace CaptureOnlyMovements.Types;
 
 public class Config : IComparerConfig, IEncoderConfig
 {
-    public string OutputFileNamePrefix { get; set; } = string.Empty;
-    public string ProcessExecutebleFullName { get; set; } = string.Empty;
-    public bool WaitForProcess { get; set; }
+    public ConfigPrefixPreset[] PrefixPresets { get; set; } = [];
+    public ConfigPrefixPreset? LastPrefixPreset { get; set; }
     public int MaximumPixelDifferenceValue { get; set; } = 144;
     public int MaximumDifferentPixelCount { get; set; } = 450;
     public int MinPlaybackSpeed { get; set; } = 5;
@@ -42,3 +41,4 @@ public class Config : IComparerConfig, IEncoderConfig
         File.WriteAllText("CaptureOnlyMovements.json", json);
     }
 }
+

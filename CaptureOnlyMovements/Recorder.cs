@@ -24,23 +24,23 @@ public class Recorder(
     public bool Recording { get; private set; }
     public bool KillSwitch { get; private set; }
     public Config Config => Application.Config;
+    public ConfigPrefixPreset? ConfigPrefix { get; private set; }
 
-    public void Start()
+    public void Start(ConfigPrefixPreset configPrefix)
     {
-        if (!Recording)
-        {
-            Console.WriteLine("Starting the recorder...");
-            WriterThread = new Thread(Kernel) { IsBackground = true };
-            WriterThread.Start();
-        }
+        if (Recording) return;
+
+        ConfigPrefix = configPrefix;
+        Console.WriteLine("Starting the recorder...");
+        WriterThread = new Thread(Kernel) { IsBackground = true };
+        WriterThread.Start();
     }
     public void Stop()
     {
-        if (Recording)
-        {
-            Console.WriteLine("Stopping the recorder...");
-            KillSwitch = true;
-        }
+        if (!Recording) return;
+
+        Console.WriteLine("Stopping the recorder...");
+        KillSwitch = true;
     }
     private void Kernel()
     {
@@ -50,9 +50,11 @@ public class Recorder(
 
         try
         {
+            if (ConfigPrefix == null) throw new Exception("No config chosen");
+
             // Get the filename for the output video
             string videosFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.MyVideos);
-            var outputName = $"{Config.OutputFileNamePrefix}{DateTime.Now:yyyy-MM-dd HH-mm-ss}.mkv";
+            var outputName = $"{ConfigPrefix.OutputFileNamePrefix}{DateTime.Now:yyyy-MM-dd HH-mm-ss}.mkv";
             string outputFullName = Path.Combine(videosFolderPath, outputName);
 
             if (File.Exists(outputFullName))
@@ -95,7 +97,7 @@ public class Recorder(
                  new MaskPipeline(Console)
                             .Next(new ShowMaskTo(Preview));
 
-            var waitTillVisualStudioHasForcus = new WaitTillVisualStudioHasForcus(Config, this);
+            var waitTillVisualStudioHasForcus = new WaitTillVisualStudioHasForcus(ConfigPrefix, this);
 
             using var pipeline =
                 new VideoPipeline(new WaitThenReadFrameThenTickFps(waitTillVisualStudioHasForcus, waitTillNextTime, reader, Application.InputFps, this), Console)

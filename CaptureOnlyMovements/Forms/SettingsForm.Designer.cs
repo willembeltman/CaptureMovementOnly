@@ -16,15 +16,12 @@
         private void InitializeComponent()
         {
             tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            ProcessExecutebleTextBox = new System.Windows.Forms.TextBox();
-            label11 = new System.Windows.Forms.Label();
             label8 = new System.Windows.Forms.Label();
             SaveButton = new System.Windows.Forms.Button();
             label10 = new System.Windows.Forms.Label();
             label9 = new System.Windows.Forms.Label();
             MinPlaybackSpeed = new System.Windows.Forms.TextBox();
             label6 = new System.Windows.Forms.Label();
-            FilenamePrefix = new System.Windows.Forms.TextBox();
             label1 = new System.Windows.Forms.Label();
             MaximumPixelDifferenceValue = new System.Windows.Forms.TextBox();
             label2 = new System.Windows.Forms.Label();
@@ -37,45 +34,41 @@
             Quality = new System.Windows.Forms.ComboBox();
             label3 = new System.Windows.Forms.Label();
             Fps = new System.Windows.Forms.ComboBox();
-            btnPickExe = new System.Windows.Forms.Button();
-            WaitForProcessCheckBox = new System.Windows.Forms.CheckBox();
+            PrefixPresetList = new System.Windows.Forms.DataGridView();
             tableLayoutPanel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)PrefixPresetList).BeginInit();
             SuspendLayout();
             // 
             // tableLayoutPanel1
             // 
             tableLayoutPanel1.ColumnCount = 2;
-            tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            tableLayoutPanel1.Controls.Add(ProcessExecutebleTextBox, 1, 0);
-            tableLayoutPanel1.Controls.Add(label11, 0, 0);
-            tableLayoutPanel1.Controls.Add(label8, 0, 2);
-            tableLayoutPanel1.Controls.Add(SaveButton, 1, 13);
-            tableLayoutPanel1.Controls.Add(label10, 1, 12);
-            tableLayoutPanel1.Controls.Add(label9, 1, 11);
-            tableLayoutPanel1.Controls.Add(MinPlaybackSpeed, 1, 10);
-            tableLayoutPanel1.Controls.Add(label6, 0, 10);
-            tableLayoutPanel1.Controls.Add(FilenamePrefix, 1, 2);
-            tableLayoutPanel1.Controls.Add(label1, 0, 3);
-            tableLayoutPanel1.Controls.Add(MaximumPixelDifferenceValue, 1, 3);
-            tableLayoutPanel1.Controls.Add(label2, 0, 4);
-            tableLayoutPanel1.Controls.Add(MaximumDifferentPixelCount, 1, 4);
-            tableLayoutPanel1.Controls.Add(label7, 0, 9);
-            tableLayoutPanel1.Controls.Add(Encoder, 1, 9);
-            tableLayoutPanel1.Controls.Add(label5, 0, 8);
-            tableLayoutPanel1.Controls.Add(Preset, 1, 8);
-            tableLayoutPanel1.Controls.Add(label4, 0, 7);
-            tableLayoutPanel1.Controls.Add(Quality, 1, 7);
-            tableLayoutPanel1.Controls.Add(label3, 0, 6);
-            tableLayoutPanel1.Controls.Add(Fps, 1, 6);
-            tableLayoutPanel1.Controls.Add(btnPickExe, 1, 1);
-            tableLayoutPanel1.Controls.Add(WaitForProcessCheckBox, 0, 1);
+            tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 40F));
+            tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 60F));
+            tableLayoutPanel1.Controls.Add(label8, 0, 0);
+            tableLayoutPanel1.Controls.Add(SaveButton, 1, 11);
+            tableLayoutPanel1.Controls.Add(label10, 1, 10);
+            tableLayoutPanel1.Controls.Add(label9, 1, 9);
+            tableLayoutPanel1.Controls.Add(MinPlaybackSpeed, 1, 8);
+            tableLayoutPanel1.Controls.Add(label6, 0, 8);
+            tableLayoutPanel1.Controls.Add(label1, 0, 1);
+            tableLayoutPanel1.Controls.Add(MaximumPixelDifferenceValue, 1, 1);
+            tableLayoutPanel1.Controls.Add(label2, 0, 2);
+            tableLayoutPanel1.Controls.Add(MaximumDifferentPixelCount, 1, 2);
+            tableLayoutPanel1.Controls.Add(label7, 0, 7);
+            tableLayoutPanel1.Controls.Add(Encoder, 1, 7);
+            tableLayoutPanel1.Controls.Add(label5, 0, 6);
+            tableLayoutPanel1.Controls.Add(Preset, 1, 6);
+            tableLayoutPanel1.Controls.Add(label4, 0, 5);
+            tableLayoutPanel1.Controls.Add(Quality, 1, 5);
+            tableLayoutPanel1.Controls.Add(label3, 0, 4);
+            tableLayoutPanel1.Controls.Add(Fps, 1, 4);
+            tableLayoutPanel1.Controls.Add(PrefixPresetList, 1, 0);
             tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             tableLayoutPanel1.Location = new System.Drawing.Point(5, 5);
             tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             tableLayoutPanel1.Name = "tableLayoutPanel1";
-            tableLayoutPanel1.RowCount = 14;
-            tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 10F));
+            tableLayoutPanel1.RowCount = 12;
+            tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
             tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 10F));
             tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 10F));
             tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 10F));
@@ -92,42 +85,23 @@
             tableLayoutPanel1.Size = new System.Drawing.Size(748, 497);
             tableLayoutPanel1.TabIndex = 0;
             // 
-            // ProcessExecutebleTextBox
-            // 
-            ProcessExecutebleTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            ProcessExecutebleTextBox.Location = new System.Drawing.Point(378, 3);
-            ProcessExecutebleTextBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            ProcessExecutebleTextBox.Name = "ProcessExecutebleTextBox";
-            ProcessExecutebleTextBox.Size = new System.Drawing.Size(366, 23);
-            ProcessExecutebleTextBox.TabIndex = 27;
-            // 
-            // label11
-            // 
-            label11.AutoSize = true;
-            label11.Location = new System.Drawing.Point(4, 0);
-            label11.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            label11.Name = "label11";
-            label11.Size = new System.Drawing.Size(47, 15);
-            label11.TabIndex = 26;
-            label11.Text = "Process";
-            // 
             // label8
             // 
             label8.AutoSize = true;
-            label8.Location = new System.Drawing.Point(4, 70);
+            label8.Location = new System.Drawing.Point(4, 0);
             label8.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             label8.Name = "label8";
-            label8.Size = new System.Drawing.Size(87, 15);
-            label8.TabIndex = 23;
-            label8.Text = "Filename Prefix";
+            label8.Size = new System.Drawing.Size(44, 15);
+            label8.TabIndex = 25;
+            label8.Text = "Presets";
             // 
             // SaveButton
             // 
             SaveButton.Dock = System.Windows.Forms.DockStyle.Fill;
-            SaveButton.Location = new System.Drawing.Point(378, 458);
+            SaveButton.Location = new System.Drawing.Point(378, 455);
             SaveButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             SaveButton.Name = "SaveButton";
-            SaveButton.Size = new System.Drawing.Size(366, 36);
+            SaveButton.Size = new System.Drawing.Size(366, 39);
             SaveButton.TabIndex = 16;
             SaveButton.Text = "Apply and close";
             SaveButton.UseVisualStyleBackColor = true;
@@ -135,7 +109,7 @@
             // label10
             // 
             label10.AutoSize = true;
-            label10.Location = new System.Drawing.Point(378, 420);
+            label10.Location = new System.Drawing.Point(378, 416);
             label10.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             label10.Name = "label10";
             label10.Size = new System.Drawing.Size(207, 15);
@@ -145,7 +119,7 @@
             // label9
             // 
             label9.AutoSize = true;
-            label9.Location = new System.Drawing.Point(378, 385);
+            label9.Location = new System.Drawing.Point(378, 380);
             label9.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             label9.Name = "label9";
             label9.Size = new System.Drawing.Size(341, 30);
@@ -156,7 +130,7 @@
             // 
             MinPlaybackSpeed.AccessibleDescription = "Note: Realtime (value 1) will be difficult because the frames are being compared single threaded with no bufferpipeline.";
             MinPlaybackSpeed.Dock = System.Windows.Forms.DockStyle.Fill;
-            MinPlaybackSpeed.Location = new System.Drawing.Point(378, 353);
+            MinPlaybackSpeed.Location = new System.Drawing.Point(378, 347);
             MinPlaybackSpeed.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             MinPlaybackSpeed.Name = "MinPlaybackSpeed";
             MinPlaybackSpeed.Size = new System.Drawing.Size(366, 23);
@@ -165,26 +139,17 @@
             // label6
             // 
             label6.AutoSize = true;
-            label6.Location = new System.Drawing.Point(4, 350);
+            label6.Location = new System.Drawing.Point(4, 344);
             label6.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             label6.Name = "label6";
             label6.Size = new System.Drawing.Size(152, 15);
             label6.TabIndex = 5;
             label6.Text = "Minimum Recording Speed";
             // 
-            // FilenamePrefix
-            // 
-            FilenamePrefix.Dock = System.Windows.Forms.DockStyle.Fill;
-            FilenamePrefix.Location = new System.Drawing.Point(378, 73);
-            FilenamePrefix.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            FilenamePrefix.Name = "FilenamePrefix";
-            FilenamePrefix.Size = new System.Drawing.Size(366, 23);
-            FilenamePrefix.TabIndex = 22;
-            // 
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new System.Drawing.Point(4, 105);
+            label1.Location = new System.Drawing.Point(4, 92);
             label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             label1.Name = "label1";
             label1.Size = new System.Drawing.Size(194, 15);
@@ -194,7 +159,7 @@
             // MaximumPixelDifferenceValue
             // 
             MaximumPixelDifferenceValue.Dock = System.Windows.Forms.DockStyle.Fill;
-            MaximumPixelDifferenceValue.Location = new System.Drawing.Point(378, 108);
+            MaximumPixelDifferenceValue.Location = new System.Drawing.Point(378, 95);
             MaximumPixelDifferenceValue.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             MaximumPixelDifferenceValue.Name = "MaximumPixelDifferenceValue";
             MaximumPixelDifferenceValue.Size = new System.Drawing.Size(366, 23);
@@ -203,7 +168,7 @@
             // label2
             // 
             label2.AutoSize = true;
-            label2.Location = new System.Drawing.Point(4, 140);
+            label2.Location = new System.Drawing.Point(4, 128);
             label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             label2.Name = "label2";
             label2.Size = new System.Drawing.Size(200, 15);
@@ -213,7 +178,7 @@
             // MaximumDifferentPixelCount
             // 
             MaximumDifferentPixelCount.Dock = System.Windows.Forms.DockStyle.Fill;
-            MaximumDifferentPixelCount.Location = new System.Drawing.Point(378, 143);
+            MaximumDifferentPixelCount.Location = new System.Drawing.Point(378, 131);
             MaximumDifferentPixelCount.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             MaximumDifferentPixelCount.Name = "MaximumDifferentPixelCount";
             MaximumDifferentPixelCount.Size = new System.Drawing.Size(366, 23);
@@ -222,7 +187,7 @@
             // label7
             // 
             label7.AutoSize = true;
-            label7.Location = new System.Drawing.Point(4, 315);
+            label7.Location = new System.Drawing.Point(4, 308);
             label7.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             label7.Name = "label7";
             label7.Size = new System.Drawing.Size(121, 15);
@@ -235,7 +200,7 @@
             Encoder.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             Encoder.FormattingEnabled = true;
             Encoder.Items.AddRange(new object[] { "software", "nvidia", "amd", "intel" });
-            Encoder.Location = new System.Drawing.Point(378, 318);
+            Encoder.Location = new System.Drawing.Point(378, 311);
             Encoder.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             Encoder.Name = "Encoder";
             Encoder.Size = new System.Drawing.Size(366, 23);
@@ -244,7 +209,7 @@
             // label5
             // 
             label5.AutoSize = true;
-            label5.Location = new System.Drawing.Point(4, 280);
+            label5.Location = new System.Drawing.Point(4, 272);
             label5.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             label5.Name = "label5";
             label5.Size = new System.Drawing.Size(72, 15);
@@ -257,7 +222,7 @@
             Preset.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             Preset.FormattingEnabled = true;
             Preset.Items.AddRange(new object[] { "veryfast", "faster", "fast", "medium", "slow", "slower", "veryslow" });
-            Preset.Location = new System.Drawing.Point(378, 283);
+            Preset.Location = new System.Drawing.Point(378, 275);
             Preset.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             Preset.Name = "Preset";
             Preset.Size = new System.Drawing.Size(366, 23);
@@ -266,7 +231,7 @@
             // label4
             // 
             label4.AutoSize = true;
-            label4.Location = new System.Drawing.Point(4, 245);
+            label4.Location = new System.Drawing.Point(4, 236);
             label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             label4.Name = "label4";
             label4.Size = new System.Drawing.Size(78, 15);
@@ -279,7 +244,7 @@
             Quality.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             Quality.FormattingEnabled = true;
             Quality.Items.AddRange(new object[] { "identical", "high", "medium", "low", "lower", "verylow" });
-            Quality.Location = new System.Drawing.Point(378, 248);
+            Quality.Location = new System.Drawing.Point(378, 239);
             Quality.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             Quality.Name = "Quality";
             Quality.Size = new System.Drawing.Size(366, 23);
@@ -288,7 +253,7 @@
             // label3
             // 
             label3.AutoSize = true;
-            label3.Location = new System.Drawing.Point(4, 210);
+            label3.Location = new System.Drawing.Point(4, 200);
             label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             label3.Name = "label3";
             label3.Size = new System.Drawing.Size(109, 15);
@@ -301,31 +266,20 @@
             Fps.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             Fps.FormattingEnabled = true;
             Fps.Items.AddRange(new object[] { "25", "30", "50", "60" });
-            Fps.Location = new System.Drawing.Point(378, 213);
+            Fps.Location = new System.Drawing.Point(378, 203);
             Fps.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             Fps.Name = "Fps";
             Fps.Size = new System.Drawing.Size(366, 23);
             Fps.TabIndex = 10;
             // 
-            // btnPickExe
+            // PrefixPresetList
             // 
-            btnPickExe.Location = new System.Drawing.Point(377, 38);
-            btnPickExe.Name = "btnPickExe";
-            btnPickExe.Size = new System.Drawing.Size(128, 24);
-            btnPickExe.TabIndex = 28;
-            btnPickExe.Text = "Pick executeble";
-            btnPickExe.UseVisualStyleBackColor = true;
-            btnPickExe.Click += btnPickExe_Click;
-            // 
-            // WaitForProcessCheckBox
-            // 
-            WaitForProcessCheckBox.AutoSize = true;
-            WaitForProcessCheckBox.Location = new System.Drawing.Point(3, 38);
-            WaitForProcessCheckBox.Name = "WaitForProcessCheckBox";
-            WaitForProcessCheckBox.Size = new System.Drawing.Size(162, 19);
-            WaitForProcessCheckBox.TabIndex = 29;
-            WaitForProcessCheckBox.Text = "Wait for process to record";
-            WaitForProcessCheckBox.UseVisualStyleBackColor = true;
+            PrefixPresetList.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            PrefixPresetList.Dock = System.Windows.Forms.DockStyle.Fill;
+            PrefixPresetList.Location = new System.Drawing.Point(377, 3);
+            PrefixPresetList.Name = "PrefixPresetList";
+            PrefixPresetList.Size = new System.Drawing.Size(368, 86);
+            PrefixPresetList.TabIndex = 26;
             // 
             // ConfigForm
             // 
@@ -339,6 +293,7 @@
             Text = "Settings";
             tableLayoutPanel1.ResumeLayout(false);
             tableLayoutPanel1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)PrefixPresetList).EndInit();
             ResumeLayout(false);
         }
 
@@ -357,16 +312,12 @@
         private System.Windows.Forms.ComboBox Fps;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.TextBox MinPlaybackSpeed;
-        private System.Windows.Forms.Button SaveButton;
         private System.Windows.Forms.ComboBox Quality;
         private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.ComboBox Encoder;
+        private System.Windows.Forms.Button SaveButton;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.Label label8;
-        private System.Windows.Forms.TextBox FilenamePrefix;
-        private System.Windows.Forms.ComboBox Encoder;
-        private System.Windows.Forms.TextBox ProcessExecutebleTextBox;
-        private System.Windows.Forms.Label label11;
-        private System.Windows.Forms.Button btnPickExe;
-        private System.Windows.Forms.CheckBox WaitForProcessCheckBox;
+        private System.Windows.Forms.DataGridView PrefixPresetList;
     }
 }

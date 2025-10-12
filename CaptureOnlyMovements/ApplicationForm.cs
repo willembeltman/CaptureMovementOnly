@@ -21,6 +21,7 @@ public class ApplicationForm : Form, IApplication
 
         MaskForm = new MaskForm(this);
         ConfigForm = new ConfigForm(this);
+        SetConfigTemplateForm = new SetConfigTemplateForm(this);
         ConverterForm = new ConverterForm(this);
         DetectEncodersForm = new DetectEncodersForm(this);
         Recorder = new Recorder(this, DebugForm, FFMpegDebugForm, MaskForm);
@@ -99,6 +100,7 @@ public class ApplicationForm : Form, IApplication
     private readonly ConverterForm ConverterForm;
     private readonly FFMpegDebugForm FFMpegDebugForm;
     private readonly DetectEncodersForm DetectEncodersForm;
+    private readonly SetConfigTemplateForm SetConfigTemplateForm;
 
     private readonly ContextMenuStrip NewContextMenuStrip;
     private readonly ToolStripMenuItem StartRecordingButton;
@@ -149,7 +151,14 @@ public class ApplicationForm : Form, IApplication
         DetectEncodersForm.Show();
         Timer.Start(); 
     }
-    private void StartRecording_Click(object? sender, EventArgs e) => Recorder.Start();
+    private void StartRecording_Click(object? sender, EventArgs e)
+    {
+        if (SetConfigTemplateForm.ShowDialog() == DialogResult.OK && 
+            Config.LastPrefixPreset != null)
+        {
+            Recorder.Start(Config.LastPrefixPreset);
+        }
+    }
     private void StopRecording_Click(object? sender, EventArgs e) => Recorder.Stop();
     private void OpenConverter_Click(object? sender, EventArgs e) => ConverterForm.Show();
     private void OpenSettings_Click(object? sender, EventArgs e) => ConfigForm.Show();

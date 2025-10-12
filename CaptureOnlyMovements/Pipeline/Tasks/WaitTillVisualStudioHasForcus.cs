@@ -10,13 +10,13 @@ namespace CaptureOnlyMovements.Pipeline.Tasks
 
     public class WaitTillVisualStudioHasForcus
     {
-        public WaitTillVisualStudioHasForcus(Config config, IKillSwitch killSwitch)
+        public WaitTillVisualStudioHasForcus(ConfigPrefixPreset config, IKillSwitch killSwitch)
         {
             Config = config ?? throw new ArgumentNullException(nameof(config));
             KillSwitch = killSwitch ?? throw new ArgumentNullException(nameof(killSwitch));
         }
 
-        public Config Config { get; }
+        public ConfigPrefixPreset Config { get; }
         public IKillSwitch KillSwitch { get; }
 
         [DllImport("user32.dll")]
@@ -30,7 +30,7 @@ namespace CaptureOnlyMovements.Pipeline.Tasks
         /// </summary>
         internal void Wait()
         {
-            if (!Config.WaitForProcess) 
+            if (!Config.WaitForProcessActive) 
                 return;
 
             try
