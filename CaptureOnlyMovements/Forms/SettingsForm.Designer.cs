@@ -1,4 +1,7 @@
-﻿namespace CaptureOnlyMovements.Forms
+﻿using System.Drawing;
+using System.Windows.Forms;
+
+namespace CaptureOnlyMovements.Forms
 {
     partial class ConfigForm
     {
@@ -15,252 +18,291 @@
         /// </summary>
         private void InitializeComponent()
         {
-            PrefixPresetListLabel = new System.Windows.Forms.Label();
-            PrefixPresetList = new System.Windows.Forms.DataGridView();
-            MinPlaybackSpeedLabel = new System.Windows.Forms.Label();
-            MinPlaybackSpeed = new System.Windows.Forms.TextBox();
-            MaximumPixelDifferenceValueLabel = new System.Windows.Forms.Label();
-            MaximumPixelDifferenceValue = new System.Windows.Forms.TextBox();
-            MaximumDifferentPixelCountLabel = new System.Windows.Forms.Label();
-            MaximumDifferentPixelCount = new System.Windows.Forms.TextBox();
-            EncoderComboLabel = new System.Windows.Forms.Label();
-            EncoderCombo = new System.Windows.Forms.ComboBox();
-            PresetComboLabel = new System.Windows.Forms.Label();
-            PresetCombo = new System.Windows.Forms.ComboBox();
-            QualityComboLabel = new System.Windows.Forms.Label();
-            QualityCombo = new System.Windows.Forms.ComboBox();
-            FpsComboLabel = new System.Windows.Forms.Label();
-            FpsCombo = new System.Windows.Forms.ComboBox();
-            Note1 = new System.Windows.Forms.Label();
-            Note2 = new System.Windows.Forms.Label();
-            Note3 = new System.Windows.Forms.Label();
-            SaveButton = new System.Windows.Forms.Button();
+            DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle2 = new DataGridViewCellStyle();
+            PrefixPresetListLabel = new Label();
+            PrefixPresetList = new DataGridView();
+            MinPlaybackSpeedLabel = new Label();
+            MinPlaybackSpeed = new TextBox();
+            MaximumPixelDifferenceValueLabel = new Label();
+            MaximumPixelDifferenceValue = new TextBox();
+            MaximumDifferentPixelCountLabel = new Label();
+            MaximumDifferentPixelCount = new TextBox();
+            EncoderComboLabel = new Label();
+            EncoderCombo = new ComboBox();
+            PresetComboLabel = new Label();
+            PresetCombo = new ComboBox();
+            QualityComboLabel = new Label();
+            QualityCombo = new ComboBox();
+            FpsComboLabel = new Label();
+            FpsCombo = new ComboBox();
+            Note1 = new Label();
+            Note2 = new Label();
+            Note3 = new Label();
+            SaveButton = new Button();
             ((System.ComponentModel.ISupportInitialize)PrefixPresetList).BeginInit();
             SuspendLayout();
             // 
             // PrefixPresetListLabel
             // 
             PrefixPresetListLabel.AutoSize = true;
-            PrefixPresetListLabel.Location = new System.Drawing.Point(13, 13);
-            PrefixPresetListLabel.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
+            PrefixPresetListLabel.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            PrefixPresetListLabel.ForeColor = Color.WhiteSmoke;
+            PrefixPresetListLabel.Location = new Point(13, 13);
             PrefixPresetListLabel.Name = "PrefixPresetListLabel";
-            PrefixPresetListLabel.Size = new System.Drawing.Size(68, 25);
-            PrefixPresetListLabel.TabIndex = 44;
+            PrefixPresetListLabel.Size = new Size(80, 28);
+            PrefixPresetListLabel.TabIndex = 0;
             PrefixPresetListLabel.Text = "Presets";
             // 
             // PrefixPresetList
             // 
-            PrefixPresetList.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
-            PrefixPresetList.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            PrefixPresetList.Location = new System.Drawing.Point(316, 13);
-            PrefixPresetList.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            PrefixPresetList.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            PrefixPresetList.BackgroundColor = Color.FromArgb(45, 45, 45);
+            PrefixPresetList.BorderStyle = BorderStyle.None;
+            dataGridViewCellStyle1.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = Color.FromArgb(45, 45, 45);
+            dataGridViewCellStyle1.Font = new Font("Segoe UI", 9F);
+            dataGridViewCellStyle1.ForeColor = Color.WhiteSmoke;
+            dataGridViewCellStyle1.SelectionBackColor = SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = DataGridViewTriState.True;
+            PrefixPresetList.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            PrefixPresetList.ColumnHeadersHeight = 34;
+            dataGridViewCellStyle2.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = Color.FromArgb(45, 45, 45);
+            dataGridViewCellStyle2.Font = new Font("Segoe UI", 9F);
+            dataGridViewCellStyle2.ForeColor = Color.WhiteSmoke;
+            dataGridViewCellStyle2.SelectionBackColor = SystemColors.Highlight;
+            dataGridViewCellStyle2.SelectionForeColor = SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = DataGridViewTriState.False;
+            PrefixPresetList.DefaultCellStyle = dataGridViewCellStyle2;
+            PrefixPresetList.EnableHeadersVisualStyles = false;
+            PrefixPresetList.GridColor = Color.Gray;
+            PrefixPresetList.Location = new Point(316, 13);
             PrefixPresetList.Name = "PrefixPresetList";
             PrefixPresetList.RowHeadersWidth = 62;
-            PrefixPresetList.Size = new System.Drawing.Size(991, 405);
-            PrefixPresetList.TabIndex = 45;
+            PrefixPresetList.Size = new Size(969, 349);
+            PrefixPresetList.TabIndex = 1;
             // 
             // MinPlaybackSpeedLabel
             // 
-            MinPlaybackSpeedLabel.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
-            MinPlaybackSpeedLabel.AutoSize = true;
-            MinPlaybackSpeedLabel.Location = new System.Drawing.Point(13, 723);
-            MinPlaybackSpeedLabel.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
+            MinPlaybackSpeedLabel.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            MinPlaybackSpeedLabel.Font = new Font("Segoe UI", 9F);
+            MinPlaybackSpeedLabel.ForeColor = Color.WhiteSmoke;
+            MinPlaybackSpeedLabel.Location = new Point(13, 667);
             MinPlaybackSpeedLabel.Name = "MinPlaybackSpeedLabel";
-            MinPlaybackSpeedLabel.Size = new System.Drawing.Size(228, 25);
-            MinPlaybackSpeedLabel.TabIndex = 32;
+            MinPlaybackSpeedLabel.Size = new Size(287, 23);
+            MinPlaybackSpeedLabel.TabIndex = 6;
             MinPlaybackSpeedLabel.Text = "Minimum Recording Speed";
             // 
             // MinPlaybackSpeed
             // 
-            MinPlaybackSpeed.AccessibleDescription = "Note: Realtime (value 1) will be difficult because the frames are being compared single threaded with no bufferpipeline.";
-            MinPlaybackSpeed.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
-            MinPlaybackSpeed.Location = new System.Drawing.Point(316, 718);
-            MinPlaybackSpeed.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
+            MinPlaybackSpeed.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            MinPlaybackSpeed.BackColor = Color.FromArgb(45, 45, 45);
+            MinPlaybackSpeed.BorderStyle = BorderStyle.FixedSingle;
+            MinPlaybackSpeed.Font = new Font("Segoe UI", 9F);
+            MinPlaybackSpeed.ForeColor = Color.WhiteSmoke;
+            MinPlaybackSpeed.Location = new Point(316, 662);
             MinPlaybackSpeed.Name = "MinPlaybackSpeed";
-            MinPlaybackSpeed.Size = new System.Drawing.Size(987, 31);
-            MinPlaybackSpeed.TabIndex = 38;
+            MinPlaybackSpeed.Size = new Size(965, 31);
+            MinPlaybackSpeed.TabIndex = 7;
             // 
             // MaximumPixelDifferenceValueLabel
             // 
-            MaximumPixelDifferenceValueLabel.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
-            MaximumPixelDifferenceValueLabel.AutoSize = true;
-            MaximumPixelDifferenceValueLabel.Location = new System.Drawing.Point(13, 433);
-            MaximumPixelDifferenceValueLabel.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
+            MaximumPixelDifferenceValueLabel.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            MaximumPixelDifferenceValueLabel.Font = new Font("Segoe UI", 9F);
+            MaximumPixelDifferenceValueLabel.ForeColor = Color.WhiteSmoke;
+            MaximumPixelDifferenceValueLabel.Location = new Point(13, 377);
             MaximumPixelDifferenceValueLabel.Name = "MaximumPixelDifferenceValueLabel";
-            MaximumPixelDifferenceValueLabel.Size = new System.Drawing.Size(292, 25);
-            MaximumPixelDifferenceValueLabel.TabIndex = 27;
+            MaximumPixelDifferenceValueLabel.Size = new Size(287, 23);
+            MaximumPixelDifferenceValueLabel.TabIndex = 2;
             MaximumPixelDifferenceValueLabel.Text = "Minimum pixel difference (0-255*3)";
             // 
             // MaximumPixelDifferenceValue
             // 
-            MaximumPixelDifferenceValue.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
-            MaximumPixelDifferenceValue.Location = new System.Drawing.Point(316, 428);
-            MaximumPixelDifferenceValue.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
+            MaximumPixelDifferenceValue.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            MaximumPixelDifferenceValue.BackColor = Color.FromArgb(45, 45, 45);
+            MaximumPixelDifferenceValue.BorderStyle = BorderStyle.FixedSingle;
+            MaximumPixelDifferenceValue.Font = new Font("Segoe UI", 9F);
+            MaximumPixelDifferenceValue.ForeColor = Color.WhiteSmoke;
+            MaximumPixelDifferenceValue.Location = new Point(316, 372);
             MaximumPixelDifferenceValue.Name = "MaximumPixelDifferenceValue";
-            MaximumPixelDifferenceValue.Size = new System.Drawing.Size(987, 31);
-            MaximumPixelDifferenceValue.TabIndex = 33;
+            MaximumPixelDifferenceValue.Size = new Size(965, 31);
+            MaximumPixelDifferenceValue.TabIndex = 3;
             // 
             // MaximumDifferentPixelCountLabel
             // 
-            MaximumDifferentPixelCountLabel.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
-            MaximumDifferentPixelCountLabel.AutoSize = true;
-            MaximumDifferentPixelCountLabel.Location = new System.Drawing.Point(13, 482);
-            MaximumDifferentPixelCountLabel.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
+            MaximumDifferentPixelCountLabel.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            MaximumDifferentPixelCountLabel.Font = new Font("Segoe UI", 9F);
+            MaximumDifferentPixelCountLabel.ForeColor = Color.WhiteSmoke;
+            MaximumDifferentPixelCountLabel.Location = new Point(13, 426);
             MaximumDifferentPixelCountLabel.Name = "MaximumDifferentPixelCountLabel";
-            MaximumDifferentPixelCountLabel.Size = new System.Drawing.Size(301, 25);
-            MaximumDifferentPixelCountLabel.TabIndex = 28;
+            MaximumDifferentPixelCountLabel.Size = new Size(287, 23);
+            MaximumDifferentPixelCountLabel.TabIndex = 4;
             MaximumDifferentPixelCountLabel.Text = "Maximum number of different pixels";
             // 
             // MaximumDifferentPixelCount
             // 
-            MaximumDifferentPixelCount.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
-            MaximumDifferentPixelCount.Location = new System.Drawing.Point(316, 477);
-            MaximumDifferentPixelCount.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
+            MaximumDifferentPixelCount.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            MaximumDifferentPixelCount.BackColor = Color.FromArgb(45, 45, 45);
+            MaximumDifferentPixelCount.BorderStyle = BorderStyle.FixedSingle;
+            MaximumDifferentPixelCount.Font = new Font("Segoe UI", 9F);
+            MaximumDifferentPixelCount.ForeColor = Color.WhiteSmoke;
+            MaximumDifferentPixelCount.Location = new Point(316, 421);
             MaximumDifferentPixelCount.Name = "MaximumDifferentPixelCount";
-            MaximumDifferentPixelCount.Size = new System.Drawing.Size(987, 31);
-            MaximumDifferentPixelCount.TabIndex = 34;
+            MaximumDifferentPixelCount.Size = new Size(965, 31);
+            MaximumDifferentPixelCount.TabIndex = 5;
             // 
             // EncoderComboLabel
             // 
-            EncoderComboLabel.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
-            EncoderComboLabel.AutoSize = true;
-            EncoderComboLabel.Location = new System.Drawing.Point(13, 580);
-            EncoderComboLabel.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
+            EncoderComboLabel.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            EncoderComboLabel.Font = new Font("Segoe UI", 9F);
+            EncoderComboLabel.ForeColor = Color.WhiteSmoke;
+            EncoderComboLabel.Location = new Point(13, 524);
             EncoderComboLabel.Name = "EncoderComboLabel";
-            EncoderComboLabel.Size = new System.Drawing.Size(185, 25);
-            EncoderComboLabel.TabIndex = 37;
+            EncoderComboLabel.Size = new Size(287, 23);
+            EncoderComboLabel.TabIndex = 8;
             EncoderComboLabel.Text = "Use gpu for encoding";
             // 
             // EncoderCombo
             // 
-            EncoderCombo.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
-            EncoderCombo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            EncoderCombo.FormattingEnabled = true;
+            EncoderCombo.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            EncoderCombo.BackColor = Color.FromArgb(45, 45, 45);
+            EncoderCombo.DropDownStyle = ComboBoxStyle.DropDownList;
+            EncoderCombo.FlatStyle = FlatStyle.Flat;
+            EncoderCombo.ForeColor = Color.WhiteSmoke;
             EncoderCombo.Items.AddRange(new object[] { "software", "nvidia", "amd", "intel" });
-            EncoderCombo.Location = new System.Drawing.Point(316, 575);
-            EncoderCombo.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
+            EncoderCombo.Location = new Point(316, 519);
             EncoderCombo.Name = "EncoderCombo";
-            EncoderCombo.Size = new System.Drawing.Size(987, 33);
-            EncoderCombo.TabIndex = 43;
+            EncoderCombo.Size = new Size(965, 33);
+            EncoderCombo.TabIndex = 9;
             // 
             // PresetComboLabel
             // 
-            PresetComboLabel.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
-            PresetComboLabel.AutoSize = true;
-            PresetComboLabel.Location = new System.Drawing.Point(13, 675);
-            PresetComboLabel.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
+            PresetComboLabel.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            PresetComboLabel.Font = new Font("Segoe UI", 9F);
+            PresetComboLabel.ForeColor = Color.WhiteSmoke;
+            PresetComboLabel.Location = new Point(13, 619);
             PresetComboLabel.Name = "PresetComboLabel";
-            PresetComboLabel.Size = new System.Drawing.Size(111, 25);
-            PresetComboLabel.TabIndex = 31;
+            PresetComboLabel.Size = new Size(287, 23);
+            PresetComboLabel.TabIndex = 10;
             PresetComboLabel.Text = "Video Preset";
             // 
             // PresetCombo
             // 
-            PresetCombo.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
-            PresetCombo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            PresetCombo.FormattingEnabled = true;
+            PresetCombo.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            PresetCombo.BackColor = Color.FromArgb(45, 45, 45);
+            PresetCombo.DropDownStyle = ComboBoxStyle.DropDownList;
+            PresetCombo.FlatStyle = FlatStyle.Flat;
+            PresetCombo.ForeColor = Color.WhiteSmoke;
             PresetCombo.Items.AddRange(new object[] { "veryfast", "faster", "fast", "medium", "slow", "slower", "veryslow" });
-            PresetCombo.Location = new System.Drawing.Point(316, 670);
-            PresetCombo.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
+            PresetCombo.Location = new Point(316, 614);
             PresetCombo.Name = "PresetCombo";
-            PresetCombo.Size = new System.Drawing.Size(987, 33);
-            PresetCombo.TabIndex = 35;
+            PresetCombo.Size = new Size(965, 33);
+            PresetCombo.TabIndex = 11;
             // 
             // QualityComboLabel
             // 
-            QualityComboLabel.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
-            QualityComboLabel.AutoSize = true;
-            QualityComboLabel.Location = new System.Drawing.Point(13, 627);
-            QualityComboLabel.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
+            QualityComboLabel.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            QualityComboLabel.Font = new Font("Segoe UI", 9F);
+            QualityComboLabel.ForeColor = Color.WhiteSmoke;
+            QualityComboLabel.Location = new Point(13, 571);
             QualityComboLabel.Name = "QualityComboLabel";
-            QualityComboLabel.Size = new System.Drawing.Size(119, 25);
-            QualityComboLabel.TabIndex = 30;
+            QualityComboLabel.Size = new Size(287, 23);
+            QualityComboLabel.TabIndex = 12;
             QualityComboLabel.Text = "Video Quality";
             // 
             // QualityCombo
             // 
-            QualityCombo.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
-            QualityCombo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            QualityCombo.FormattingEnabled = true;
+            QualityCombo.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            QualityCombo.BackColor = Color.FromArgb(45, 45, 45);
+            QualityCombo.DropDownStyle = ComboBoxStyle.DropDownList;
+            QualityCombo.FlatStyle = FlatStyle.Flat;
+            QualityCombo.ForeColor = Color.WhiteSmoke;
             QualityCombo.Items.AddRange(new object[] { "identical", "high", "medium", "low", "lower", "verylow" });
-            QualityCombo.Location = new System.Drawing.Point(316, 622);
-            QualityCombo.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
+            QualityCombo.Location = new Point(316, 566);
             QualityCombo.Name = "QualityCombo";
-            QualityCombo.Size = new System.Drawing.Size(987, 33);
-            QualityCombo.TabIndex = 40;
+            QualityCombo.Size = new Size(965, 33);
+            QualityCombo.TabIndex = 13;
             // 
             // FpsComboLabel
             // 
-            FpsComboLabel.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
-            FpsComboLabel.AutoSize = true;
-            FpsComboLabel.Location = new System.Drawing.Point(13, 530);
-            FpsComboLabel.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
+            FpsComboLabel.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            FpsComboLabel.Font = new Font("Segoe UI", 9F);
+            FpsComboLabel.ForeColor = Color.WhiteSmoke;
+            FpsComboLabel.Location = new Point(13, 474);
             FpsComboLabel.Name = "FpsComboLabel";
-            FpsComboLabel.Size = new System.Drawing.Size(166, 25);
-            FpsComboLabel.TabIndex = 29;
+            FpsComboLabel.Size = new Size(287, 23);
+            FpsComboLabel.TabIndex = 14;
             FpsComboLabel.Text = "Video Playback FPS";
             // 
             // FpsCombo
             // 
-            FpsCombo.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
-            FpsCombo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            FpsCombo.FormattingEnabled = true;
+            FpsCombo.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            FpsCombo.BackColor = Color.FromArgb(45, 45, 45);
+            FpsCombo.DropDownStyle = ComboBoxStyle.DropDownList;
+            FpsCombo.FlatStyle = FlatStyle.Flat;
+            FpsCombo.ForeColor = Color.WhiteSmoke;
             FpsCombo.Items.AddRange(new object[] { "25", "30", "50", "60" });
-            FpsCombo.Location = new System.Drawing.Point(316, 525);
-            FpsCombo.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
+            FpsCombo.Location = new Point(316, 469);
             FpsCombo.Name = "FpsCombo";
-            FpsCombo.Size = new System.Drawing.Size(987, 33);
-            FpsCombo.TabIndex = 36;
+            FpsCombo.Size = new Size(965, 33);
+            FpsCombo.TabIndex = 15;
             // 
             // Note1
             // 
-            Note1.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
-            Note1.AutoSize = true;
-            Note1.Location = new System.Drawing.Point(330, 768);
-            Note1.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
+            Note1.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            Note1.Font = new Font("Segoe UI", 9F);
+            Note1.ForeColor = Color.LightGray;
+            Note1.Location = new Point(330, 712);
             Note1.Name = "Note1";
-            Note1.Size = new System.Drawing.Size(421, 25);
-            Note1.TabIndex = 41;
+            Note1.Size = new Size(951, 23);
+            Note1.TabIndex = 16;
             Note1.Text = "Note: Realtime (value 1) will be difficult because the ";
             // 
             // Note2
             // 
-            Note2.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
-            Note2.AutoSize = true;
-            Note2.Location = new System.Drawing.Point(330, 793);
-            Note2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            Note2.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            Note2.Font = new Font("Segoe UI", 9F);
+            Note2.ForeColor = Color.LightGray;
+            Note2.Location = new Point(330, 737);
             Note2.Name = "Note2";
-            Note2.Size = new System.Drawing.Size(541, 25);
-            Note2.TabIndex = 46;
+            Note2.Size = new Size(951, 23);
+            Note2.TabIndex = 17;
             Note2.Text = "frames are being compared single threaded with no bufferpipeline.";
             // 
             // Note3
             // 
-            Note3.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
-            Note3.AutoSize = true;
-            Note3.Location = new System.Drawing.Point(330, 818);
-            Note3.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
+            Note3.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            Note3.Font = new Font("Segoe UI", 9F);
+            Note3.ForeColor = Color.LightGray;
+            Note3.Location = new Point(330, 762);
             Note3.Name = "Note3";
-            Note3.Size = new System.Drawing.Size(312, 25);
-            Note3.TabIndex = 42;
+            Note3.Size = new Size(951, 23);
+            Note3.TabIndex = 18;
             Note3.Text = "Please use OBS for realtime capturing.";
             // 
             // SaveButton
             // 
-            SaveButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
-            SaveButton.Location = new System.Drawing.Point(316, 853);
-            SaveButton.Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
+            SaveButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            SaveButton.BackColor = Color.FromArgb(80, 80, 80);
+            SaveButton.FlatAppearance.BorderSize = 0;
+            SaveButton.FlatStyle = FlatStyle.Flat;
+            SaveButton.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            SaveButton.ForeColor = Color.WhiteSmoke;
+            SaveButton.Location = new Point(316, 797);
             SaveButton.Name = "SaveButton";
-            SaveButton.Size = new System.Drawing.Size(989, 65);
-            SaveButton.TabIndex = 39;
+            SaveButton.Size = new Size(967, 65);
+            SaveButton.TabIndex = 19;
             SaveButton.Text = "Apply and close";
-            SaveButton.UseVisualStyleBackColor = true;
+            SaveButton.UseVisualStyleBackColor = false;
             // 
             // ConfigForm
             // 
-            AutoScaleDimensions = new System.Drawing.SizeF(10F, 25F);
-            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            ClientSize = new System.Drawing.Size(1317, 932);
+            AutoScaleDimensions = new SizeF(10F, 25F);
+            AutoScaleMode = AutoScaleMode.Font;
+            BackColor = Color.FromArgb(24, 24, 24);
+            ClientSize = new Size(1298, 884);
             Controls.Add(PrefixPresetListLabel);
             Controls.Add(PrefixPresetList);
             Controls.Add(MaximumPixelDifferenceValueLabel);
@@ -281,14 +323,18 @@
             Controls.Add(Note2);
             Controls.Add(Note3);
             Controls.Add(SaveButton);
-            Margin = new System.Windows.Forms.Padding(6, 5, 6, 5);
+            Font = new Font("Segoe UI", 9F);
+            ForeColor = Color.WhiteSmoke;
+            FormBorderStyle = FormBorderStyle.SizableToolWindow;
+            //MinimumSize = new Size(1320, 940);
             Name = "ConfigForm";
-            Padding = new System.Windows.Forms.Padding(7, 8, 7, 8);
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "Settings";
             ((System.ComponentModel.ISupportInitialize)PrefixPresetList).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
+
 
         #endregion
 
