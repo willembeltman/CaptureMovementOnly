@@ -3,6 +3,7 @@ using CaptureOnlyMovements.Forms.SubForms;
 using CaptureOnlyMovements.Interfaces;
 using CaptureOnlyMovements.Types;
 using System;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace CaptureOnlyMovements;
@@ -38,52 +39,75 @@ public class ApplicationForm : Form, IApplication
             Text = "Capture Motion Only"
         };
 
+        // -------------------------
+        // Setup ContextMenuStrip
+        // -------------------------
         NewContextMenuStrip = new ContextMenuStrip();
+        NewContextMenuStrip.RenderMode = ToolStripRenderMode.Professional;
+        NewContextMenuStrip.Renderer = new ModernDarkRenderer();
+        NewContextMenuStrip.BackColor = Color.FromArgb(30, 30, 30);
+        NewContextMenuStrip.ForeColor = Color.White;
+        NewContextMenuStrip.Font = new Font("Segoe UI", 10, FontStyle.Regular);
 
+
+        // -------------------------
+        // Menu items
+        // -------------------------
         StartRecordingButton = new ToolStripMenuItem("Start recording");
         StartRecordingButton.Click += StartRecording_Click;
+        StartRecordingButton.Image = Properties.Resources.RecordIcon; // optioneel icon
         NewContextMenuStrip.Items.Add(StartRecordingButton);
 
         StopRecordingButton = new ToolStripMenuItem("Stop recording") { Visible = false };
         StopRecordingButton.Click += StopRecording_Click;
+        StopRecordingButton.Image = Properties.Resources.StopIcon;
         NewContextMenuStrip.Items.Add(StopRecordingButton);
 
-        NewContextMenuStrip.Items.Add(new ToolStripSeparator());
+        //NewContextMenuStrip.Items.Add(new ToolStripSeparator());
 
         var OpenConverterButton = new ToolStripMenuItem("Convert video(s)");
         OpenConverterButton.Click += OpenConverter_Click;
+        OpenConverterButton.Image = Properties.Resources.ConverterIcon;
         NewContextMenuStrip.Items.Add(OpenConverterButton);
 
-        NewContextMenuStrip.Items.Add(new ToolStripSeparator());
+        //NewContextMenuStrip.Items.Add(new ToolStripSeparator());
 
         var OpenSettingsButton = new ToolStripMenuItem("Open settings window");
         OpenSettingsButton.Click += OpenSettings_Click;
+        OpenSettingsButton.Image = Properties.Resources.SettingsIcon;
         NewContextMenuStrip.Items.Add(OpenSettingsButton);
 
-        NewContextMenuStrip.Items.Add(new ToolStripSeparator());
+        //NewContextMenuStrip.Items.Add(new ToolStripSeparator());
 
         var OpenDebugButton = new ToolStripMenuItem("Open main debug window");
         OpenDebugButton.Click += OpenDebug_Click;
+        OpenDebugButton.Image = Properties.Resources.DebugIcon;
         NewContextMenuStrip.Items.Add(OpenDebugButton);
 
         var OpenFFMpegDebugButton = new ToolStripMenuItem("Open ffmpeg debug window");
         OpenFFMpegDebugButton.Click += OpenFFMpegDebug_Click;
+        OpenFFMpegDebugButton.Image = Properties.Resources.FFmpegIcon;
         NewContextMenuStrip.Items.Add(OpenFFMpegDebugButton);
 
         var OpenMaskButton = new ToolStripMenuItem("Open mask window");
         OpenMaskButton.Click += OpenMask_Click;
+        OpenMaskButton.Image = Properties.Resources.MaskIcon;
         NewContextMenuStrip.Items.Add(OpenMaskButton);
 
-        NewContextMenuStrip.Items.Add(new ToolStripSeparator());
+        //NewContextMenuStrip.Items.Add(new ToolStripSeparator());
 
         var ExitMenuButton = new ToolStripMenuItem("Close");
         ExitMenuButton.Click += ExitMenuItem_Click;
+        ExitMenuButton.Image = Properties.Resources.ExitIcon;
         NewContextMenuStrip.Items.Add(ExitMenuButton);
 
+
+        // Koppel aan notification icon
         NotificationIcon.ContextMenuStrip = NewContextMenuStrip;
 
 
-        Load += ApplicationForm_Load;
+
+    Load += ApplicationForm_Load;
         Config.StateChanged += StateChanged;
         Timer.Tick += Timer_Tick;
         ShowInTaskbar = false;
