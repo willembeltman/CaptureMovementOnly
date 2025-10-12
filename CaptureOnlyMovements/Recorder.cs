@@ -95,8 +95,10 @@ public class Recorder(
                  new MaskPipeline(Console)
                             .Next(new ShowMaskTo(Preview));
 
+            var waitTillVisualStudioHasForcus = new WaitTillVisualStudioHasForcus(Config, this);
+
             using var pipeline =
-                new VideoPipeline(new WaitThenReadFrameThenTickFps(waitTillNextTime, reader, Application.InputFps, this), Console)
+                new VideoPipeline(new WaitThenReadFrameThenTickFps(waitTillVisualStudioHasForcus, waitTillNextTime, reader, Application.InputFps, this), Console)
                             .Next(new SkipNotDifferentFrames(comparer, Preview))
                             .Next(new ShowPreviewTo_PassThrough(Preview), maskPipeline)
                             .Next(new WriteFrameAndTickFps(writer, Application.OutputFps));

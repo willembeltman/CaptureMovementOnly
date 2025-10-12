@@ -43,6 +43,9 @@ public partial class ConfigForm : Form
         Preset.Enabled = !Application.IsBusy;
         Encoder.Enabled = !Application.IsBusy;
         FilenamePrefix.Enabled = !Application.IsBusy;
+        btnPickExe.Enabled = !Application.IsBusy;
+        ProcessExecutebleTextBox.Enabled = !Application.IsBusy;
+        WaitForProcessCheckBox.Enabled = !Application.IsBusy;
 
         if (Application.IsBusy)
         {
@@ -54,11 +57,24 @@ public partial class ConfigForm : Form
         }
     }
 
+
+    private void btnPickExe_Click(object sender, EventArgs e)
+    {
+        OpenFileDialog form = new OpenFileDialog();
+        form.DefaultExt = "*.exe|Executebles";
+        if (form.ShowDialog() == DialogResult.OK)
+        {
+            ProcessExecutebleTextBox.Text = form.FileName;
+        }
+    }
+
     private void ConfigForm_VisibleChanged(object? sender, EventArgs e)
     {
         if (Visible)
         {
             StateChanged();
+            ProcessExecutebleTextBox.Text = Config.ProcessExecutebleFullName;
+            WaitForProcessCheckBox.Checked = Config.WaitForProcess;
             MaximumPixelDifferenceValue.Text = Config.MaximumPixelDifferenceValue.ToString();
             MaximumDifferentPixelCount.Text = Config.MaximumDifferentPixelCount.ToString();
             MinPlaybackSpeed.Text = Config.MinPlaybackSpeed.ToString();
@@ -101,6 +117,8 @@ public partial class ConfigForm : Form
         Config.MaximumDifferentPixelCount = maxDifferentPixel;
         Config.MinPlaybackSpeed = minPlaybackSpeed;
         Config.OutputFps = fps;
+        Config.ProcessExecutebleFullName = ProcessExecutebleTextBox.Text;
+        Config.WaitForProcess = WaitForProcessCheckBox.Checked;
         Config.OutputFileNamePrefix = FilenamePrefix.Text;
         Config.OutputQuality = Enum.Parse<QualityEnum>(Quality.Text);
         Config.OutputPreset = Enum.Parse<PresetEnum>(Preset.Text);
