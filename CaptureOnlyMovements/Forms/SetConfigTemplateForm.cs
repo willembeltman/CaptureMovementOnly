@@ -2,6 +2,7 @@
 using CaptureOnlyMovements.Types;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 
@@ -18,11 +19,19 @@ namespace CaptureOnlyMovements.Forms
         {
             Application = application;
             InitializeComponent();
-            DialogResult = DialogResult.Cancel;
+            DialogResult = DialogResult.Cancel; 
+            this.FormBorderStyle = FormBorderStyle.None;
+
         }
 
         private void SetConfigTemplateForm_Load(object sender, EventArgs e)
         {
+            this.BackColor = Color.FromArgb(30, 30, 30);
+            this.DoubleBuffered = true;
+            this.Font = new Font("Segoe UI", 9F);
+            this.FormBorderStyle = FormBorderStyle.SizableToolWindow; // platte border
+
+
             NewItem = new ConfigPrefixPreset() { IsNew = true };
 
             if (Config.LastPrefixPreset != null)

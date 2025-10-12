@@ -29,9 +29,9 @@ public partial class ConfigForm : Form
 
     private void ConfigForm_Load(object? sender, EventArgs e)
     {
-        Quality.DataSource = Enum.GetNames<QualityEnum>();
-        Preset.DataSource = Enum.GetNames<PresetEnum>();
-        Encoder.DataSource = Application.WorkingEncoders.List.Select(a => a.ToString()).ToArray();
+        QualityCombo.DataSource = Enum.GetNames<QualityEnum>();
+        PresetCombo.DataSource = Enum.GetNames<PresetEnum>();
+        EncoderCombo.DataSource = Application.WorkingEncoders.List.Select(a => a.ToString()).ToArray();
     }
 
     private void StateChanged()
@@ -42,10 +42,10 @@ public partial class ConfigForm : Form
             return;
         }
 
-        Fps.Enabled = !Application.IsBusy;
-        Quality.Enabled = !Application.IsBusy;
-        Preset.Enabled = !Application.IsBusy;
-        Encoder.Enabled = !Application.IsBusy;
+        FpsCombo.Enabled = !Application.IsBusy;
+        QualityCombo.Enabled = !Application.IsBusy;
+        PresetCombo.Enabled = !Application.IsBusy;
+        EncoderCombo.Enabled = !Application.IsBusy;
         PrefixPresetList.Enabled = !Application.IsBusy;
 
         if (Application.IsBusy)
@@ -58,17 +58,6 @@ public partial class ConfigForm : Form
         }
     }
 
-
-    //private void btnPickExe_Click(object sender, EventArgs e)
-    //{
-    //    OpenFileDialog form = new OpenFileDialog();
-    //    form.DefaultExt = "*.exe|Executebles";
-    //    if (form.ShowDialog() == DialogResult.OK)
-    //    {
-    //        ProcessExecutebleTextBox.Text = form.FileName;
-    //    }
-    //}
-
     private void ConfigForm_VisibleChanged(object? sender, EventArgs e)
     {
         if (Visible)
@@ -77,13 +66,17 @@ public partial class ConfigForm : Form
 
             PrefixList = Config.PrefixPresets.Select(a => new ConfigPrefixPreset(a)).ToList();
             PrefixPresetList.DataSource = new BindingList<ConfigPrefixPreset>(PrefixList);
+            PrefixPresetList.Columns[0]!.Width = 200;
+            PrefixPresetList.Columns[1]!.Width = 600;
+            PrefixPresetList.Columns[2]!.Width = 120;
+            PrefixPresetList.Columns[3]!.Visible = false;
             MaximumPixelDifferenceValue.Text = Config.MaximumPixelDifferenceValue.ToString();
             MaximumDifferentPixelCount.Text = Config.MaximumDifferentPixelCount.ToString();
             MinPlaybackSpeed.Text = Config.MinPlaybackSpeed.ToString();
-            Fps.SelectedItem = Config.OutputFps.ToString();
-            Quality.SelectedItem = Config.OutputQuality.ToString();
-            Preset.SelectedItem = Config.OutputPreset.ToString();
-            Encoder.SelectedItem = Config.OutputEncoder.ToString();
+            FpsCombo.SelectedItem = Config.OutputFps.ToString();
+            QualityCombo.SelectedItem = Config.OutputQuality.ToString();
+            PresetCombo.SelectedItem = Config.OutputPreset.ToString();
+            EncoderCombo.SelectedItem = Config.OutputEncoder.ToString();
         }
     }
 
@@ -107,10 +100,10 @@ public partial class ConfigForm : Form
             MinPlaybackSpeed.Focus();
             return;
         }
-        if (!int.TryParse(Fps.Text, out var fps))
+        if (!int.TryParse(FpsCombo.Text, out var fps))
         {
             MessageBox.Show("You have to specify a number");
-            Fps.Focus();
+            FpsCombo.Focus();
             return;
         }
 
@@ -119,9 +112,9 @@ public partial class ConfigForm : Form
         Config.MaximumDifferentPixelCount = maxDifferentPixel;
         Config.MinPlaybackSpeed = minPlaybackSpeed;
         Config.OutputFps = fps;
-        Config.OutputQuality = Enum.Parse<QualityEnum>(Quality.Text);
-        Config.OutputPreset = Enum.Parse<PresetEnum>(Preset.Text);
-        Config.OutputEncoder = Enum.Parse<EncoderEnum>(Encoder.Text);
+        Config.OutputQuality = Enum.Parse<QualityEnum>(QualityCombo.Text);
+        Config.OutputPreset = Enum.Parse<PresetEnum>(PresetCombo.Text);
+        Config.OutputEncoder = Enum.Parse<EncoderEnum>(EncoderCombo.Text);
         Config.Save();
         Hide();
     }
