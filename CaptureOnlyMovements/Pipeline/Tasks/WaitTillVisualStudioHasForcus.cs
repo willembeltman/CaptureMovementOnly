@@ -30,7 +30,7 @@ namespace CaptureOnlyMovements.Pipeline.Tasks
         /// </summary>
         internal void Wait()
         {
-            if (!Config.WaitForProcessActive) 
+            if (!Config.WaitForProcessActive)
                 return;
 
             try
@@ -50,7 +50,7 @@ namespace CaptureOnlyMovements.Pipeline.Tasks
                         {
                             using (var process = Process.GetProcessById((int)processId))
                             {
-                                string exePath = process.MainModule?.FileName?.ToLowerInvariant();
+                                var exePath = process.MainModule?.FileName?.ToLowerInvariant();
                                 if (exePath == targetExe)
                                     return; // Visual Studio heeft focus
                             }

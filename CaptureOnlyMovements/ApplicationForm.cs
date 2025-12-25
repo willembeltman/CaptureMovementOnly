@@ -49,7 +49,6 @@ public class ApplicationForm : Form, IApplication
         NewContextMenuStrip.ForeColor = Color.White;
         NewContextMenuStrip.Font = new Font("Segoe UI", 10, FontStyle.Regular);
 
-
         // -------------------------
         // Menu items
         // -------------------------
@@ -101,13 +100,10 @@ public class ApplicationForm : Form, IApplication
         ExitMenuButton.Image = Properties.Resources.ExitIcon;
         NewContextMenuStrip.Items.Add(ExitMenuButton);
 
-
         // Koppel aan notification icon
         NotificationIcon.ContextMenuStrip = NewContextMenuStrip;
 
-
-
-    Load += ApplicationForm_Load;
+        Load += ApplicationForm_Load;
         Config.StateChanged += StateChanged;
         Timer.Tick += Timer_Tick;
         ShowInTaskbar = false;
@@ -145,7 +141,7 @@ public class ApplicationForm : Form, IApplication
         }
 
         StartRecordingButton.Visible = !Recorder.Recording;
-        StopRecordingButton.Visible = Recorder.Recording; 
+        StopRecordingButton.Visible = Recorder.Recording;
 
         if (Recorder.Recording)
         {
@@ -173,11 +169,11 @@ public class ApplicationForm : Form, IApplication
     {
         Hide();
         DetectEncodersForm.Show();
-        Timer.Start(); 
+        Timer.Start();
     }
     private void StartRecording_Click(object? sender, EventArgs e)
     {
-        if (SetConfigTemplateForm.ShowDialog() == DialogResult.OK && 
+        if (SetConfigTemplateForm.ShowDialog() == DialogResult.OK &&
             Config.LastPrefixPreset != null)
         {
             Recorder.Start(Config.LastPrefixPreset);

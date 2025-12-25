@@ -1,4 +1,6 @@
-﻿namespace CaptureOnlyMovements.Forms.SubForms
+﻿using CaptureOnlyMovements.DirectX;
+
+namespace CaptureOnlyMovements.Forms.SubForms
 {
     partial class ConverterForm
     {
@@ -37,7 +39,7 @@
             AddRectangeButton = new System.Windows.Forms.Button();
             DeleteSelectedRectangleButton = new System.Windows.Forms.Button();
             Console2 = new CaptureOnlyMovements.Forms.Controls.ConsoleControl();
-            displayControl1 = new CaptureOnlyMovements.Forms.Controls.DisplayControl();
+            displayControl1 = new DisplayControl();
             Timer = new System.Windows.Forms.Timer(components);
             ((System.ComponentModel.ISupportInitialize)FileGrid).BeginInit();
             tableLayoutPanel1.SuspendLayout();
@@ -346,7 +348,7 @@
         private System.Windows.Forms.CheckBox ShowDiffernceCheckbox;
         private System.Windows.Forms.Button StartButton;
         private System.Windows.Forms.Button StopButton;
-        private Controls.DisplayControl displayControl1;
+        private DisplayControl displayControl1;
         private System.Windows.Forms.Timer Timer;
         private System.Windows.Forms.Label InputFpsLabel;
         private System.Windows.Forms.Label OutputFpsLabel;

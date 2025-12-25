@@ -1,5 +1,4 @@
-﻿using CaptureOnlyMovements.Enums;
-using CaptureOnlyMovements.FFMpeg.Types;
+﻿using CaptureOnlyMovements.FFMpeg.Types;
 using CaptureOnlyMovements.FFProbe;
 using CaptureOnlyMovements.Interfaces;
 using CaptureOnlyMovements.Types;

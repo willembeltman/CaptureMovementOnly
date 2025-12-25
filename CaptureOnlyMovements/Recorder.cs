@@ -57,27 +57,22 @@ public class Recorder(
             var outputName = $"{ConfigPrefix.OutputFileNamePrefix}{DateTime.Now:yyyy-MM-dd HH-mm-ss}.mkv";
             string outputFullName = Path.Combine(videosFolderPath, outputName);
 
-            if (File.Exists(outputFullName))
-                File.Delete(outputFullName); // Delete existing file
-
             Console.WriteLine($"Starting screen capture.");
 
             // Get first frame for the resolution
             using var reader = new ScreenshotCapturer(Console);
             var frame = reader.CaptureFrame(this);
+            var resolution = frame!.Resolution;
             Application.InputFps.Tick();
 
             // Create the comparer
-            var resolution = frame.Resolution;
-            using var comparer = new FrameComparerTasks(Config, resolution, Preview);
+            using var comparer = new FrameComparerTasks(resolution, Config, Preview);
             comparer.IsDifferent(frame.Buffer); // Initialize comparer with the first frame
 
-            Console.WriteLine($"Opening '{outputFullName}' to write video to.");
-
             // Create the writer
+            Console.WriteLine($"Opening '{outputFullName}' to write video to.");
             var writerInfo = new MediaInfo(outputFullName);
             using var writer = writerInfo.OpenVideoWriter(this, resolution, Config, FFMpegWriterConsole);
-
             Console.WriteLine($"Writing first frame to the video.");
 
             // Write the first frame to the video
@@ -85,49 +80,40 @@ public class Recorder(
             Application.OutputFps.Tick();
             Console.WriteLine($"Captured frame at {DateTime.Now:HH:mm:ss.fff}");
 
-            // Remember the previous frame date for timing
+            // Create additional wait helpers
             var waitTillNextTime = new WaitForNext_DateTime(Config, Application);
+            var waitTillVisualStudioHasForcus = new WaitTillVisualStudioHasForcus(ConfigPrefix, this);
 
             Console.WriteLine($"Setting up pipeline.");
 
-            // ## New correct method
-
             // Setup pipeline
-            using var maskPipeline =
-                 new MaskPipeline(Console)
-                            .Next(new ShowMaskTo(Preview));
-
-            var waitTillVisualStudioHasForcus = new WaitTillVisualStudioHasForcus(ConfigPrefix, this);
-
             using var pipeline =
                 new VideoPipeline(new WaitThenReadFrameThenTickFps(waitTillVisualStudioHasForcus, waitTillNextTime, reader, Application.InputFps, this), Console)
-                            .Next(new SkipNotDifferentFrames(comparer, Preview))
-                            .Next(new ShowPreviewTo_PassThrough(Preview), maskPipeline)
+                            .Next(new SkipNotDifferentFrames(comparer, Preview)) // This step has 2 outputs: frames and masks
+                            .Next(// Frame output: 
+                                  new ShowPreviewTo_PassThrough(Preview),
+                                  // Mask output pipeline:
+                                  new MaskPipeline(Console) // Parent video pipeline will be the frame reader
+                                             .Next(new ShowMaskTo(Preview)))
                             .Next(new WriteFrameAndTickFps(writer, Application.OutputFps));
 
             Console.WriteLine($"Starting the pipeline.");
 
+            // ## New correct method
+
             // Then start it
             pipeline.Start(this);
+
+            // Sleep this thread until the pipeline is done
             pipeline.WaitForExit();
 
+            // Then check if there were exceptions
             if (pipeline.Exception != null)
                 Application.Exception(pipeline.Exception);
 
 
             //// ## New "feed the pipeline yourself" method 
             //// (I don't know how it is possible this works, maybe because of the wait?)
-
-            //// Setup pipeline
-            //using var maskPipeline =
-            //     new MaskPipeline(Console)
-            //                .Next(new ShowMaskTo(Preview));
-
-            //using var pipeline =
-            //    new VideoPipeline(Console)
-            //                .Next(new SkipNotDifferentFrames(comparer, Preview))
-            //                .Next(new ShowPreviewTo_PassThrough(Preview), maskPipeline)
-            //                .Next(new WriteFrameAndTickFps(writer, Application.OutputFps));
 
             //pipeline.Start(this); // Start it
 

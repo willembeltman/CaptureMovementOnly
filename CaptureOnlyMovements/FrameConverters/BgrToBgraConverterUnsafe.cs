@@ -1,6 +1,5 @@
 ﻿using CaptureOnlyMovements.Interfaces;
 using System;
-using Vortice;
 
 namespace CaptureOnlyMovements.FrameConverters;
 

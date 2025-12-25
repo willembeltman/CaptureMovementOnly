@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 
-namespace CaptureOnlyMovements.Pipeline.Base;
+namespace CaptureOnlyMovements.Pipeline;
 
 public class PipelineStatistics
 {

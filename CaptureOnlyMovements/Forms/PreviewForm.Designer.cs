@@ -1,4 +1,6 @@
-﻿namespace CaptureOnlyMovements.Forms
+﻿using CaptureOnlyMovements.DirectX;
+
+namespace CaptureOnlyMovements.Forms
 {
     partial class MaskForm
     {
@@ -15,7 +17,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            displayControl1 = new CaptureOnlyMovements.Forms.Controls.DisplayControl();
+            displayControl1 = new DisplayControl();
             SuspendLayout();
             // 
             // displayControl1
@@ -40,6 +42,6 @@
 
         #endregion
 
-        private Controls.DisplayControl displayControl1;
+        private DisplayControl displayControl1;
     }
 }

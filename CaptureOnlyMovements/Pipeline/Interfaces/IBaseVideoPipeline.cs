@@ -1,7 +1,6 @@
 ﻿using CaptureOnlyMovements.Interfaces;
-using CaptureOnlyMovements.Pipeline.Interfaces;
 
-namespace CaptureOnlyMovements.Pipeline.Base;
+namespace CaptureOnlyMovements.Pipeline.Interfaces;
 
 public interface IBaseVideoPipeline : INextVideoPipeline
 {

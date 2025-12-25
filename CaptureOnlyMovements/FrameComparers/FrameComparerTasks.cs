@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 namespace CaptureOnlyMovements.FrameComparers;
 
 public class FrameComparerTasks(
-    IComparerConfig config,
     Resolution resolution,
+    IComparerConfig config,
     IPreview? preview = null) : IBgrComparer
 {
     private readonly byte[] PreviousFrameData = new byte[resolution.Width * resolution.Height * 3];

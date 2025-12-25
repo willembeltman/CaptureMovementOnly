@@ -1,5 +1,4 @@
-﻿using CaptureOnlyMovements.FrameComparers;
-using CaptureOnlyMovements.Interfaces;
+﻿using CaptureOnlyMovements.Interfaces;
 using CaptureOnlyMovements.Types;
 
 namespace CaptureOnlyMovements.Pipeline.Tasks

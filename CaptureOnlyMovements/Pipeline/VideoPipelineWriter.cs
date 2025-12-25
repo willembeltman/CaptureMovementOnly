@@ -11,13 +11,13 @@ public class VideoPipelineWriter(
     BaseVideoPipeline firstPipeline,
     BaseVideoPipeline previousPipeline,
     IFrameWriter writer,
-    IConsole? console) 
+    IConsole? console)
     : BaseVideoPipeline(
-        firstPipeline, 
+        firstPipeline,
         previousPipeline,
         null, null, null, writer,
-        writer.GetType().Name, 
-        console), 
+        writer.GetType().Name,
+        console),
     IFrameWriter
 {
     private readonly AutoResetEvent Stopped = new(false);
@@ -46,7 +46,7 @@ public class VideoPipelineWriter(
     {
         if (((IBaseVideoPipeline)FirstPipeline).Reader != null)
             throw new Exception($"You cannot write to a pipeline with a reader, please remove the frame reader from the first pipeline.");
-        
+
         ((INextVideoPipeline)FirstPipeline).HandleNextFrame(frame);
     }
 

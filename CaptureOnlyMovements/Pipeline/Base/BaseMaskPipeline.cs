@@ -28,7 +28,7 @@ public abstract class BaseMaskPipeline : BasePipeline, INextMaskPipeline
     public IMaskWriter? MaskWriter { get; }
     protected BwFrame[]? Masks { get; set; }
 
-    int IPipeline.Start(IKillSwitch? cancellationToken, int count) 
+    int IPipeline.Start(IKillSwitch? cancellationToken, int count)
         => StartMask(cancellationToken, count);
     protected virtual int StartMask(IKillSwitch? cancellationToken, int count)
     {

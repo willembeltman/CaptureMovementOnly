@@ -5,7 +5,7 @@ using System;
 
 namespace CaptureOnlyMovements.Pipeline.Base;
 
-public abstract class BaseVideoPipeline 
+public abstract class BaseVideoPipeline
     : BasePipeline, IBaseVideoPipeline
 {
     public BaseVideoPipeline(
@@ -16,7 +16,7 @@ public abstract class BaseVideoPipeline
         IFrameProcessorWithMask? processorWithMask,
         IFrameWriter? writer,
         string name,
-        IConsole? console) 
+        IConsole? console)
         : base(firstPipeline, previousPipeline, name, console)
     {
         FirstPipeline = firstPipeline ?? this;
@@ -42,7 +42,7 @@ public abstract class BaseVideoPipeline
     IFrameProcessorWithMask? IBaseVideoPipeline.ProcessorWithMask => ProcessorWithMask;
     IFrameWriter? IBaseVideoPipeline.Writer => Writer;
 
-    int IPipeline.Start(IKillSwitch? cancellationToken, int count) 
+    int IPipeline.Start(IKillSwitch? cancellationToken, int count)
         => StartVideo(cancellationToken, count);
     protected virtual int StartVideo(IKillSwitch? cancellationToken, int count)
     {

@@ -1,7 +1,6 @@
 ﻿
 
 using CaptureOnlyMovements.Types;
-using System;
 
 namespace CaptureOnlyMovements.Pipeline.Interfaces;
 

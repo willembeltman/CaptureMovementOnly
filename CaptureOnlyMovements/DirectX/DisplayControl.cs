@@ -12,7 +12,7 @@ using Vortice.DXGI;
 using Vortice.Mathematics;
 using MapFlags = Vortice.Direct3D11.MapFlags;
 
-namespace CaptureOnlyMovements.Forms.Controls;
+namespace CaptureOnlyMovements.DirectX;
 
 public class DisplayControl : UserControl, IMaskWriter, IFrameWriter
 {

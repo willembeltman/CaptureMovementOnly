@@ -10,7 +10,7 @@ public abstract class BasePipeline : IBasePipeline
 {
     protected BasePipeline(
         BasePipeline? firstPipeline,
-        BasePipeline? previousPipeline, 
+        BasePipeline? previousPipeline,
         string name,
         IConsole? console)
     {

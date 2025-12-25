@@ -10,19 +10,19 @@ public class VideoPipelineWithMaskOutput(
     BaseVideoPipeline firstPipeline,
     BaseVideoPipeline previousPipeline,
     IFrameProcessorWithMask processorWithMask,
-    IConsole? console) 
+    IConsole? console)
     : BaseVideoPipeline(
         firstPipeline,
         previousPipeline,
-        null, null, processorWithMask, null, 
-        processorWithMask.GetType().Name, 
+        null, null, processorWithMask, null,
+        processorWithMask.GetType().Name,
         console)
 {
     protected override int StartVideo(IKillSwitch? cancellationToken, int count)
     {
         count++;
-        var previousPipeline = 
-            (IPipeline?)PreviousPipeline 
+        var previousPipeline =
+            (IPipeline?)PreviousPipeline
             ?? throw new Exception(
                 @"This should not be possible! 
 

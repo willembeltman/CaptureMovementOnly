@@ -127,17 +127,17 @@ Please download FFmpeg and place it in the specified location. The program will 
     private static string GetCodec(EncoderEnum encoder)
        => encoder switch
        {
-            EncoderEnum.NVIDIA_HEVC => "hevc_nvenc",
-            EncoderEnum.NVIDIA_H264 => "h264_nvenc",
+           EncoderEnum.NVIDIA_HEVC => "hevc_nvenc",
+           EncoderEnum.NVIDIA_H264 => "h264_nvenc",
 
-            EncoderEnum.AMD_HEVC => "hevc_amf",
-            EncoderEnum.AMD_H264 => "h264_amf",
+           EncoderEnum.AMD_HEVC => "hevc_amf",
+           EncoderEnum.AMD_H264 => "h264_amf",
 
-            EncoderEnum.INTEL_HEVC => "hevc_qsv",
-            EncoderEnum.INTEL_H264 => "h264_qsv",
+           EncoderEnum.INTEL_HEVC => "hevc_qsv",
+           EncoderEnum.INTEL_H264 => "h264_qsv",
 
-            EncoderEnum.SOFTWARE_HEVC => "libx265",
-            _ => "libx264"
+           EncoderEnum.SOFTWARE_HEVC => "libx265",
+           _ => "libx264"
        };
 
     private static string GetQuality(EncoderEnum encoder, QualityEnum quality)
@@ -198,7 +198,7 @@ Please download FFmpeg and place it in the specified location. The program will 
                 PresetEnum.VeryFast => "p1",
                 _ => "p4", // Medium
             },
-            
+
             EncoderEnum.AMD_H264 or EncoderEnum.AMD_HEVC => preset switch
             {
                 PresetEnum.VerySlow => "quality",
@@ -225,7 +225,7 @@ Please download FFmpeg and place it in the specified location. The program will 
 
     private static string GetArguments(EncoderEnum encoder, string pixFmt,
         string format, string overwrite, string size, string frameRate,
-        string codec, string preset, string quality, string fullName) 
+        string codec, string preset, string quality, string fullName)
         => encoder switch
         {
             EncoderEnum.NVIDIA_HEVC or EncoderEnum.NVIDIA_H264 =>

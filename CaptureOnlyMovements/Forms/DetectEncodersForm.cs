@@ -23,7 +23,7 @@ namespace CaptureOnlyMovements.Forms
             InitializeComponent();
             ProgressBar.Maximum = 7;
         }
-        
+
         protected override void OnPaintBackground(PaintEventArgs e)
         {
             base.OnPaintBackground(e);
@@ -115,7 +115,7 @@ namespace CaptureOnlyMovements.Forms
 
             StatusLabel.Text = "All done, have a nice day!";
             StatusLabel.Left = (ClientRectangle.Width - StatusLabel.Width) / 2;
-            
+
             List = workingEncoders.ToArray();
 
             await Task.Delay(2000);

@@ -58,9 +58,6 @@ public class Converter(
             var outputName = $"Converted {DateTime.Now:yyyy-MM-dd HH-mm-ss}.mkv";
             string outputFullName = Path.Combine(videosFolderPath, outputName);
 
-            if (File.Exists(outputFullName))
-                File.Delete(outputFullName); // Delete existing file
-
             Console?.WriteLine($"Opening '{outputFullName}' to write video to.");
 
             // Determine the resolution from the file configurations
@@ -91,11 +88,11 @@ public class Converter(
                 frameIndex++;
 
                 // Create the frame comparer and resizer
-                using var comparer = new FrameComparerTasks(fileConfig, frame.Resolution, Preview);
                 using var resizer = new BgrResizerUnsafe(resolution);
+                using var comparer = new FrameComparerTasks(frame.Resolution, fileConfig,  Preview);
 
+                // Then initialize them
                 comparer.IsDifferent(frame.Buffer);
-
                 frame = resizer.Resize(frame);
 
                 writer.WriteFrame(frame);
@@ -109,14 +106,14 @@ public class Converter(
                 // ## New correct method
 
                 // Setup pipeline
-                using var maskPipeline =
-                     new MaskPipeline(Console)
-                                .Next(new ShowMaskTo(Preview));
-
                 using var pipeline =
                     new VideoPipeline(new ReadFrameAndTickFps(reader, Application.InputFps), Console) // Start pipeline with reader,
-                                .Next(new SkipInitialOrNotDifferentFrames(skipTillNextIndex, comparer, Preview))
-                                .Next(new ResizeFrame(resizer), maskPipeline)
+                                .Next(new SkipInitialOrNotDifferentFrames(skipTillNextIndex, comparer, Preview)) // This step has 2 outputs: frames and masks
+                                .Next(// Frame output:
+                                      new ResizeFrame(resizer), // Will output to the next step of the pipeline
+                                      // Mask output to a new pipeline:
+                                      new MaskPipeline(Console) // Parent video pipeline will be the frame reader of the mask pipeline
+                                                 .Next(new ShowMaskTo(Preview)))
                                 .Next(new ShowPreviewTo_PassThrough(Preview))
                                 .Next(new WriteFrameAndTickFps(writer, Application.OutputFps));
 

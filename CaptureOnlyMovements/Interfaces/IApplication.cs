@@ -1,5 +1,4 @@
-﻿using CaptureOnlyMovements.Forms;
-using CaptureOnlyMovements.Types;
+﻿using CaptureOnlyMovements.Types;
 using System;
 
 namespace CaptureOnlyMovements.Interfaces;

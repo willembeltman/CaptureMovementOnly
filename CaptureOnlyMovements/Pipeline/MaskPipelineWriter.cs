@@ -32,7 +32,7 @@ public class MaskPipelineWriter : BaseMaskPipeline, IMaskWriter
 
             while (!Disposing)
             {
-                if (!FrameReceived.WaitOne(10_000)) 
+                if (!FrameReceived.WaitOne(10_000))
                     continue;
 
                 if (!Disposing)

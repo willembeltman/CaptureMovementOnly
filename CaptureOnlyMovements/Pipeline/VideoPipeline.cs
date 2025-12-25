@@ -1,24 +1,23 @@
 ﻿using CaptureOnlyMovements.Interfaces;
 using CaptureOnlyMovements.Pipeline.Base;
 using System;
-using System.Diagnostics;
 
 namespace CaptureOnlyMovements.Pipeline;
 
 public class VideoPipeline : BaseVideoPipeline
 {
+    //public VideoPipeline(
+    //    IConsole? console = null)
+    //    : base(null, null, null, null, null, null, "WriteFrame receiver", console) { }
+    //public VideoPipeline(
+    //    IFrameProcessor processor,
+    //    IConsole? console = null)
+    //    : base(null, null, null, processor, null, null, processor.GetType().Name, console) { }
 
-    public VideoPipeline(
-        IConsole? console = null)
-        : base(null, null, null, null, null, null, "WriteFrame receiver", console) { }
     public VideoPipeline(
         IFrameReader reader,
         IConsole? console = null)
         : base(null, null, reader, null, null, null, reader.GetType().Name, console) { }
-    public VideoPipeline(
-        IFrameProcessor processor,
-        IConsole? console = null)
-        : base(null, null, null, processor, null, null, processor.GetType().Name, console) { }
     public VideoPipeline(
         BaseVideoPipeline firstPipeline,
         BaseVideoPipeline previousPipeline,
@@ -55,7 +54,7 @@ public class VideoPipeline : BaseVideoPipeline
             {
                 ReaderKernel(cancellationToken);
             }
-            else 
+            else
             {
                 ProcessorKernel();
             }
